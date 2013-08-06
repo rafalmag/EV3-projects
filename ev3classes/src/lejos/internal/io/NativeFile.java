@@ -1,9 +1,7 @@
 package lejos.internal.io;
 
-import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
-import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +10,18 @@ import java.nio.ByteBuffer;
 import java.nio.Buffer;
 import java.nio.channels.FileChannel;
 
+/**
+ * This class provides access to Linux files using native I/O operations. It is
+ * implemented using the JNA package. The class is required because certain
+ * operations (like ioctl) that are required by the Lego kernel module interface are
+ * not support by standard Java methods. In addition standard Java memory mapped
+ * files do not seem to function correctly when used with Linux character devices.
+ * <p><p>
+ * Where possible standard Java classes and methods are used. JNA is used to extended
+ * the standard Java interface as required.
+ * @author andy
+ *
+ */
 public class NativeFile
 {
     static final int O_ACCMODE = 0003;
@@ -74,40 +84,63 @@ public class NativeFile
     {
         
     }
-    
+
+    /**
+     * Create a NativeFile object and open the associated file/device 
+     * for native access.
+     * @param fname the name of the file to open
+     * @param flags Linux style file access flags
+     * @param mode Linux style file access mode
+     * @throws FileNotFoundException
+     */
     public NativeFile(String fname, int flags, int mode) throws FileNotFoundException
     {
         open(fname, flags, mode);
     }
     
+    /**
+     * Open the specified file/device 
+     * for native access.
+     * @param fname the name of the file to open
+     * @param flags Linux style file access flags
+     * @param mode Linux style file access mode
+     * @throws FileNotFoundException
+     */
     public void open(String fname, int flags, int mode) throws FileNotFoundException
     {
-        //fd = CLibrary.INSTANCE.open(fname, flags, mode);
         fd = clib.open(fname, flags);
         if (fd < 0)
             throw new FileNotFoundException("File: " + fname + " errno " + Native.getLastError());
         jfd = new RandomAccessFile(fname, "rw");
         fc = jfd.getChannel();
     }
-    
+
+    /**
+     * Attempt to read the requested number of bytes from the associated file.
+     * @param buf location to store the read bytes
+     * @param len number of bytes to attempt to read
+     * @return number of bytes read or -1 if there is an error
+     */
     public int read(byte[] buf, int len)
     {
-        //return CLibrary.INSTANCE.read(fd, ByteBuffer.wrap(buf, 0, len), len);
-        //return clib.read(fd, ByteBuffer.wrap(buf, 0, len), len);
         try
         {
             return fc.read(ByteBuffer.wrap(buf, 0, len));
         } catch (IOException e)
         {
-            // TODO Auto-generated catch block
             return -1;
         }
     }
     
+    /**
+     * Attempt to write the requested number of bytes to the associated file.
+     * @param buf location to store the read bytes
+     * @param offset the offset within buf to take data from for the write
+     * @param len number of bytes to attempt to read
+     * @return number of bytes read or -1 if there is an error
+     */
     public int write(byte[] buf, int offset, int len)
     {
-        //return CLibrary.INSTANCE.write(fd, ByteBuffer.wrap(buf, offset, len), len);
-        //return clib.write(fd, ByteBuffer.wrap(buf, offset, len), len);
         try
         {
             return fc.write(ByteBuffer.wrap(buf, offset, len));
@@ -117,24 +150,32 @@ public class NativeFile
         }
     }
     
+    /**
+     * Attempt to read the requested number of byte from the associated file.
+     * @param buf location to store the read bytes
+     * @param offset offset with buf to start storing the read bytes
+     * @param len number of bytes to attempt to read
+     * @return number of bytes read or -1 if there is an error
+     */
     public int read(byte[] buf, int offset, int len)
     {
-        //return CLibrary.INSTANCE.read(fd, ByteBuffer.wrap(buf, offset, len), len);
-        //return clib.read(fd, ByteBuffer.wrap(buf, offset, len), len);
         try
         {
             return fc.read(ByteBuffer.wrap(buf, offset, len));
         } catch (IOException e)
         {
-            // TODO Auto-generated catch block
             return -1;
         }
     }
     
+    /**
+     * Attempt to write the requested number of bytes to the associated file.
+     * @param buf location to store the read bytes
+     * @param len number of bytes to attempt to read
+     * @return number of bytes read or -1 if there is an error
+     */
     public int write(byte[] buf, int len)
     {
-        //return CLibrary.INSTANCE.write(fd, ByteBuffer.wrap(buf, 0, len), len);
-        //return clib.write(fd, ByteBuffer.wrap(buf, 0, len), len);
         try
         {
             return fc.write(ByteBuffer.wrap(buf, 0, len));
@@ -143,22 +184,35 @@ public class NativeFile
             return -1;
         }
     }
-    
+
+    /**
+     * Perform a Linux style ioctl operation on the associated file.
+     * @param req ioctl operation to be performed
+     * @param buf byte array containing the ioctl parameters if any
+     * @return Linux style ioctl return
+     */
     public int ioctl(int req, byte[] buf)
     {
-        //return CLibrary.INSTANCE.ioctl(fd, req, buf);
         return clib.ioctl(fd, req, buf);
     }
     
+    /**
+     * Perform a Linux style ioctl operation on the associated file.
+     * @param req ioctl operation to be performed
+     * @param buf pointer to ioctl parameters
+     * @return Linux style ioctl return
+     */
     public int ioctl(int req, Pointer buf)
     {
-        //return CLibrary.INSTANCE.ioctl(fd, req, buf);
         return clib.ioctl(fd, req, buf);
     }
-    
+
+    /**
+     * Close the associated file
+     * @return Linux style return
+     */
     public int close()
     {
-        //return CLibrary.INSTANCE.close(fd);
         try
         {
             fc.close();
@@ -169,11 +223,19 @@ public class NativeFile
         }
         return clib.close(fd);
     }
-    
+
+    /**
+     * Map a portion of the associated file into memory and return a pointer
+     * that can be used to access that memory.
+     * @param len size of the region to map
+     * @param prot protection for the memory region
+     * @param flags Linux mmap flags
+     * @param off offset within the file for the start of the region
+     * @return a pointer that can be used to access the mapped data
+     */
     public Pointer mmap(long len, int prot, int flags, long off)
     {
-        //Pointer p = CLibrary.INSTANCE.mmap(new Pointer(0), new NativeLong(len), prot, flags, fd, new NativeLong(off));
-        Pointer p = clib.mmap(new Pointer(0), new NativeLong(len), prot, flags, fd, new NativeLong(off));
+       Pointer p = clib.mmap(new Pointer(0), new NativeLong(len), prot, flags, fd, new NativeLong(off));
         if (p == null)
             return null;
         return p;
