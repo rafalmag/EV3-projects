@@ -1,5 +1,10 @@
 package lejos.nxt;
 
+/**
+ * Basic constants for use when accessing EV3 Sensors.
+ * @author andy
+ *
+ */
 public interface EV3SensorConstants
 {
     public static final int PORTS = 4;

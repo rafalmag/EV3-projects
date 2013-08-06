@@ -8,6 +8,19 @@ import com.sun.jna.Structure;
 import lejos.internal.io.NativeDevice;
 import lejos.util.Delay;
 
+/**
+ * Provide access to EV3 sensor ports operating in UART mode.<p><p>
+ * NOTE: This code is not pretty! The interface uses a number of structures mapped
+ * into memory from the device. I am not aware of any clean way to implement this
+ * interface in Java. So for now multiple pointers to bytes/ints array etc. are used this
+ * means that the actual offsets of the start of the C arrays needs to be obtained
+ * and these (along with various sizes) are currently hard-coded as "OFF" values below.
+ * I'm sure there must be a better way! Also note that there seem to be a large
+ * number of potential race conditions in the device initialisation stage hence the
+ * various loops needed to retry operations.
+ * @author andy
+ *
+ */
 public class UARTPort implements EV3SensorConstants
 {
     protected static NativeDevice uart;
@@ -41,6 +54,11 @@ public class UARTPort implements EV3SensorConstants
         initDeviceIO();
     }
 
+    /**
+     * The following class maps directly to a C structure containg device information.
+     * @author andy
+     *
+     */
     public static class TYPES extends Structure
     {
         public byte Name[] = new byte[12];
@@ -87,12 +105,14 @@ public class UARTPort implements EV3SensorConstants
     protected TYPES[] modeInfo = new TYPES[UART_MAX_MODES];
     protected int mode = 0;
     /**
-     * Create and return a devCon structure ready for use.
-     * @param p
-     * @param conn
-     * @param typ
-     * @param mode
-     * @return
+     * Create and return a devCon structure ready for use. Note that this structure
+     * when used will impact all of the UART ports currently active. Thus the values
+     * used for other ports in earlier operations must be preserved.
+     * @param p port number
+     * @param conn connection type
+     * @param typ sensor type
+     * @param mode operating mode
+     * @return the DEVCON structure ready for use
      */
     private static byte[] devCon(int p, int conn, int typ, int mode)
     {
@@ -104,11 +124,20 @@ public class UARTPort implements EV3SensorConstants
         return dc;
     }
 
+    /**
+     * return the current status of the port
+     * @return status
+     */
     protected byte getStatus()
     {
         return devStatus.get(port);
     }
-    
+
+    /**
+     * Wait for the port status to become non zero, or for the operation to timeout
+     * @param timeout timeout period in ms
+     * @return port status or 0 if the operation timed out
+     */
     protected byte waitNonZeroStatus(int timeout)
     {
         int cnt = timeout/TIMEOUT_DELTA;
@@ -122,7 +151,12 @@ public class UARTPort implements EV3SensorConstants
         }
         return status;       
     }
-    
+
+    /**
+     * Wait for the port status to become zero
+     * @param timeout timeout period in ms
+     * @return zero if successful or the current status if timed out
+     */
     protected byte waitZeroStatus(int timeout)
     {
         int cnt = timeout/TIMEOUT_DELTA;
@@ -137,42 +171,63 @@ public class UARTPort implements EV3SensorConstants
         return status;       
     }
 
+    /**
+     * reset the port and device
+     */
     protected void reset()
     {
         // Force the device to reset
         uart.ioctl(UART_SET_CONN, devCon(port, CONN_NONE, 0, 0));        
     }
 
+    /**
+     * Set the current operating mode
+     * @param mode
+     */
     protected void setOperatingMode(int mode)
     {
         uart.ioctl(UART_SET_CONN, devCon(port, CONN_INPUT_UART, 0, mode));        
     }
 
+    /**
+     * Read the mode information for the specified operating mode.
+     * @param mode mode number to read
+     * @param uc control structure to read the data into
+     * @return
+     */
     protected boolean getModeInfo(int mode, UARTCTL uc)
     {
         uc.Port = (byte)port;
         uc.Mode = (byte)mode;
         uc.write();
-        System.out.println("size is " + uc.size() + " TYPES " + uc.TypeData.size() + " ptr " + uc.getPointer().SIZE);
+        //System.out.println("size is " + uc.size() + " TYPES " + uc.TypeData.size() + " ptr " + uc.getPointer().SIZE);
         uart.ioctl(UART_READ_MODE_INFO, uc.getPointer());
         uc.read();
-        System.out.println("name[0]" + uc.TypeData.Name[0]);
+        //System.out.println("name[0]" + uc.TypeData.Name[0]);
         return uc.TypeData.Name[0] != 0;
     }
 
+    /**
+     * Clear the port changed flag for the current port.
+     */
     protected void clearPortChanged()
     {
         //System.out.printf("Clear changed\n");
         uart.ioctl(UART_CLEAR_CHANGED, devCon(port, CONN_INPUT_UART, 0, 0));
         devStatus.put(port, (byte)(devStatus.get(port) & ~UART_PORT_CHANGED));        
     }
-    
+
+    /**
+     * Attempt to initialise the sensor ready for use.
+     * @param port port to init
+     * @param mode initial operating mode
+     * @return true if the initialisation succeeded false if it failed
+     */
     protected boolean initSensor(int port, int mode)
     {
         this.port = port;
         byte status;
         int retryCnt = INIT_RETRY;
-        long base = System.currentTimeMillis();
         // Force the device to reset
         reset();
         status = waitZeroStatus(TIMEOUT);
@@ -239,7 +294,13 @@ public class UARTPort implements EV3SensorConstants
        return false;
     }
     
-    
+
+    /**
+     * Open the port and set the initial operating mode.
+     * @param port port number to open
+     * @param mode operating mode
+     * @return true if post was opened, false if the operation failed
+     */
     public boolean open(int port, int mode)
     {
         for(int i = 0; i < OPEN_RETRY; i++)
@@ -251,6 +312,11 @@ public class UARTPort implements EV3SensorConstants
         return false;
     }
 
+    /**
+     * Set the current operating mode
+     * @param mode new mode to set
+     * @return true if the mode is set, false if the operation failed
+     */
     public boolean setMode(int mode)
     {
         setOperatingMode(mode);
@@ -263,17 +329,33 @@ public class UARTPort implements EV3SensorConstants
         else
             return false;
     }
-    
+
+    /**
+     * The RAW data is held in a circular buffer with 32 bytes of data per entry
+     * and 300 entries per port. This method calculates the byte offset of the
+     * latest data value read into the buffer.
+     * @return offset of the current data
+     */
     private int calcRawOffset()
     {
         return port*DEV_RAW_SIZE1 + actual.getShort(port*2)*DEV_RAW_SIZE2;
     }
 
+    /**
+     * read a single byte from the device
+     * @return the byte value
+     */
     public byte getByte()
     {
         return raw.get(calcRawOffset());
     }
-    
+
+    /**
+     * read a number of bytes from the device
+     * @param vals byte array to accept the data
+     * @param offset offset at which to store the data
+     * @param len number of bytes to read
+     */
     public void getBytes(byte [] vals, int offset, int len)
     {
         int loc = calcRawOffset();
@@ -281,11 +363,21 @@ public class UARTPort implements EV3SensorConstants
             vals[i+offset] = raw.get(loc + i);
     }
 
+    /**
+     * read a single short from the device.
+     * @return the short value
+     */
     public int getShort()
     {
         return raw.getShort(calcRawOffset());
     }
     
+    /**
+     * read a number of shorts from the device
+     * @param vals short array to accept the data
+     * @param offset offset at which to store the data
+     * @param len number of shorts to read
+     */
     public void getShorts(short [] vals, int offset, int len)
     {
         int loc = calcRawOffset();
@@ -293,6 +385,12 @@ public class UARTPort implements EV3SensorConstants
             vals[i+offset] = raw.get(loc + i*2);
     }
 
+    /**
+     * Get the string name of the specified mode.<p><p>
+     * TODO: Make other mode data available.
+     * @param mode mode to lookup
+     * @return String version of the mode name
+     */
     public String getModeName(int mode)
     {
         if (modeInfo[mode] != null)
@@ -301,6 +399,9 @@ public class UARTPort implements EV3SensorConstants
             return "Unknown";
     }
 
+    /**
+     * Return the current sensor reading to a string. 
+     */
     public String toString()
     {
         float divTable[] = {1f, 10f, 100f, 1000f, 10000f, 100000f};
@@ -329,6 +430,9 @@ public class UARTPort implements EV3SensorConstants
         return String.format(format, val);        
     }
 
+    /**
+     * Reset all of the ports
+     */
     public static void resetAll()
     {
         // reset everything

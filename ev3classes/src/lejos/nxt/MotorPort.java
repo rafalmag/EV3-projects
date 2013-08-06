@@ -7,7 +7,9 @@ import lejos.internal.io.NativeDevice;
 
 /**
  * 
- * Abstraction for a NXT output port.
+ * Abstraction for an EV3 output port.
+ * 
+ * TODO: Sort out a better way to do this, or least clean up the magic numbers.
  *
  */
 public class MotorPort implements TachoMotorPort {

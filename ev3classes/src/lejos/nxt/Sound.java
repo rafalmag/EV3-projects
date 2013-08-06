@@ -8,8 +8,10 @@ import lejos.internal.io.NativeDevice;
 import lejos.util.Delay;
 
 /**
- * NXT sound routines.
+ * EV3 sound routines.
  *
+ *<p><p>
+ *TODO: Get playNote working
  */
 public class Sound
 {

@@ -1,19 +1,11 @@
 package lejos.nxt;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import javax.swing.JPanel;
+
 import lejos.internal.io.NativeDevice;
-import java.nio.ByteBuffer;
 import lejos.util.Delay;
 import com.sun.jna.Pointer;
 /**
- * PC emulation of the LCD class
- * 
- * @author Lawrie Griffiths
+ * Provide access to the EV3 LCD display
  *
  */
 //public class LCD extends JPanel
@@ -438,8 +430,25 @@ public class LCD extends Thread
     public static final int ROP_NAND = 0xff0000ff;
     public static final int ROP_SET = 0x000000ff;
 
+    
+    protected final static int LCD_MEM_WIDTH = 60; // width of HW Buffer in bytes
+    protected final static int LCD_BUFFER_LENGTH = LCD_MEM_WIDTH*SCREEN_HEIGHT;
+    protected NativeDevice dev = new NativeDevice("/dev/fb0");
+    protected Pointer lcd = dev.mmap(LCD_BUFFER_LENGTH);
+    protected final static byte[] convert = new byte[] {
+            (byte)0x00, // 000 00000000
+            (byte)0xE0, // 001 11100000
+            (byte)0x1C, // 010 00011100
+            (byte)0xFC, // 011 11111100
+            (byte)0x03, // 100 00000011
+            (byte)0xE3, // 101 11100011
+            (byte)0x1F, // 110 00011111
+            (byte)0xFF  // 111 11111111
+    };
+    protected byte [] hwBuffer = new byte[LCD_BUFFER_LENGTH];
+    protected static LCD singleton = new LCD();
+
     private LCD() {
-        // Do not instantiate
         this.setDaemon(true);
         this.start();
     }
@@ -850,8 +859,6 @@ public class LCD extends Thread
           inStart += swb;
           outStart += dwb;
         }
-        //if (dst == displayBuf)
-            //singleton.update(displayBuf);
       }        
     /**
      * Scrolls the screen up one text line
@@ -893,93 +900,17 @@ public class LCD extends Thread
     {
         
     }
-/*    
-    private static final long serialVersionUID = 1L;    
-	public static final int LCD_WIDTH = 178;
-    public static final int LCD_HEIGHT = 128;
-    
-    private static LCD singleton = new LCD();
-    private static Color white = new Color(155, 205, 155, 255);
-    private static Color black = new Color(0,0,0,255);
-    // Start NXT frame
-    static NXTFrame frame = NXTFrame.getSingleton();
- 
-    private static boolean auto = true;
-    
-    private BufferedImage lcd = new BufferedImage(LCD_WIDTH, LCD_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-    private Graphics2D lcdGC = lcd.createGraphics();
-    
-    
-    public static LCD getSingleton() {
-    	return singleton;
-    }
+
     
 
-    public void paint(Graphics g)
-    {
-        Graphics2D g2d = (Graphics2D)g;
-        super.paint(g);
-        int width = getWidth();
-        int height = getHeight();
-        int imgWidth = lcd.getWidth();
-        int imgHeight = lcd.getHeight();
-        // Draw a scaled version of the display, keep the aspect ratio and
-        // centre it.
-        if (width < (height*imgWidth)/imgHeight)
-        {
-            imgHeight = (width*imgHeight)/imgWidth;
-            imgWidth = width;
-        }
-        else
-        {
-            imgWidth = (height*imgWidth)/imgHeight;
-            imgHeight = height;
-        }
-        g2d.drawImage(lcd, (width-imgWidth)/2, (height-imgHeight)/2, imgWidth, imgHeight, null);
-
-    }
-    
-    
-    
-    public void update(byte [] buffer)
-    {
-        int offset = 0;
-        lcdGC.setColor(white);
-        lcdGC.fillRect(0, 0, LCD_WIDTH, LCD_HEIGHT);
-        lcdGC.setColor(new Color(0, 0, 0, 255));
-        for(int row = 0; row < LCD_HEIGHT; row++)
-            for(int col = 0; col < LCD_WIDTH; col += 8)
-            {
-                byte vals = buffer[offset++];
-                for(int bit = 0; bit < 8; bit++)
-                {
-                    if ((vals & 1) != 0)
-                        lcdGC.fillRect(col+bit, row, 1, 1);
-                    vals >>= 1;
-                }
-            }
-        repaint();
-    }
-    */
-    final static int LCD_MEM_WIDTH = 60; // width of HW Buffer in bytes
-    final static int LCD_BUFFER_LENGTH = LCD_MEM_WIDTH*SCREEN_HEIGHT;
-    NativeDevice dev = new NativeDevice("/dev/fb0");
-    //ByteBuffer lcd = dev.mmap(LCD_BUFFER_LENGTH);
-    Pointer lcd = dev.mmap(LCD_BUFFER_LENGTH);
-    byte[] convert = new byte[] {
-            (byte)0x00, // 000 00000000
-            (byte)0xE0, // 001 11100000
-            (byte)0x1C, // 010 00011100
-            (byte)0xFC, // 011 11111100
-            (byte)0x03, // 100 00000011
-            (byte)0xE3, // 101 11100011
-            (byte)0x1F, // 110 00011111
-            (byte)0xFF  // 111 11111111
-    };
-    byte [] hwBuffer = new byte[LCD_BUFFER_LENGTH];
-    static LCD singleton = new LCD();
-
-    synchronized void update(byte [] buffer)
+    /**
+     * Update the hardware display contents from the internal display bitmap. We 
+     * need to convert the data from the simple packed format used by the internal
+     * display to that used by the actual LCD controller. See the datasheet for the
+     * ST7586S LCD controller for details.
+     * @param buffer internal format buffer to display
+     */
+    protected synchronized void update(byte [] buffer)
     {
         int inOffset = 0;
         int outOffset = 0;
@@ -1022,6 +953,9 @@ public class LCD extends Thread
         lcd.write(0, hwBuffer, 0, hwBuffer.length);
     }
 
+    /**
+     * Background thread which provides automatic screen updates
+     */
     public void run()
     {
         for(;;)

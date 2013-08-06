@@ -1,10 +1,20 @@
 package lejos.nxt;
 
+import java.nio.ByteBuffer;
+
+import com.sun.jna.Pointer;
+
 import lejos.internal.io.NativeDevice;
 
 public class DeviceManager implements EV3SensorConstants
 {
+    protected static final int ANALOG_SIZE = 5172;
+    protected static final int ANALOG_INDCM_OFF = 5156;
+    protected static final int ANALOG_INCONN_OFF = 5160;
     protected static NativeDevice dev;
+    protected static Pointer pAnalog;
+    protected static ByteBuffer inDcm;
+    protected static ByteBuffer inConn;
     
     static {
         initDeviceIO();
@@ -14,13 +24,7 @@ public class DeviceManager implements EV3SensorConstants
     {
         if (port > PORTS || port < 0)
             return CONN_ERROR;
-        byte[] types = new byte[PORTS*2 + 2];
-        dev.read(types, types.length);
-        if (types[port] == 125)
-            return CONN_INPUT_UART;
-        else
-            return CONN_NONE;
-        //return types[port];
+        return inConn.get(port);
     }
     
     public String getPortTypeName(int typ)
@@ -49,6 +53,9 @@ public class DeviceManager implements EV3SensorConstants
     
     private static void initDeviceIO()
     {
-        dev = new NativeDevice("/dev/lms_dcm");        
+        dev = new NativeDevice("/dev/lms_analog"); 
+        pAnalog = dev.mmap(ANALOG_SIZE);
+        inDcm = pAnalog.getByteBuffer(ANALOG_INDCM_OFF, PORTS);
+        inConn = pAnalog.getByteBuffer(ANALOG_INCONN_OFF, PORTS);
     }
 }

@@ -6,6 +6,8 @@ import com.sun.jna.Pointer;
  * This class provides access from Java to Linux character devices. It is intended
  * to allow access from Java to the Lego kernel modules which provide access to
  * EV3 hardware features.
+ * <p><p>
+ * TODO: Find a better way to return memory mapped data for use by Java.
  * @author andy
  *
  */
