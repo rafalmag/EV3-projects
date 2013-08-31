@@ -14,6 +14,8 @@ import javax.microedition.lcdui.game.Sprite;
  * 8th scan line. Values of 1 represent black. 0 white. This class implements a
  * sub set of the standard lcdui Image class. Only mutable images are supported
  * and the ARGB methods are not available.
+ * 
+ * TODO: This file needs to be updated to match the EV3 image format.
  * @author Andre Nijholt & Andy Shaw
  */
 public class Image

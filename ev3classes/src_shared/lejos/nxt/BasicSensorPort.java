@@ -18,11 +18,11 @@ public interface BasicSensorPort extends SensorConstants {
 	
 	public int getType();
 	
-	public void setMode(int mode);
+	public boolean setMode(int mode);
 	
-	public void setType(int type);
+	public boolean setType(int type);
 	
-	public void setTypeAndMode(int type, int mode);
+	public boolean setTypeAndMode(int type, int mode);
 
 }
 

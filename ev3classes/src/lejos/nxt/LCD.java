@@ -551,7 +551,7 @@ public class LCD extends Thread
      */
     public static void drawInt(int i, int places, int x, int y)
     {
-        drawString(String.format("%1$d", places, i), x, y);
+        drawString(String.format("%"+places+"d", i), x, y);
     }
 
     /**

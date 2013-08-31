@@ -11,11 +11,15 @@ package lejos.nxt;
  * @author Lawrie Griffiths.
  * 
  */
-public interface ADSensorPort extends BasicSensorPort {
+public interface ADSensorPort extends SensorPort {
 
 	public boolean readBooleanValue();
 	
 	public int readRawValue();
 	
 	public int readValue();
+	
+	public int getPin6();
+	
+	public int getPin1();
 }

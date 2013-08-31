@@ -13,7 +13,7 @@ import com.sun.jna.Pointer;
  * @author andy
  *
  */
-public class AnalogPort implements EV3SensorConstants
+public class LocalAnalogPort extends LocalSensorPort implements ADSensorPort
 {
     protected static final int ANALOG_SIZE = 5172;
     protected static final int ANALOG_PIN1_OFF = 0;
@@ -35,22 +35,21 @@ public class AnalogPort implements EV3SensorConstants
         initDeviceIO();
     }
 
-    protected int port;
     
     /**
      * allow access to the specified port
      * @param p port number to open
      */
-    public void open(int p)
+    public boolean open(int p)
     {
-        this.port = p;
+        return super.open(p);
     }
     
     /**
      * Return the analog voltage reading from pin 1
      * @return the voltage in mV
      */
-    public short getPin1()
+    public int getPin1()
     {
         return shortVals.getShort(ANALOG_PIN1_OFF + port*2);
     }
@@ -59,16 +58,77 @@ public class AnalogPort implements EV3SensorConstants
      * Return the analog voltage reading from pin 6
      * @return the voltage in mV
      */
-   public short getPin6()
+    public int getPin6()
     {
         return shortVals.getShort(ANALOG_PIN6_OFF + port*2);
     }
+
+    // The following method provide compatibility with NXT sensors
     
-   /**
-    * Return the analog voltage reading from pin 5 on the output port
-    * @param p the port number to return the reading for
-    * @return the voltage in mV
-    */
+    @Override
+    public boolean setType(int type)
+    {
+        switch(type)
+        {
+        case TYPE_NO_SENSOR:
+        case TYPE_SWITCH:
+        case TYPE_TEMPERATURE:
+        case TYPE_CUSTOM:
+        case TYPE_ANGLE:
+            setPinMode(CMD_FLOAT);
+            break;
+        case TYPE_LIGHT_ACTIVE:
+        case TYPE_SOUND_DBA:            
+        case TYPE_REFLECTION:
+            setPinMode(CMD_SET|CMD_PIN5);
+            break;
+        case TYPE_LIGHT_INACTIVE:
+        case TYPE_SOUND_DB: 
+            setPinMode(CMD_SET);
+            break;
+        case TYPE_LOWSPEED:
+            setPinMode(CMD_SET);
+            break;
+        case TYPE_LOWSPEED_9V:
+            setPinMode(CMD_SET|CMD_PIN1);
+            break;
+        default:
+            throw new UnsupportedOperationException("Unrecognised sensor type");
+        }
+        return true;
+    }
+
+    
+    @Override
+    public boolean readBooleanValue()
+    {
+        return getPin1() < 2400;
+    }
+
+    @Override
+    public int readRawValue()
+    {
+        // TODO Auto-generated method stub
+        return (getPin1() + 3)/4;
+    }
+
+    @Override
+    public int readValue()
+    {
+        // TODO Auto-generated method stub
+        return (getPin1() + 3)/4;
+    }
+
+    // The following methods should arguably be in different class, but they
+    // share the same memory structures as those used for analog I/O. Perhaps
+    // we need to restructure at some point and mode them to a common private
+    // class.
+    
+    /**
+     * Return the analog voltage reading from pin 5 on the output port
+     * @param p the port number to return the reading for
+     * @return the voltage in mV
+     */
     protected static short getOutputPin5(int p)
     {
         return shortVals.getShort(ANALOG_PIN5_OFF + p*2);
@@ -78,7 +138,7 @@ public class AnalogPort implements EV3SensorConstants
      * Return the battery temperature reading
      * @return
      */
-    public static short getBatteryTemperature()
+    protected static short getBatteryTemperature()
     {
         return shortVals.getShort(ANALOG_BAT_TEMP_OFF);
     }
@@ -87,7 +147,7 @@ public class AnalogPort implements EV3SensorConstants
      * return the motor current
      * @return
      */
-    public static short getMotorCurrent()
+    protected static short getMotorCurrent()
     {
         return shortVals.getShort(ANALOG_MOTOR_CUR_OFF);
     }
@@ -96,7 +156,7 @@ public class AnalogPort implements EV3SensorConstants
      * return the battery current
      * @return
      */
-    public static short getBatteryCurrent()
+    protected static short getBatteryCurrent()
     {
         return shortVals.getShort(ANALOG_BAT_CUR_OFF);
     }
@@ -105,7 +165,7 @@ public class AnalogPort implements EV3SensorConstants
      * return the battery voltage
      * @return
      */
-    public static short getBatteryVoltage()
+    protected static short getBatteryVoltage()
     {
         return shortVals.getShort(ANALOG_BAT_V_OFF);
     }
@@ -143,4 +203,5 @@ public class AnalogPort implements EV3SensorConstants
         inConn = pAnalog.getByteBuffer(ANALOG_INCONN_OFF, PORTS);
         shortVals = pAnalog.getByteBuffer(0, ANALOG_BAT_V_OFF+2);
     }
+
 }
