@@ -10,7 +10,11 @@ import javax.microedition.lcdui.game.Sprite;
 
 import lejos.nxt.Button;
 import lejos.nxt.DeviceManager;
+import lejos.nxt.I2CPort;
+import lejos.nxt.I2CSensor;
 import lejos.nxt.LCD;
+import lejos.nxt.LocalI2CPort;
+import lejos.nxt.LocalUARTPort;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.Sound;
@@ -408,6 +412,7 @@ public class GraphicsSample extends Thread
         int chWidth = g.getFont().stringWidth("M");
         int [] current = new int[DeviceManager.PORTS];
         UARTPort[] uarts = new UARTPort[DeviceManager.PORTS];
+        I2CPort[] i2c = new I2CPort[DeviceManager.PORTS];
         DeviceManager dm = new DeviceManager();
         int devCnt = 0;
         while(devCnt < DeviceManager.PORTS)
@@ -423,6 +428,11 @@ public class GraphicsSample extends Thread
                 {
                     g.drawString(uarts[i].getModeName(0), 2*chWidth, (2*i + 1)*chHeight, 0);
                     devCnt++;
+                }
+                else if (i2c[i] != null)
+                {
+                    I2CSensor s = new I2CSensor(i2c[i]);
+                    g.drawString(s.getProductID(), 2*chWidth, (2*i + 1)*chHeight, 0);
                 }
                 else
                     g.drawString("Unknown", 2*chWidth, (2*i + 1)*chHeight, 0);
@@ -441,14 +451,22 @@ public class GraphicsSample extends Thread
                     if (typ == DeviceManager.CONN_INPUT_UART)
                     {
                         System.out.println("Open port " + i);
-                        UARTPort u = new UARTPort();
-                        if (u.open(i, 0))
+                        UARTPort u = new LocalUARTPort();
+                        if (u.open(i))
                             uarts[i] = u;
                         break;
                     }
+                    else if (typ == DeviceManager.CONN_NXT_IIC)
+                    {
+                        I2CPort ii = new LocalI2CPort();
+                        ii.open(i);
+                        i2c[i] = ii;
+                    }
                     else
+                    {
                         uarts[i] = null;
-                    
+                        i2c[i] = null;
+                    }
                 }
             }
         }
@@ -952,14 +970,15 @@ public class GraphicsSample extends Thread
 
     public static void main(String[] options) throws Exception
     {
-        UARTPort.resetAll();
+        LocalUARTPort.resetAll();
         GraphicsSample sample = new GraphicsSample();
+        sample.sensorPorts();
+        /*
         sample.splash();
         sample.buttons();
         sample.motors();
         sample.sound();
         sample.leds();
-        sample.sensorPorts();
         sample.titles();
         //sample.characterSet();
         //sample.textAnchors();
@@ -972,6 +991,6 @@ public class GraphicsSample extends Thread
         //sample.scroll();
         sample.images();
         sample.animation();
-        sample.credits();
+        sample.credits();*/
     }
 }
