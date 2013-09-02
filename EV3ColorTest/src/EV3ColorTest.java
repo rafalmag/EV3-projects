@@ -4,6 +4,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
 import lejos.nxt.LCD;
+import lejos.nxt.LocalUARTPort;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.Sound;
@@ -23,13 +24,13 @@ public class EV3ColorTest
         // TODO Auto-generated method stub
         System.out.println("Running...");
 
-        UARTPort u = new UARTPort();
-        if (!u.open(3, 2))
+        UARTPort u = new LocalUARTPort();
+        if (!u.open(3))
         {
             System.out.println("Open failed");
             return;
         }
-        //u.setMode(2);
+        u.setMode(2);
         Graphics g = new Graphics();
         final int SW = LCD.SCREEN_WIDTH;
         final int SH = LCD.SCREEN_HEIGHT;
