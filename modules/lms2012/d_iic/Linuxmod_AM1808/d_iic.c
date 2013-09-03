@@ -1003,7 +1003,7 @@ static enum hrtimer_restart Device1TimerInterrupt1(struct hrtimer *pTimer)
 
       case IIC_WAITING :
       {
-        if ((*pIic).Status[Port] & IIC_WRITE_REQUEST)
+        if ((*pIic).Status[Port] == IIC_WRITE_REQUEST)
         {
           if (IicPortBusy(Port) == 0)
           {
@@ -1092,7 +1092,6 @@ static enum hrtimer_restart Device1TimerInterrupt1(struct hrtimer *pTimer)
 
           (*pIic).Status[Port]     |=  IIC_DATA_READY;
           IicPort[Port].State       =  IIC_REPEAT;
-
           if (IicPort[Port].Repeat != 0)
           {
             IicPort[Port].Repeat--;
@@ -1249,10 +1248,10 @@ static int Device1Ioctl(struct inode *pNode, struct file *File, unsigned int Req
       Port                        =  (*pIicDat).Port;
       (*pIicDat).Result           =  BUSY;
 
-      printk("1\n");
+      //printk("1\n");
       if (!((*pIic).Status[Port] & IIC_WRITE_REQUEST))
       {
-        printk("2\n");
+        //printk("2\n");
         IicPort[Port].Repeat      =  (*pIicDat).Repeat;
         IicPort[Port].Time        =  (*pIicDat).Time;
         IicPort[Port].OutLength   =  (*pIicDat).WrLng;
@@ -1284,7 +1283,7 @@ static int Device1Ioctl(struct inode *pNode, struct file *File, unsigned int Req
 
       if (((*pIic).Status[Port] & IIC_DATA_READY))
       {
-        printk("3\n");
+        //printk("3\n");
         memcpy((void*)&(*pIicDat).RdData[0],(void*)&IicPort[Port].InBuffer[0],IicPort[Port].InLength);
 
         (*pIicDat).Result         =  OK;
@@ -1473,7 +1472,22 @@ static int Device1Init(void)
       printk("  %s kmalloc failed !!\n",DEVICE1_NAME);
     }
   }
+  {
+    IICDAT d;
+    IIC ic;
+  printk("IIC_SET_CONN %x\n", IIC_SET_CONN);
+  printk("IIC_READ_TYPE_INFO %x\n", IIC_READ_TYPE_INFO);
+  printk("IIC_SETUP %x\n", IIC_SETUP);
+  printk("IIC_SET %x\n", IIC_SET);
+  printk("IICDAT size %d\n", sizeof(d));
+  printk("IICDAT port offset %d\n", ((char *)&(d.Port)) - ((char *) &d));
+  printk("IICDAT repeat offset %d\n", ((char *)&(d.Repeat)) - ((char *) &d));
+  printk("IICDAT RdLen offset %d\n", ((char *)&(d.RdLng)) - ((char *) &d));
 
+  printk("IIC size %d\n", sizeof(IIC));
+  printk("IIC status offset %d\n", ((char *)&(ic.Status)) - ((char *)&ic));
+  printk("IIC changed offset %d\n", ((char *)&(ic.Changed)) - ((char *)&ic));
+  }
   return (Result);
 }
 
