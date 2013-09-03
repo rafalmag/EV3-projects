@@ -2313,7 +2313,6 @@ static enum hrtimer_restart Device1TimerInterrupt1(struct hrtimer *pTimer)
 
       if (!TestMode)
       {
-
         switch (UartPort[Port].State)
         { // Main state machine
 
@@ -3110,7 +3109,6 @@ static enum hrtimer_restart Device1TimerInterrupt1(struct hrtimer *pTimer)
           { // Get device data
 
             UartPort[Port].InLength   =  UartPortReadData(Port,&UartPort[Port].Cmd,TmpBuffer,&UartPort[Port].Check,&CrcError);
-
             if (UartPort[Port].InLength)
             {
               if (!CrcError)
@@ -3654,7 +3652,6 @@ static int Device1Ioctl(struct inode *pNode, struct file *File, unsigned int Req
       pUartCtl  =  (UARTCTL*)Pointer;
       Port      =  (*pUartCtl).Port;
       Mode      =  (*pUartCtl).Mode;
-
 #ifdef DEBUG
       if (TypeData[Port][Mode].Name[0])
       {
@@ -3920,7 +3917,21 @@ static int Device1Init(void)
 #endif
     }
   }
-
+  {
+    UARTCTL c;
+  printk("mem size %d\n", SHM_LENGTH);
+  printk("status offset %d\n", ((char *)&((*pUart).Status[0]) - (char *)pUart));
+  printk("input offset %d\n", ((char *)&((*pUart).Raw[0]) - (char *)pUart));
+  printk("input offset 1%d\n", ((char *)&((*pUart).Raw[1]) - (char *)pUart));
+  printk("actual offset %d\n", ((char *)&((*pUart).Actual[0]) - (char *)pUart));
+  printk("LogIn offset %d\n", ((char *)&((*pUart).LogIn[0]) - (char *)pUart));
+  printk("UART_SET_CONN %x\n", UART_SET_CONN);
+  printk("UART_READ_MODE_INFO %x\n", UART_READ_MODE_INFO);
+  printk("UART_NACK_MODE_INFO %x\n", UART_NACK_MODE_INFO);
+  printk("UART_CLEAR_CHANGED %x\n", UART_CLEAR_CHANGED);
+  printk("uartctl sz %d\n", sizeof(c));
+  printk("port offset %d\n", (((char *)&c.Port) - (char *)&c));
+  }
   return (Result);
 }
 
