@@ -4,13 +4,16 @@
 
 img=lejosimage
 rm -rf $img 2> /dev/null
-mkdir lejosimage 2> /dev/null
+mkdir $img 2> /dev/null
 cp scripts/* $img
 cp -r lejosfs $img
 cp external/uImage $img
 cp external/lmsfs.tar.bz2 $img 
 cp -r external/Linux_AM1808 $img 
 cp -r external/netmods $img
+cp ../modules/net/bin/* $img/netmods
+mkdir $img/mod
+cp ../modules/lms2012/bin/* $img/mod
 dpkg-deb -x external/libjna* $img/libjna
 dpkg-deb -x external/libffi* $img/libjna
 cp ../ev3classes/ev3classes.jar $img

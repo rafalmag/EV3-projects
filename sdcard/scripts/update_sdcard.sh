@@ -46,6 +46,8 @@ then
         sudo cp -r lejosfs/* "$mount/LMS2012_EXT"
 	sudo cp wpa_supplicant.conf "$mount/LMS2012_EXT"/etc
 	sudo cp ev3classes.jar "$mount/LMS2012_EXT"/lejos/lib
+	sudo cp Linux_AM1808/sys/mod/*.ko "$mount/LMS2012_EXT"/lejos/mod
+	sudo cp mod/*.ko "$mount/LMS2012_EXT"/lejos/mod
     	if [ -e $jvm ]
     	then
         	echo "  ....  "Java
