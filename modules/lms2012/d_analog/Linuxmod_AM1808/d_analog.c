@@ -1969,7 +1969,14 @@ static int Device1Init(void)
       printk("  %s kmalloc failed !!\n",DEVICE1_NAME);
     }
   }
-
+  printk("Analog mem size %d\n", SHM_LENGTH);
+  printk("InDcm offset %d\n", ((char *)&((*pAnalog).InDcm[0]) - (char *)pAnalog));
+  printk("InConn offset %d\n", ((char *)&((*pAnalog).InConn[0]) - (char *)pAnalog));
+  printk("OutDcm offset %d\n", ((char *)&((*pAnalog).OutDcm[0]) - (char *)pAnalog));
+  printk("OutConn offset %d\n", ((char *)&((*pAnalog).OutConn[0]) - (char *)pAnalog));
+  printk("Actual offset %d\n", ((char *)&((*pAnalog).Actual[0]) - (char *)pAnalog));
+  printk("Pin6 offset %d\n", ((char *)&((*pAnalog).Pin6[0]) - (char *)pAnalog));
+  printk("Pin1 offset %d\n", ((char *)&((*pAnalog).Pin1[0]) - (char *)pAnalog));
   return (Result);
 }
 
