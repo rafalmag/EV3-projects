@@ -81,8 +81,8 @@ public abstract class LocalSensorPort implements SensorPort
             throw new IllegalStateException("Port is not open");
         synchronized (openPorts)
         {
-            port = -1;
             openPorts[port] = null;
+            port = -1;
         }
     }
     

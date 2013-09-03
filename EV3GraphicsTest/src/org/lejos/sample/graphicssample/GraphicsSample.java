@@ -421,7 +421,7 @@ public class GraphicsSample extends Thread
             devCnt = 0;
             for(int i = 0; i < DeviceManager.PORTS; i++)
             {
-                System.out.println("Type " + i + " is " + current[i]);
+                //System.out.println("Type " + i + " is " + current[i]);
                 g.drawString("Port "+i, 0, i*chHeight*2, 0);
                 g.drawString(dm.getPortTypeName(current[i]), 8*chWidth,i*chHeight*2, 0);
                 if (uarts[i] != null)
@@ -443,7 +443,7 @@ public class GraphicsSample extends Thread
             for(int i = 0; i < DeviceManager.PORTS; i++)
             {
                 int typ = dm.getPortType(i);
-                System.out.println("Type " + typ);
+                //System.out.println("Type " + typ);
                 if (current[i] != typ)
                 {
                     System.out.println("Changed to " + typ);
@@ -464,6 +464,10 @@ public class GraphicsSample extends Thread
                     }
                     else
                     {
+                        if (uarts[i] != null)
+                            uarts[i].close();
+                        if (i2c[i] != null)
+                            i2c[i].close();
                         uarts[i] = null;
                         i2c[i] = null;
                     }

@@ -286,7 +286,8 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
      */
     public boolean open(int port, int mode)
     {
-        super.open(port);
+        if (!super.open(port))
+            return false;
         
         for(int i = 0; i < OPEN_RETRY; i++)
             if (initSensor(mode))

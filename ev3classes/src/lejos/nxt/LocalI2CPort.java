@@ -34,7 +34,7 @@ public class LocalI2CPort extends LocalSensorPort implements I2CPort
     protected static final int IIC_STATUS_OFF = 42608;
     protected static final int IIC_CHANGED_OFF = 42612;
     
-    protected static final int IO_TIMEOUT = 10000;
+    protected static final int IO_TIMEOUT = 2000;
 
     public static class IICDATA extends Structure
     {
@@ -88,13 +88,15 @@ public class LocalI2CPort extends LocalSensorPort implements I2CPort
     
     protected boolean initSensor()
     {
-        reset();
         // Set pin configuration and power for standard i2c sensor.
         setPinMode(CMD_FLOAT);
+        reset();
+        Delay.msDelay(100);
         setOperatingMode(TYPE_IIC_UNKNOWN, 255);
         Delay.msDelay(100);
         setOperatingMode(TYPE_IIC_UNKNOWN, 255);        
         Delay.msDelay(100);
+        //System.out.println("Status " + getStatus() + " changed " + getChanged());
         return true;
     }
     
@@ -104,7 +106,8 @@ public class LocalI2CPort extends LocalSensorPort implements I2CPort
      */
     public boolean open(int p)
     {
-        super.open(p);
+        if (!super.open(p))
+            return false;
         if (!initSensor())
         {
             super.close();
@@ -141,7 +144,7 @@ public class LocalI2CPort extends LocalSensorPort implements I2CPort
         iicdata.WrData[0] = (byte)(deviceAddress >> 1);
         iicdata.WrLng = (byte)(writeLen + 1);
         // note -ve value due to Lego's crazy reverse order stuff
-        iicdata.RdLng = (byte)readLen;
+        iicdata.RdLng = (byte)-readLen;
         iicdata.write();
         while(timeout > System.currentTimeMillis())
         {
@@ -159,6 +162,7 @@ public class LocalI2CPort extends LocalSensorPort implements I2CPort
             }
             Thread.yield();
         }
+        //System.out.println("Timeout");
         return -1;
     }
     
