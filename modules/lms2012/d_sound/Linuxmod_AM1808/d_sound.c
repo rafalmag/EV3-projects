@@ -112,6 +112,8 @@ static    ktime_t         Device1Time;
 #define PLL_MASTER_LOCK   0x00001000
 #define DEFAULT_FREQUENCY 16499           // 16499 should give 8 KHz
 #define DEFAULT_LEVEL     1000            // 25% D.C.
+#undef SOUND_BUFFER_COUNT
+#define SOUND_BUFFER_COUNT 32
 
 static UWORD	SoundBuffers[SOUND_BUFFER_COUNT][SOUND_FILE_BUFFER_SIZE];
 static UBYTE  SoundChunkSize[SOUND_BUFFER_COUNT];
