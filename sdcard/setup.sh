@@ -5,6 +5,11 @@
 img=lejosimage
 rm -rf $img 2> /dev/null
 mkdir $img 2> /dev/null
+mkdir lejosfs/lejos/lib 2> /dev/null
+mkdir lejosfs/lejos/libjna 2> /dev/null
+mkdir lejosfs/lejos/mod 2> /dev/null
+mkdir lejosfs/lejos/samples 2> /dev/null
+mkdir lejosfs/lejos/bin/utils 2> /dev/null
 cp scripts/* $img
 cp -r lejosfs $img
 cp external/uImage $img
