@@ -6,7 +6,7 @@ package lejos.nxt;
  *
  */
 public interface SensorPort extends BasicSensorPort, EV3SensorConstants   {
-    // The following do not really work with the new way of doing things
+    // TODO: The following do not really work with the new way of doing things
     // but there is code everywhere that uses this interface
     public static final SensorPort S1 = LocalEV3.S1();
     public static final SensorPort S2 = LocalEV3.S2();

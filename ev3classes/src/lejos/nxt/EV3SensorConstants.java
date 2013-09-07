@@ -58,4 +58,7 @@ public interface EV3SensorConstants
     public static final byte CMD_COL_AMB = 0x12;
     public static final byte CMD_PIN1 = 0x1;
     public static final byte CMD_PIN5 = 0x2;
+    
+    public static final int ADC_REF = 5000; // 5.0 Volts
+    public static final int ADC_RES = 4095;
 }

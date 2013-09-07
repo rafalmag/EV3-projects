@@ -102,13 +102,12 @@ public class LocalAnalogPort extends LocalSensorPort implements ADSensorPort
     @Override
     public boolean readBooleanValue()
     {
-        return getPin1() < 2400;
+        return getPin1() < ADC_RES/2;
     }
 
     @Override
     public int readRawValue()
     {
-        // TODO Auto-generated method stub
         return (getPin1() + 3)/4;
     }
 

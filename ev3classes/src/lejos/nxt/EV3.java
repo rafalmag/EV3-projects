@@ -38,6 +38,12 @@ public interface EV3
      * @return the sensor port object or null
      */
     public SensorPort getSensorPort(int port);
+
+    /**
+     * return a battery object which can be used to obtain battery voltage etc.
+     * @return A battery object
+     */
+    public Battery getBattery();
     
     //TODO: Extend to include motor ports and perhaps motors, also buttons, sound, LCD etc.
 

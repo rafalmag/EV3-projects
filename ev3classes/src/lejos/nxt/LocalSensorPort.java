@@ -9,7 +9,7 @@ public abstract class LocalSensorPort implements SensorPort
 {
     protected int port = -1;
     protected static byte [] dc = new byte[3*PORTS];
-    protected int mode = 0;
+    protected int currentMode = 0;
     protected static LocalSensorPort [] openPorts = new LocalSensorPort[PORTS];
    
 
@@ -22,7 +22,7 @@ public abstract class LocalSensorPort implements SensorPort
     @Override
     public int getMode()
     {
-        return mode;
+        return currentMode;
     }
 
     @Override
@@ -34,7 +34,7 @@ public abstract class LocalSensorPort implements SensorPort
     @Override
     public boolean setMode(int mode)
     {
-        this.mode = mode;
+        currentMode = mode;
         return true;
     }
 

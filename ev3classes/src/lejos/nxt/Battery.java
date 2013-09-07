@@ -1,38 +1,36 @@
 package lejos.nxt;
 
 //import lejos.pc.comm.*;
-import lejos.nxt.remote.*;
 
 /**
- * Battery class that supports remote execution.
- * 
- * Usage: int x = Battery.getVoltageMilliVolt();
- * 
- * @author Brian Bagnall and Lawrie Griffiths
+ * Interface used to access information about the EV3 battery and current usage.
+ * @author Brian Bagnall, Lawrie Griffiths Andy Shaw
  *
  */
-public class Battery implements NXTProtocol {
-	//private static RemoteBattery remoteBattery = new RemoteBattery(nxtCommand);
-	
-	// Ensure no one tries to instantiate this.
-	private Battery() {}
+public interface Battery {
 		
 	/**
 	 * The NXT uses 6 batteries of 1500 mV each.
 	 * @return Battery voltage in mV. ~9000 = full.
 	 */
-	public static int getVoltageMilliVolt() {
-		//return remoteBattery.getVoltageMilliVolt();
-		return 9000;
-	}
+	public int getVoltageMilliVolt();
 
 	/**
 	 * The NXT uses 6 batteries of 1.5 V each.
 	 * @return Battery voltage in Volt. ~9V = full.
 	 */
-	public static float getVoltage()  {
-	   //return remoteBattery.getVoltage();
-		return 9;
-	}
+	public float getVoltage();
+
+	/**
+	 * Return the current draw from the battery
+	 * @return current in Amps
+	 */
+	public float getBatteryCurrent();
+
+	/**
+	 * return the motor current draw
+	 * @return current in Amps
+	 */
+	public float getMotorCurrent();
 }
 

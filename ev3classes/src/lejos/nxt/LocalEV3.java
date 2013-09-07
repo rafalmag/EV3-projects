@@ -9,15 +9,16 @@ package lejos.nxt;
 public class LocalEV3 implements EV3
 {
     protected DeviceManager ldm = DeviceManager.getLocalDeviceManager();
-    protected static EV3 localEV3 = new LocalEV3();
-
+    public static final LocalEV3 ev3 = new LocalEV3();
+    public final Battery battery = new LocalBattery();
+    
     private LocalEV3()
     {        
     }
     
     public static EV3 getLocalEV3()
     {
-        return localEV3;
+        return ev3;
     }
     
     /** {@inheritDoc}
@@ -69,27 +70,35 @@ public class LocalEV3 implements EV3
             return sp;
         return openSensorPort(port);
     }
+
+    /** {@inheritDoc}
+     */    
+    @Override
+    public Battery getBattery()
+    {
+        return battery;
+    }
     
     // The following convenience methods try to duplicate the old NXT S1, S2 etc. but
     // in a form that is more compatible with the new sensor model.
     
     public static SensorPort S1()
     {
-        return localEV3.getSensorPort(0);
+        return ev3.getSensorPort(0);
     }
     
     public static SensorPort S2()
     {
-        return localEV3.getSensorPort(1);
+        return ev3.getSensorPort(1);
     }
     
     public static SensorPort S3()
     {
-        return localEV3.getSensorPort(2);
+        return ev3.getSensorPort(2);
     }
     
     public static SensorPort S4()
     {
-        return localEV3.getSensorPort(3);
+        return ev3.getSensorPort(3);
     }
 }

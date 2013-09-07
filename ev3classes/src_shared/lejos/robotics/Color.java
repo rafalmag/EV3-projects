@@ -22,6 +22,7 @@ public class Color {
     public static final int LIGHT_GRAY = 10;
     public static final int DARK_GRAY = 11;
     public static final int CYAN = 12;
+    public static final int BROWN = 13;
     public static final int NONE = -1;
 	
 	private int red;

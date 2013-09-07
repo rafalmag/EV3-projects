@@ -322,13 +322,15 @@ public class Button implements ListenerCaller
 	private static int getButtons()
 	{
 	    // read buttons and de-bounce them
-	    int state1, state2;
-	    do {
+	    int state1, state2 = 0;
+	    for(;;)
+	    {
 	        state1 = checkButtons();
+	        if (state1 == state2)
+	            return state1;
 	        Delay.msDelay(DEBOUNCE_TIME);
 	        state2 = checkButtons();
-	    } while (state1 != state2);
-	    return state1;	    
+	    }	    
 	}
 
 	/**

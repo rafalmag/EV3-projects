@@ -28,7 +28,7 @@ public class MotorPort implements TachoMotorPort {
 	
 	private int _id;
 	private int _pwmMode = PWM_FLOAT; // default to float mode
-	private int curMode = 3;
+	private int curMode = FLOAT+1; // current mode is unknown
 	private byte[] cmd = new byte[8];
 	
 	private MotorPort(int id)
@@ -96,7 +96,7 @@ public class MotorPort implements TachoMotorPort {
 	public void controlMotor(int power, int mode)
 	{
 		// Convert lejos power and mode to NXT power and mode
-	    if (mode >= 3)
+	    if (mode >= STOP)
 	        power = 0;
 	    else if (mode == 2)
 	        power = -power;
@@ -108,9 +108,9 @@ public class MotorPort implements TachoMotorPort {
 	        pwm.write(cmd,  3);
 	        if (mode != curMode)
 	        {
-	            if (mode <= 2)
+	            if (mode <= BACKWARD)
 	            {
-	                if (curMode >= 3)
+	                if (curMode >= STOP)
 	                {
 	                    // motor not running start it
 	                    cmd[0] = OUTPUT_START;
@@ -119,12 +119,22 @@ public class MotorPort implements TachoMotorPort {
 	            }
 	            else
 	            {
-	                // need to stop the motor
-	                cmd[0] = OUTPUT_STOP;
-	                // Set brake or float mode
-	                cmd[2] = (byte)(mode == 3 ? 1 : 0);
-	                pwm.write(cmd, 3);
+	                if (mode == FLOAT)
+	                {
+	                    // need to stop the motor
+	                    cmd[0] = OUTPUT_STOP;
+	                    // Set float
+	                    cmd[2] = (byte)0;
+	                    pwm.write(cmd, 3);
+	                }
+	                else
+	                {
+	                    // STOP leave motor powered up but with zero power
+                        cmd[0] = OUTPUT_START;
+                        pwm.write(cmd,  2);
+	                }
 	            }
+	            curMode = mode;
 	        }
 	    }
 	}

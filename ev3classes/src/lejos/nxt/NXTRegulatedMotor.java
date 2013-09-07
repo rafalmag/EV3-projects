@@ -728,7 +728,8 @@ public class NXTRegulatedMotor implements RegulatedMotor
                 basePower = -TachoMotorPort.MAX_POWER;
             power = (newPower > TachoMotorPort.MAX_POWER ? TachoMotorPort.MAX_POWER : newPower < -TachoMotorPort.MAX_POWER ? -TachoMotorPort.MAX_POWER : Math.round(newPower));
 
-            mode = (power == 0 ? TachoMotorPort.STOP : TachoMotorPort.FORWARD);
+            //mode = (power == 0 ? TachoMotorPort.STOP : TachoMotorPort.FORWARD);
+            mode = TachoMotorPort.FORWARD;
         }
     }
 
@@ -810,6 +811,6 @@ public class NXTRegulatedMotor implements RegulatedMotor
 	public float getMaxSpeed() {
 	    // It is generally assumed, that the maximum accurate speed of Motor is
 	    // 100 degree/second * Voltage
-		return Battery.getVoltage() * 100.0f;
+		return LocalEV3.ev3.battery.getVoltage() * 100.0f;
 	}
 }
