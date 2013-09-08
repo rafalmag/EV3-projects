@@ -1,7 +1,8 @@
 #! /bin/sh
+LJHOME=/home/root/lejos
 echo "Set power off flag..."
-cd /lejos/bin/utils
-/lejos/bin/jrun PowerOff 
+cd $LJHOME/bin/utils
+$LJHOME/bin/jrun PowerOff 
 sync;sync
 # Power will be turned off when monule are unloaded
 

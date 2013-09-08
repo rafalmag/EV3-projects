@@ -1,15 +1,15 @@
 #! /bin/bash
 # Create a set of files to allow the easy creation of leJOS SD card images
 # Created by Andy Shaw
-
+LJHOME=lejosfs/home/root/lejos
 img=lejosimage
 rm -rf $img 2> /dev/null
 mkdir $img 2> /dev/null
-mkdir lejosfs/lejos/lib 2> /dev/null
-mkdir lejosfs/lejos/libjna 2> /dev/null
-mkdir lejosfs/lejos/mod 2> /dev/null
-mkdir lejosfs/lejos/samples 2> /dev/null
-mkdir lejosfs/lejos/bin/utils 2> /dev/null
+mkdir $LJHOME/lib 2> /dev/null
+mkdir $LJHOME/libjna 2> /dev/null
+mkdir $LJHOME/mod 2> /dev/null
+mkdir $LJHOME/samples 2> /dev/null
+mkdir $LJHOME/bin/utils 2> /dev/null
 cp scripts/* $img
 cp -r lejosfs $img
 cp external/uImage $img
@@ -22,7 +22,7 @@ cp ../modules/lms2012/bin/* $img/mod
 dpkg-deb -x external/libjna* $img/libjna
 dpkg-deb -x external/libffi* $img/libjna
 cp ../ev3classes/ev3classes.jar $img
-cp ../EV3HelloWorld/bin/EV3HelloWorld.class $img/lejosfs/lejos/samples
-cp ../EV3Splash/bin/Splash.class $img/lejosfs/lejos/bin/utils
-cp ../EV3PowerOff/bin/PowerOff.class $img/lejosfs/lejos/bin/utils
+cp ../EV3HelloWorld/bin/EV3HelloWorld.class $img/$LJHOME/samples
+cp ../EV3Splash/bin/Splash.class $img/$LJHOME/bin/utils
+cp ../EV3PowerOff/bin/PowerOff.class $img/$LJHOME/bin/utils
 tar cfj lejosimage.bz2 lejosimage

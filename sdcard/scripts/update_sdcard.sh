@@ -10,6 +10,7 @@ echo
 sudo -v
 mount=${1:-/media/`id -u -r -n`}
 jvm=${2:-`echo ejre*`}
+LJHOME=home/root/lejos
 echo "Mount point is $mount"
 echo Java is $jvm
 echo
@@ -45,20 +46,20 @@ then
         echo "  ...."copying.lejos.to.sdcard
         sudo cp -r lejosfs/* "$mount/LMS2012_EXT"
 	sudo cp wpa_supplicant.conf "$mount/LMS2012_EXT"/etc
-	sudo cp ev3classes.jar "$mount/LMS2012_EXT"/lejos/lib
-	sudo cp Linux_AM1808/sys/mod/*.ko "$mount/LMS2012_EXT"/lejos/mod
-	sudo cp mod/*.ko "$mount/LMS2012_EXT"/lejos/mod
+	sudo cp ev3classes.jar "$mount/LMS2012_EXT"/$LJHOME/lib
+	sudo cp Linux_AM1808/sys/mod/*.ko "$mount/LMS2012_EXT"/$LJHOME/mod
+	sudo cp mod/*.ko "$mount/LMS2012_EXT"/$LJHOME/mod
     	if [ -e $jvm ]
     	then
         	echo "  ....  "Java
-		sudo tar -C "$mount/LMS2012_EXT/lejos" -axf $jvm 
+		sudo tar -C "$mount/LMS2012_EXT/$LJHOME" -axf $jvm 
         else
                 echo "   WARNING: file $jvm does not exist"
 	fi
 	if [ -e libjna ]
 	then
         	echo "  ....  "Jna
-		sudo cp -r libjna "$mount/LMS2012_EXT"/lejos
+		sudo cp -r libjna "$mount/LMS2012_EXT"/$LJHOME
 	fi
 
         echo "  ...."writing.to.sdcard

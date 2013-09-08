@@ -1,5 +1,5 @@
 #! /bin/sh
-mod=/lejos
+mod=/home/root/lejos
 sync
 
 var=$(printf 'HostStr=%s SerialStr=%s' $(cat /home/root/lms2012/sys/settings/BrickName) $(cat /home/root/lms2012/sys/settings/BTser))
