@@ -26,4 +26,5 @@ cp ../EV3HelloWorld/bin/EV3HelloWorld.class $img/$LJHOME/samples
 cp ../EV3Splash/bin/Splash.class $img/$LJHOME/bin/utils
 cp ../EV3PowerOff/bin/PowerOff.class $img/$LJHOME/bin/utils
 git describe > $img/version
+cp readme $img
 tar cfj lejosimage.bz2 lejosimage

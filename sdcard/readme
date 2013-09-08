@@ -1,0 +1,14 @@
+leJOS/EV3
+
+For details on how to use this please see:
+https://sourceforge.net/p/lejos/wiki/Home/
+
+Change history
+0.2.0.alpha
+* Support of i2c sensors
+* Added classes for all EV3 Lego sensors
+* Restructured access to motor and sensor class instances (see LocalEV3)
+* Added version information to boot screen
+* Added shutdown screen
+* Moved location of leJOS files to /home/root/lejos
+* Lots of small changes and bug fixes
