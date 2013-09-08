@@ -31,7 +31,7 @@ public class LocalBattery implements Battery
     public int getVoltageMilliVolt()
     {
         // TODO Auto-generated method stub
-        return (int)(getVoltage()/1000f);
+        return (int)(getVoltage()*1000f);
     }
     
     /**

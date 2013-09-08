@@ -101,6 +101,7 @@ public class LocalEV3 implements EV3
     @Override
     public NXTRegulatedMotor openMotor(int port)
     {
+        System.out.println("Open motor " + port);
         if (motors[port] != null)
             return null;
         motors[port] = new NXTRegulatedMotor(getMotorPort(port));

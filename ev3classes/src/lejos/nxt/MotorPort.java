@@ -27,17 +27,17 @@ public interface MotorPort extends TachoMotorPort {
 	/**
 	 * MotorPort B.
 	 */
-	public static final MotorPort B = LocalEV3.ev3.getMotorPort(0);
+	public static final MotorPort B = LocalEV3.ev3.getMotorPort(1);
 	
     /**
      * MotorPort C.
      */
-    public static final MotorPort C = LocalEV3.ev3.getMotorPort(0);
+    public static final MotorPort C = LocalEV3.ev3.getMotorPort(2);
     
     /**
      * MotorPort D.
      */
-    public static final MotorPort D = LocalEV3.ev3.getMotorPort(0);
+    public static final MotorPort D = LocalEV3.ev3.getMotorPort(3);
     
 	
     /**
