@@ -5,6 +5,7 @@ LJHOME=lejosfs/home/root/lejos
 img=lejosimage
 rm -rf $img 2> /dev/null
 mkdir $img 2> /dev/null
+mkdir lejosfs/home/lejos 2> /dev/null
 mkdir $LJHOME/lib 2> /dev/null
 mkdir $LJHOME/libjna 2> /dev/null
 mkdir $LJHOME/mod 2> /dev/null

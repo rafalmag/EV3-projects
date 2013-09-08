@@ -3,7 +3,7 @@ LJHOME=/home/root/lejos
 echo "Start WiFi"
 $LJHOME/bin/startwlan
 #echo "Mount dev system"
-#busybox mount -t nfs -o nolock legovm:/export/Lego /legovm
+#busybox mount -t nfs -o nolock legovm:/export/lejos /home/lejos
 # show lejos splash, while modules load
 (cd $LJHOME/bin/utils; $LJHOME/bin/jrun Splash `cat $LJHOME/version`) &
 echo "Load modules"

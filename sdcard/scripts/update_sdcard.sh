@@ -49,7 +49,7 @@ then
 	sudo cp ev3classes.jar "$mount/LMS2012_EXT"/$LJHOME/lib
 	sudo cp Linux_AM1808/sys/mod/*.ko "$mount/LMS2012_EXT"/$LJHOME/mod
 	sudo cp mod/*.ko "$mount/LMS2012_EXT"/$LJHOME/mod
-	sudo cp version "$mount/LMS2012_EXT"/$LJHOME"
+	sudo cp version "$mount/LMS2012_EXT"/$LJHOME
     	if [ -e $jvm ]
     	then
         	echo "  ....  "Java
