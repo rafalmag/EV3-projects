@@ -1,11 +1,1 @@
-#! /bin/sh
-LJHOME=/home/root/lejos
-export LD_LIBRARY_PATH=$LJHOME/libjna/usr/lib/arm-linux-gnueabi/:$LJHOME/libjna/usr/lib/jni/
-classpath=$LJHOME/lib/ev3classes.jar:$LJHOME/libjna/usr/share/java/jna.jar:.
-if [ $1 = "-cp" ]
-then
-        classpath="$2":$classpath
-        echo classpath: $classpath
-        shift 2
-fi
-$LJHOME/ejre*/bin/java -classpath $classpath $*
+../home/root/lejos/bin/jrun
