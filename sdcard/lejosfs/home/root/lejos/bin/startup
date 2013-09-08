@@ -5,7 +5,7 @@ $LJHOME/bin/startwlan
 #echo "Mount dev system"
 #busybox mount -t nfs -o nolock legovm:/export/Lego /legovm
 # show lejos splash, while modules load
-(cd $LJHOME/bin/utils; $LJHOME/bin/jrun Splash) &
+(cd $LJHOME/bin/utils; $LJHOME/bin/jrun Splash `cat $LJHOME/version`) &
 echo "Load modules"
 $LJHOME/bin/init
 echo "Complete"

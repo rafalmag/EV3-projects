@@ -108,14 +108,12 @@ public class Splash
             (byte) 0xff, (byte) 0x00, (byte) 0x00, });
     public static String getIPAddress()
     {
-        // TODO Auto-generated method stub
         Enumeration<NetworkInterface> interfaces;
         try
         {
             interfaces = NetworkInterface.getNetworkInterfaces();
         } catch (SocketException e1)
         {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
             return "";
         }
@@ -126,7 +124,6 @@ public class Splash
                 if (!current.isUp() || current.isLoopback() || current.isVirtual()) continue;
             } catch (SocketException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             Enumeration<InetAddress> addresses = current.getInetAddresses();
@@ -139,22 +136,22 @@ public class Splash
         return "";
     }    
 
-    public void displaySplash()
+    public void displaySplash(String ver)
     {
         g.clear();
-        g.setFont(Font.getLargeFont());
         //g.setFont(Font.getDefaultFont());
         g.drawRegion(logo, 0, 0, logo.getWidth(), logo.getHeight(), 0, SW / 2, SH / 4 , Graphics.HCENTER | Graphics.VCENTER);
-        g.drawString("leJOS/EV3", SW/2, 3*SH/4, Graphics.BASELINE|Graphics.HCENTER);
         g.setFont(Font.getDefaultFont());
-        g.drawString(getIPAddress(), SW/2, (3*SH/4)+3*Font.getDefaultFont().getHeight()/2, Graphics.BASELINE|Graphics.HCENTER);
+        g.drawString("leJOS/EV3", SW/2, 3*SH/4, Graphics.BASELINE|Graphics.HCENTER);
+        g.drawString(ver, SW/2, (3*SH/4)+Font.getDefaultFont().getHeight(), Graphics.BASELINE|Graphics.HCENTER);
+        g.drawString(getIPAddress(), SW/2, (3*SH/4)+2*Font.getDefaultFont().getHeight(), Graphics.BASELINE|Graphics.HCENTER);
         LCD.refresh();
     }
     
     public static void main(String[] args)
     {
         Splash s = new Splash();
-        s.displaySplash();
+        s.displaySplash(args[0]);
     }
 
 }
