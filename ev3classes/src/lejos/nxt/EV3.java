@@ -40,6 +40,44 @@ public interface EV3
     public SensorPort getSensorPort(int port);
 
     /**
+     * return a motor port object for the specified port.  The motor port will
+     * be open and ready for use. If the port is in use or it is not possible
+     * to open the port return null
+     * @param port The port to obtain the motor port object for.
+     * @return the sensor port object or null
+     */
+    public MotorPort openMotorPort(int port);
+
+    /**
+     * returns a motor port object. If the port is already open this method will
+     * return the existing port object. If the port is closed a new object will be 
+     * created and opened. If there is some problem opening the port null will be
+     * returned.
+     * @param port The port to obtain the object for
+     * @return the sensor port object or null
+     */
+    public MotorPort getMotorPort(int port);
+    
+    /**
+     * return a motor object for the specified port.  The motor will
+     * be open and ready for use. If the port is in use or it is not possible
+     * to open the port return null
+     * @param port The port to obtain the motor port object for.
+     * @return the sensor port object or null
+     */
+    public NXTRegulatedMotor openMotor(int port);
+
+    /**
+     * returns a motor object. If the motor is already open this method will
+     * return the existing object. If the port is closed a new object will be 
+     * created and opened. If there is some problem opening the port null will be
+     * returned.
+     * @param port The port to obtain the object for
+     * @return the sensor port object or null
+     */
+    public NXTRegulatedMotor getMotor(int port);
+
+    /**
      * return a battery object which can be used to obtain battery voltage etc.
      * @return A battery object
      */

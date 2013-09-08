@@ -25,15 +25,20 @@ public class Motor
     /**
      * Motor A.
      */
-    public static final NXTRegulatedMotor A = new NXTRegulatedMotor(MotorPort.A);
+    public static final NXTRegulatedMotor A = LocalEV3.A();
     /**
      * Motor B.
      */
-    public static final NXTRegulatedMotor B = new NXTRegulatedMotor(MotorPort.B);
+    public static final NXTRegulatedMotor B = LocalEV3.B();;
     /**
      * Motor C.
      */
-    public static final NXTRegulatedMotor C = new NXTRegulatedMotor(MotorPort.C);
+    public static final NXTRegulatedMotor C = LocalEV3.C();;
+    
+    /**
+     * Motor D.
+     */
+    public static final NXTRegulatedMotor D = LocalEV3.D();;
     
     private Motor() {
     	// Motor class cannot be instantiated
@@ -46,17 +51,7 @@ public class Motor
      */
     public static NXTRegulatedMotor getInstance(int id)
     {
-        switch (id)
-        {
-            case 0:
-                return A;
-            case 1:
-                return B;
-            case 2:
-                return C;
-            default:
-                throw new IllegalArgumentException("no such motor");
-        }
+        return LocalEV3.ev3.getMotor(id);
     }
 
 }

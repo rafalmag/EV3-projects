@@ -13,24 +13,32 @@ public abstract class LocalSensorPort implements SensorPort
     protected static LocalSensorPort [] openPorts = new LocalSensorPort[PORTS];
    
 
+    /** {@inheritDoc}
+     */    
     @Override
     public int getId()
     {
         return port;
     }
     
+    /** {@inheritDoc}
+     */    
     @Override
     public int getMode()
     {
         return currentMode;
     }
 
+    /** {@inheritDoc}
+     */    
     @Override
     public int getType()
     {
         return 0;
     }
 
+    /** {@inheritDoc}
+     */    
     @Override
     public boolean setMode(int mode)
     {
@@ -38,6 +46,8 @@ public abstract class LocalSensorPort implements SensorPort
         return true;
     }
 
+    /** {@inheritDoc}
+     */    
     @Override
     public boolean setType(int type)
     {
@@ -45,6 +55,8 @@ public abstract class LocalSensorPort implements SensorPort
 
     }
 
+    /** {@inheritDoc}
+     */    
     @Override
     public boolean setTypeAndMode(int type, int mode)
     {
@@ -53,11 +65,9 @@ public abstract class LocalSensorPort implements SensorPort
         return true;
     }
    
-    /**
-     * Open the port and make it available for use.
-     * @param port the port number to open
-     * @return true if the port is now open, false if there is an error
-     */
+    /** {@inheritDoc}
+     */    
+    @Override
     public boolean open(int port)
     {
         synchronized (openPorts)
@@ -72,9 +82,9 @@ public abstract class LocalSensorPort implements SensorPort
         }
     }
    
-    /**
-     * Close the port, the port can not be used after this call.
-     */
+    /** {@inheritDoc}
+     */    
+    @Override
     public void close()
     {
         if (port == -1)

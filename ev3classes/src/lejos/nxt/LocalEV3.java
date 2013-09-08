@@ -11,6 +11,7 @@ public class LocalEV3 implements EV3
     protected DeviceManager ldm = DeviceManager.getLocalDeviceManager();
     public static final LocalEV3 ev3 = new LocalEV3();
     public final Battery battery = new LocalBattery();
+    protected NXTRegulatedMotor [] motors = new NXTRegulatedMotor[MotorPort.PORTS];
     
     private LocalEV3()
     {        
@@ -60,6 +61,7 @@ public class LocalEV3 implements EV3
             return p;
         return null;        
     }
+    
     /** {@inheritDoc}
      */    
     @Override
@@ -70,7 +72,52 @@ public class LocalEV3 implements EV3
             return sp;
         return openSensorPort(port);
     }
+    
+    /** {@inheritDoc}
+     */    
+    @Override
+    public MotorPort openMotorPort(int port)
+    {
+        LocalMotorPort p = new LocalMotorPort();
+        if (p != null && p.open(port))
+            return p;
+        return null;        
+    }
 
+    
+    /** {@inheritDoc}
+     */    
+    @Override
+    public MotorPort getMotorPort(int port)
+    {
+        MotorPort p = LocalMotorPort.getInstance(port);
+        if (p != null)
+            return p;
+        return openMotorPort(port);    }
+
+    
+    /** {@inheritDoc}
+     */    
+    @Override
+    public NXTRegulatedMotor openMotor(int port)
+    {
+        if (motors[port] != null)
+            return null;
+        motors[port] = new NXTRegulatedMotor(getMotorPort(port));
+        return null;
+    }
+
+    
+    /** {@inheritDoc}
+     */    
+    @Override
+    public NXTRegulatedMotor getMotor(int port)
+    {
+        if (motors[port] != null)
+            return motors[port];
+        return openMotor(port);
+    }
+    
     /** {@inheritDoc}
      */    
     @Override
@@ -100,5 +147,30 @@ public class LocalEV3 implements EV3
     public static SensorPort S4()
     {
         return ev3.getSensorPort(3);
+    }
+    
+    public static NXTRegulatedMotor A()
+    {
+        return ev3.getMotor(0);
+    }
+    
+    public static NXTRegulatedMotor B()
+    {
+        return ev3.getMotor(1);
+    }
+    
+    public static NXTRegulatedMotor C()
+    {
+        return ev3.getMotor(2);
+    }
+    
+    public static NXTRegulatedMotor D()
+    {
+        return ev3.getMotor(3);
+    }
+    
+    public static Battery battery()
+    {
+        return ev3.getBattery();
     }
 }
