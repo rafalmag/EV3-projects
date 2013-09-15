@@ -1,7 +1,7 @@
 #! /bin/sh
 LJHOME=/home/root/lejos
-echo "Start WiFi"
-$LJHOME/bin/startwlan
+echo "Start Network"
+$LJHOME/bin/startnetwork
 #echo "Mount dev system"
 #busybox mount -t nfs -o nolock legovm:/export/lejos /home/lejos
 # show lejos splash, while modules load

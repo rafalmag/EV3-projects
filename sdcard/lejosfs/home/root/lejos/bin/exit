@@ -7,7 +7,7 @@ rmmod d_analog
 # d_uart must be removed after d_analog
 rmmod d_uart
 rmmod d_pwm
-rmmod d_usbdev
+#rmmod d_usbdev
 rmmod d_usbhost
 rmmod d_sound
 rmmod d_iic

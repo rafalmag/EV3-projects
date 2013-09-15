@@ -1,0 +1,8 @@
+#! /bin/sh
+# add lejos bin dir to path to make things easier
+SCRIPT=`readlink -f "$0"`
+LJBIN=`dirname "$SCRIPT"`
+export PATH="$LJBIN":$PATH
+brctl delif br0 $1
+ifconfig $1 0.0.0.0
+

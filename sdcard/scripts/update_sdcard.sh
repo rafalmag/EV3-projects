@@ -10,9 +10,11 @@ echo
 sudo -v
 mount=${1:-/media/`id -u -r -n`}
 jvm=${2:-`echo ejre*`}
+ipaddress=${3:-10.0.1.1}
 LJHOME=home/root/lejos
 echo "Mount point is $mount"
 echo Java is $jvm
+echo "IP for BT and USB is $ipaddress"
 echo
 echo "  ...."checking.sdcard
 sleep 10
@@ -39,6 +41,8 @@ then
         sudo cp -r Linux_AM1808/* "$mount/LMS2012_EXT"/home/root/lms2012
 
         echo "  ...."copying.extra.modules.to.sdcard
+	sudo rm -rf $mount/LMS2012_EXT/lib/modules/*
+	sudo cp -r modules/* $mount/LMS2012_EXT/
         sudo cp -r netmods/* "$mount/LMS2012_EXT"/lib/modules/*/kernel/drivers/net/wireless/
         echo "  ...."force.depmod.on.first.boot
 	sudo rm "$mount/LMS2012_EXT"/lib/modules/*/modules.dep
@@ -50,6 +54,9 @@ then
 	sudo cp Linux_AM1808/sys/mod/*.ko "$mount/LMS2012_EXT"/$LJHOME/mod
 	sudo cp mod/*.ko "$mount/LMS2012_EXT"/$LJHOME/mod
 	sudo cp version "$mount/LMS2012_EXT"/$LJHOME
+	sudo sh -c "echo $ipaddress > '$mount/LMS2012_EXT'/$LJHOME/bin/netaddress"
+	sudo rm "$mount/LMS2012_EXT"/var/lib/bluetooth
+	sudo mkdir "$mount/LMS2012_EXT"/var/lib/bluetooth
     	if [ -e $jvm ]
     	then
         	echo "  ....  "Java
