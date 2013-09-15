@@ -42,7 +42,9 @@ public class EV3IRSensor extends UARTSensor implements RangeFinder
     @Override
     public float[] getRanges()
     {
-        return null;
+        float [] result = new float[1];
+        result[0] = getRange();
+        return result;
     }
 
     /**

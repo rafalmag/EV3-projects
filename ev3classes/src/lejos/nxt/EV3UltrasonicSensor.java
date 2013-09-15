@@ -29,11 +29,16 @@ public class EV3UltrasonicSensor extends UARTSensor implements RangeFinder
         return (float)port.getShort()/10.0f;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public float[] getRanges()
     {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO Work out how to use other modes, maybe change this
+        float [] result = new float[1];
+        result[0] = getRange();
+        return result;
     }
 
 }

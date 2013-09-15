@@ -38,7 +38,7 @@ public class UARTSensor
     
 
     /**
-     * Switch to the selcted mode (if not already in that mode) and delay for the
+     * Switch to the selected mode (if not already in that mode) and delay for the
      * specified period to allow the sensor to settle in the new mode. <br>
      * TODO: There really should be a better way to work out when the switch is
      * complete, if you don't wait though you end up reading data from the previous
@@ -46,7 +46,7 @@ public class UARTSensor
      * @param newMode The mode to switch to.
      * @param switchDelay Time in mS to delay after the switch.
      */
-    public void switchMode(int newMode, long switchDelay)
+    protected void switchMode(int newMode, long switchDelay)
     {
         if (currentMode != newMode)
         {
