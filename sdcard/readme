@@ -4,7 +4,14 @@ For details on how to use this please see:
 https://sourceforge.net/p/lejos/wiki/Home/
 
 Change history
-0.2.0.alpha
+0.3.0-aplha
+* fixed minor bugs in Java code
+* re-worked config scripts
+* Added new kernel and modules to support USB and Bluetooth
+* Added experimental support for TCP over USB and Bluetooth
+* Reworked splash screen to display more information
+
+0.2.0-alpha
 * Support of i2c sensors
 * Added classes for all EV3 Lego sensors
 * Restructured access to motor and sensor class instances (see LocalEV3)
