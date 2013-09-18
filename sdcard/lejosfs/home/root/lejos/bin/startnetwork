@@ -1,19 +1,17 @@
 #! /bin/sh
-# add lejos bin dir to path to make things easier
-SCRIPT=`readlink -f "$0"`
-LJBIN=`dirname "$SCRIPT"`
-export PATH="$LJBIN":$PATH
+. /etc/default/lejos
 # We act as a server for USB and Bluetooth network connections. Bridge
 # both types of connections together and run dhcpd on them
 # get our network address
-NETADDRESS=`cat "$LJBIN"/netaddress`
+LJBIN=${LEJOS_HOME}/bin
+NETADDRESS=`cat ${LJBIN}/netaddress`
 # construct config file - nasty but works so long as the address is x.x.x.1!
-echo interface br0 > $LJBIN/udhcpd.conf
-echo start "$NETADDRESS"0 >> $LJBIN/udhcpd.conf
-echo end "$NETADDRESS"9 >> $LJBIN/udhcpd.conf
+echo interface br0 > ${LJBIN}/udhcpd.conf
+echo start ${NETADDRESS}0 >> ${LJBIN}/udhcpd.conf
+echo end ${NETADDRESS}9 >> ${LJBIN}/udhcpd.conf
 # create the bridge and configure it
 brctl addbr br0
-ifconfig br0 "$NETADDRESS"
+ifconfig br0 ${NETADDRESS}
 brctl setfd br0 0
 brctl stp br0 off
 # setup the USB interface
@@ -21,16 +19,18 @@ modprobe g_ether
 ifconfig usb0 0.0.0.0
 brctl addif br0 usb0
 # start dhcpd
-udhcpd "$LJBIN"/udhcpd.conf
+udhcpd ${LJBIN}/udhcpd.conf
 # configure Bluetooth
 hciconfig hci0 lm MASTER
+# make us discoverable
 hciconfig hci0 piscan
 # set default pin
 agent -a hci0 1234 &
-pand --listen --role NAP --devup "$LJBIN"/btup --devdown "$LJBIN"/btdown -sdp
+# listen for pan connections
+pand --listen --role NAP --devup ${LJBIN}/btup --devdown ${LJBIN}/btdown -sdp
 # Now we start wlan
-# start wpa_supplicant
-/home/root/lms2012/sys/wpa_supplicant -B -Dwext -iwlan0 -c/etc/wpa_supplicant.conf
+# start wpa_supplicant note must use the Lego version not the default system
+${LMS2012_HOME}/sys/wpa_supplicant -B -Dwext -iwlan0 -c/etc/wpa_supplicant.conf
 # get ip address etc.
 udhcpc -i wlan0
 

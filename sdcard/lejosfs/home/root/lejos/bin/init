@@ -1,20 +1,20 @@
 #! /bin/sh
-mod=/home/root/lejos
+. /etc/default/lejos
 sync
 
-var=$(printf 'HostStr=%s SerialStr=%s' $(cat /home/root/lms2012/sys/settings/BrickName) $(cat /home/root/lms2012/sys/settings/BTser))
-echo $var > /home/root/lms2012/sys/settings/UsbInfo.dat
+var=$(printf 'HostStr=%s SerialStr=%s' $(cat ${LMS2012_SETTINGS}/BrickName) $(cat ${LMS2012_SETTINGS}/BTser))
+echo $var > ${LMS2012_SETTINGS}/UsbInfo.dat
 
-insmod $mod/mod/d_iic.ko `cat /home/root/lms2012/sys/settings/HwId`
-insmod $mod/mod/d_uart.ko `cat /home/root/lms2012/sys/settings/HwId`
-insmod $mod/mod/d_power.ko `cat /home/root/lms2012/sys/settings/HwId`
-insmod $mod/mod/d_pwm.ko `cat /home/root/lms2012/sys/settings/HwId`
-insmod $mod/mod/d_ui.ko `cat /home/root/lms2012/sys/settings/HwId`
-insmod $mod/mod/d_analog.ko `cat /home/root/lms2012/sys/settings/HwId`
-#insmod $mod/mod/d_usbdev.ko `cat /home/root/lms2012/sys/settings/UsbInfo.dat`
-insmod $mod/mod/d_usbhost.ko
-insmod $mod/mod/d_sound.ko `cat /home/root/lms2012/sys/settings/HwId`
-insmod $mod/mod/d_bt.ko `cat /home/root/lms2012/sys/settings/HwId`
+insmod ${LEJOS_MODULES}/d_iic.ko `cat ${LMS2012_SETTINGS}/HwId`
+insmod ${LEJOS_MODULES}/d_uart.ko `cat ${LMS2012_SETTINGS}/HwId`
+insmod ${LEJOS_MODULES}/d_power.ko `cat ${LMS2012_SETTINGS}/HwId`
+insmod ${LEJOS_MODULES}/d_pwm.ko `cat ${LMS2012_SETTINGS}/HwId`
+insmod ${LEJOS_MODULES}/d_ui.ko `cat ${LMS2012_SETTINGS}/HwId`
+insmod ${LEJOS_MODULES}/d_analog.ko `cat ${LMS2012_SETTINGS}/HwId`
+#insmod ${LEJOS_MODULES}/d_usbdev.ko `cat ${LMS2012_SETTINGS}/UsbInfo.dat`
+insmod ${LEJOS_MODULES}/d_usbhost.ko
+insmod ${LEJOS_MODULES}/d_sound.ko `cat ${LMS2012_SETTINGS}/HwId`
+insmod ${LEJOS_MODULES}/d_bt.ko `cat ${LMS2012_SETTINGS}/HwId`
 
 chmod 666 /dev/lms_pwm
 chmod 666 /dev/lms_motor

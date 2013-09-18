@@ -1,8 +1,5 @@
 #! /bin/sh
-# add lejos bin dir to path to make things easier
-SCRIPT=`readlink -f "$0"`
-LJBIN=`dirname "$SCRIPT"`
-export PATH="$LJBIN":$PATH
+# Bluetooth pan network is up add it to the bridge
 brctl addif br0 $1
 ifconfig $1 0.0.0.0
 
