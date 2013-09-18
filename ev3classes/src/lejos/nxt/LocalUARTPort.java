@@ -370,6 +370,8 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
     private int calcRawOffset()
     {
         //System.out.println("actual " + actual.getShort(port*2));
+        if ((getStatus() & UART_PORT_CHANGED) != 0)
+            System.out.println("port " + port + " Changed ");
         return port*DEV_RAW_SIZE1 + actual.getShort(port*2)*DEV_RAW_SIZE2;
     }
 
