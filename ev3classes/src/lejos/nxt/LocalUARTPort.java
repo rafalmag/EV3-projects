@@ -43,7 +43,7 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
     protected static final byte UART_PORT_CHANGED = 1;
     protected static final byte UART_DATA_READY = 8;
     
-    protected static final int TIMEOUT_DELTA = 5;
+    protected static final int TIMEOUT_DELTA = 1;
     protected static final int TIMEOUT = 4000;
     protected static final int INIT_DELAY = 5;
     protected static final int INIT_RETRY = 100;
@@ -52,9 +52,11 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
     static {
         initDeviceIO();
     }
+    
+    protected DeviceManager ldm = DeviceManager.getLocalDeviceManager();
 
     /**
-     * The following class maps directly to a C structure containg device information.
+     * The following class maps directly to a C structure containing device information.
      * @author andy
      *
      */
@@ -79,12 +81,13 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
         public short IdValue;
         public byte  Pins;
         public byte[] Symbol = new byte[5];
-        public short     Align;
-        
+        public short Align;
+
+        /*
         public TYPES()
         {
-            this.setAlignType(Structure.ALIGN_NONE);
-        }
+            this.setAlignType(Structure.ALIGN_DEFAULT);
+        }*/
     }
     
     public static class UARTCTL extends Structure
@@ -95,12 +98,14 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
         
         public UARTCTL()
         {
-            this.setAlignType(Structure.ALIGN_NONE);
+            //this.setAlignType(Structure.ALIGN_DEFAULT);
+            System.out.println("size is " + size());
         }
 
     }
     
     protected TYPES[] modeInfo = new TYPES[UART_MAX_MODES];
+    protected int modeCnt = 0;
 
     /**
      * return the current status of the port
@@ -124,6 +129,8 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
         {
             if (status != 0)
                 return status;
+            if (ldm.getPortType(port) != CONN_INPUT_UART)
+                return status;
             Delay.msDelay(TIMEOUT_DELTA);
             status = getStatus();
         }
@@ -143,6 +150,8 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
         while (cnt-- > 0)
         {
             if (status == 0)
+                return status;
+            if (ldm.getPortType(port) != CONN_INPUT_UART)
                 return status;
             Delay.msDelay(TIMEOUT_DELTA);
             status = getStatus();
@@ -186,6 +195,23 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
         //System.out.println("name[0]" + uc.TypeData.Name[0]);
         return uc.TypeData.Name[0] != 0;
     }
+    
+    /**
+     * Clear the flag that indicates the mode info has been cached. This
+     * allows us to read the same infomration again later without having to
+     * reset the device.
+     * @param mode mode number to read
+     * @param uc control structure to read the data into
+     * @return
+     */
+    protected void clearModeCache(int mode, UARTCTL uc)
+    {
+        uc.Port = (byte)port;
+        uc.Mode = (byte)mode;
+        uc.write();
+        //System.out.println("size is " + uc.size() + " TYPES " + uc.TypeData.size() + " ptr " + uc.getPointer().SIZE);
+        uart.ioctl(UART_NACK_MODE_INFO, uc.getPointer());
+    }
 
     /**
      * Clear the port changed flag for the current port.
@@ -198,6 +224,30 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
     }
 
     /**
+     * Read the mode information from the port. return true 
+     * @return
+     */
+    protected boolean readModeInfo()
+    {
+        long base = System.currentTimeMillis();
+        modeCnt = 0;
+        for(int i = 0; i < UART_MAX_MODES; i++)
+        {
+            UARTCTL uc = new UARTCTL();
+            if (getModeInfo(i, uc))
+            {
+                clearModeCache(i, uc);
+                modeInfo[i] = uc.TypeData;
+                modeCnt++;
+            }
+            else
+                modeInfo[i] = null;
+        }
+        System.out.println("Got " + modeCnt + " entries time " + (System.currentTimeMillis() - base));
+        return modeCnt > 0;
+
+    }
+    /**
      * Attempt to initialise the sensor ready for use.
      * @param mode initial operating mode
      * @return true if the initialisation succeeded false if it failed
@@ -205,81 +255,35 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
     protected boolean initSensor(int mode)
     {
         byte status;
-        int retryCnt = INIT_RETRY;
+        int retryCnt = 0;
+        System.out.println("Initial status is " + getStatus());
         long base = System.currentTimeMillis();
-       // Force the device to reset
-        reset();
-        status = waitZeroStatus(TIMEOUT);
-        if (status != 0)
+        if (ldm.getPortType(port) != CONN_INPUT_UART)
             return false;
-        System.out.println("Time is " + (System.currentTimeMillis() - base));
-        //if (!getModeInfo(0, uc))
-            //System.out.println("Got info fails");
-            
-        // initialise the device
-        //System.out.println("status is " + getStatus());
-        //System.out.println("Time is " + (System.currentTimeMillis() - base));
         // now try and configure as a UART
         setOperatingMode(mode);
-        //System.out.println("Time is " + (System.currentTimeMillis() - base));
         status = waitNonZeroStatus(TIMEOUT);
-        //System.out.println("status is " + getStatus());
         System.out.println("Time is " + (System.currentTimeMillis() - base));
-        while((status & UART_PORT_CHANGED) != 0 && retryCnt-- > 0)
+        while((status & UART_PORT_CHANGED) != 0 && retryCnt++ < INIT_RETRY)
         {
-            //System.out.println("About to get mode data retry " + retryCnt);
-
-            // When mode zero data is available the device is almost ready!
-            //if (getModeInfo(0, uc))
-            {
-                //System.out.println("Time is " + (System.currentTimeMillis() - base));
-                //Delay.msDelay(5);
-                //clearModeInfoCache(0);
-                clearPortChanged();
-                System.out.println("L1 Time is " + (System.currentTimeMillis() - base));
-                //System.out.println("status is " + devStatus.get(port));
-                //Delay.msDelay(INIT_DELAY);
-                //System.out.println("status is " + devStatus.get(port));
-                //setOperatingMode(mode);
-                Delay.msDelay(INIT_DELAY);
-                //System.out.println("Time is " + (System.currentTimeMillis() - base));
-                //System.out.println("status is " + devStatus.get(port));
-                status = waitNonZeroStatus(TIMEOUT);
-                System.out.println("L2 Time is " + (System.currentTimeMillis() - base));
-                if ((status & UART_DATA_READY) != 0 && (status & UART_PORT_CHANGED) == 0) 
-                {
-                    int modeCnt = 0;
-                    System.out.println("Sensor is ready retry cnt " + retryCnt);
-                    for(int i = 0; i < UART_MAX_MODES; i++)
-                    {
-                        UARTCTL uc = new UARTCTL();
-                        if (getModeInfo(i, uc))
-                        {
-                            modeInfo[i] = uc.TypeData;
-                            modeCnt++;
-                        }
-                        else
-                            modeInfo[i] = null;
-                    }
-                    System.out.println("L3 Time is " + (System.currentTimeMillis() - base));
-                    System.out.println("Mode cnt " + modeCnt);
-                    status = waitNonZeroStatus(TIMEOUT);
-                    if ((status & UART_DATA_READY) != 0 && (status & UART_PORT_CHANGED) == 0)
-                    {
-                        setOperatingMode(mode);
-                        status = waitNonZeroStatus(TIMEOUT);
-                        if ((status & UART_DATA_READY) != 0 && (status & UART_PORT_CHANGED) == 0)
-                            return super.setMode(mode);
-                    }
-                    System.out.println("Failed during get info");
-                }
-                //return false;
-            }
+            // something change wait for it to become ready
+            if (ldm.getPortType(port) != CONN_INPUT_UART)
+                return false;
+            clearPortChanged();
             Delay.msDelay(INIT_DELAY);
-            //System.out.println("status is " + devStatus.get(port));
             status = waitNonZeroStatus(TIMEOUT);
-       }
-       return false;
+            if ((status & UART_DATA_READY) != 0 && (status & UART_PORT_CHANGED) == 0) 
+            {
+                // device ready make sure it is now in the correct mode
+                setOperatingMode(mode);
+                status = waitNonZeroStatus(TIMEOUT);
+            }
+        }
+        System.out.println("Init complete retry " + retryCnt + " time " + (System.currentTimeMillis() - base));
+        if ((status & UART_DATA_READY) != 0 && (status & UART_PORT_CHANGED) == 0)
+            return super.setMode(mode);
+        else
+            return false;
     }
 
     /** {@inheritDoc}
@@ -288,11 +292,18 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
     public boolean initialiseSensor(int mode)
     {
         for(int i = 0; i < OPEN_RETRY; i++)
-            if (initSensor(mode))
+        {
+            if (ldm.getPortType(port) != CONN_INPUT_UART)
+                return false;
+            // initialise the sensor, if we have no mode data
+            // then read it, otherwise use what we have
+            if (initSensor(mode) && (modeCnt > 0 || readModeInfo()))
             {
                 System.out.println("reset cnt " + i);
                 return true;
             }
+            resetSensor();
+        }
         return false;
     }
     
@@ -302,6 +313,7 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
     public void resetSensor()
     {
         reset();
+        waitZeroStatus(TIMEOUT);
     }
 
     /**
@@ -314,6 +326,8 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
     {
         if (!super.open(port))
             return false;
+        // clear mode data cache
+        modeCnt = 0;
         if (initialiseSensor(mode))
             return true;
         super.close();
@@ -369,18 +383,34 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
      */
     private int calcRawOffset()
     {
-        //System.out.println("actual " + actual.getShort(port*2));
-        if ((getStatus() & UART_PORT_CHANGED) != 0)
-            System.out.println("port " + port + " Changed ");
         return port*DEV_RAW_SIZE1 + actual.getShort(port*2)*DEV_RAW_SIZE2;
     }
 
+    /**
+     * Check the sensor status, and if possible recover any from any error.
+     * If everything fails throw an exception
+     */
+    protected void checkSensor()
+    {
+        if (ldm.getPortType(port) != CONN_INPUT_UART)
+            throw new SensorException("Sensor unavailable");
+        if ((getStatus() & UART_PORT_CHANGED) != 0)
+        {
+            System.out.println("port " + port + " Changed ");
+            // try and reinitialze it
+            if (!initialiseSensor(getMode()))
+                throw new SensorException("Sensor changed unable to reset");
+                
+        }
+        
+    }
     /**
      * read a single byte from the device
      * @return the byte value
      */
     public byte getByte()
     {
+        checkSensor();
         return raw.get(calcRawOffset());
     }
 
@@ -392,6 +422,7 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
      */
     public void getBytes(byte [] vals, int offset, int len)
     {
+        checkSensor();
         int loc = calcRawOffset();
         for(int i = 0; i < len; i++)
             vals[i+offset] = raw.get(loc + i);
@@ -403,6 +434,7 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
      */
     public int getShort()
     {
+        checkSensor();
         return raw.getShort(calcRawOffset());
     }
     
@@ -414,6 +446,7 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
      */
     public void getShorts(short [] vals, int offset, int len)
     {
+        checkSensor();
         int loc = calcRawOffset();
         for(int i = 0; i < len; i++)
             vals[i+offset] = raw.get(loc + i*2);
