@@ -1,4 +1,4 @@
-cmd_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8192c_d_hal_init.o := arm-none-linux-gnueabi-gcc -Wp,-MD,/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/.rtl8192c_d_hal_init.o.d  -nostdinc -isystem /home/andy/CodeSourcery/Sourcery_G++_Lite/bin/../lib/gcc/arm-none-linux-gnueabi/4.3.3/include -I/home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include -Iinclude  -include include/generated/autoconf.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-davinci/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -marm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -mabi=aapcs-linux -mno-thumb-interwork -D__LINUX_ARM_ARCH__=5 -march=armv5te -mtune=arm9tdmi -msoft-float -Uarm -fno-stack-protector -fno-omit-frame-pointer -fno-optimize-sibling-calls -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -O1 -Wno-unused-variable -Wno-unused-value -Wno-unused-label -Wno-unused-parameter -Wno-uninitialized -Wno-unused -Wno-unused-function -I/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/include -DCONFIG_LITTLE_ENDIAN  -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(rtl8192c_d_hal_init)"  -D"KBUILD_MODNAME=KBUILD_STR(8192cu)"  -c -o /home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/.tmp_rtl8192c_d_hal_init.o /home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8192c_d_hal_init.c
+cmd_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8192c_d_hal_init.o := arm-none-linux-gnueabi-gcc -Wp,-MD,/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/.rtl8192c_d_hal_init.o.d  -nostdinc -isystem /home/andy/CodeSourcery/Sourcery_G++_Lite/bin/../lib/gcc/arm-none-linux-gnueabi/4.3.3/include -I/home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include -Iinclude  -include include/generated/autoconf.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-davinci/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -marm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -mabi=aapcs-linux -mno-thumb-interwork -D__LINUX_ARM_ARCH__=5 -march=armv5te -mtune=arm9tdmi -msoft-float -Uarm -fno-stack-protector -fno-omit-frame-pointer -fno-optimize-sibling-calls -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -O1 -Wno-unused-variable -Wno-unused-value -Wno-unused-label -Wno-unused-parameter -Wno-uninitialized -Wno-unused -Wno-unused-function -I/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/include -DCONFIG_LITTLE_ENDIAN  -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(rtl8192c_d_hal_init)"  -D"KBUILD_MODNAME=KBUILD_STR(8192cu)"  -c -o /home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/.tmp_rtl8192c_d_hal_init.o /home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8192c_d_hal_init.c
 
 deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8192c_d_hal_init.o := \
   /home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8192c_d_hal_init.c \
@@ -43,7 +43,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/lbdaf.h) \
     $(wildcard include/config/phys/addr/t/64bit.h) \
     $(wildcard include/config/64bit.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/types.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/types.h \
   include/asm-generic/int-ll64.h \
   include/asm-generic/bitsperlong.h \
   include/linux/posix_types.h \
@@ -57,7 +57,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/arch/supports/optimized/inlining.h) \
     $(wildcard include/config/optimize/inlining.h) \
   include/linux/compiler-gcc4.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/posix_types.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/posix_types.h \
   include/linux/version.h \
   include/linux/spinlock.h \
     $(wildcard include/config/smp.h) \
@@ -76,24 +76,24 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/generic/find/first/bit.h) \
     $(wildcard include/config/generic/find/last/bit.h) \
     $(wildcard include/config/generic/find/next/bit.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/bitops.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/system.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/bitops.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/system.h \
     $(wildcard include/config/cpu/xsc3.h) \
     $(wildcard include/config/cpu/fa526.h) \
     $(wildcard include/config/cpu/sa1100.h) \
     $(wildcard include/config/cpu/sa110.h) \
     $(wildcard include/config/cpu/32v6k.h) \
   include/linux/linkage.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/linkage.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/linkage.h \
   include/linux/irqflags.h \
     $(wildcard include/config/trace/irqflags.h) \
     $(wildcard include/config/irqsoff/tracer.h) \
     $(wildcard include/config/trace/irqflags/support.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/irqflags.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/ptrace.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/irqflags.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/ptrace.h \
     $(wildcard include/config/cpu/endian/be8.h) \
     $(wildcard include/config/arm/thumb.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/hwcap.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/hwcap.h \
   include/asm-generic/cmpxchg-local.h \
   include/asm-generic/cmpxchg.h \
   include/asm-generic/bitops/non-atomic.h \
@@ -101,12 +101,12 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/asm-generic/bitops/sched.h \
   include/asm-generic/bitops/hweight.h \
   include/asm-generic/bitops/lock.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/thread_info.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/thread_info.h \
     $(wildcard include/config/arm/thumbee.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/fpstate.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/fpstate.h \
     $(wildcard include/config/vfpv3.h) \
     $(wildcard include/config/iwmmxt.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/domain.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/domain.h \
     $(wildcard include/config/io/36.h) \
     $(wildcard include/config/mmu.h) \
   include/linux/list.h \
@@ -114,8 +114,8 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/poison.h \
     $(wildcard include/config/illegal/pointer/value.h) \
   include/linux/prefetch.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/processor.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/cache.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/processor.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/cache.h \
     $(wildcard include/config/arm/l1/cache/shift.h) \
     $(wildcard include/config/aeabi.h) \
   include/linux/kernel.h \
@@ -133,18 +133,18 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/arch/has/ilog2/u32.h) \
     $(wildcard include/config/arch/has/ilog2/u64.h) \
   include/linux/dynamic_debug.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/byteorder.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/byteorder.h \
   include/linux/byteorder/little_endian.h \
   include/linux/swab.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/swab.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/swab.h \
   include/linux/byteorder/generic.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/bug.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/bug.h \
     $(wildcard include/config/bug.h) \
     $(wildcard include/config/debug/bugverbose.h) \
   include/asm-generic/bug.h \
     $(wildcard include/config/generic/bug.h) \
     $(wildcard include/config/generic/bug/relative/pointers.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/div64.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/div64.h \
   include/linux/stringify.h \
   include/linux/bottom_half.h \
   include/linux/spinlock_types.h \
@@ -157,14 +157,14 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/spinlock_up.h \
   include/linux/rwlock.h \
   include/linux/spinlock_api_up.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/atomic.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/atomic.h \
   include/asm-generic/atomic-long.h \
   include/linux/semaphore.h \
   include/linux/sem.h \
     $(wildcard include/config/sysvipc.h) \
   include/linux/ipc.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/ipcbuf.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/sembuf.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/ipcbuf.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/sembuf.h \
   include/linux/rcupdate.h \
     $(wildcard include/config/tree/rcu.h) \
     $(wildcard include/config/tree/preempt/rcu.h) \
@@ -182,11 +182,11 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/bitmap.h \
   include/linux/string.h \
     $(wildcard include/config/binary/printf.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/string.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/string.h \
   include/linux/seqlock.h \
   include/linux/completion.h \
   include/linux/wait.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/current.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/current.h \
   include/linux/rcutree.h \
     $(wildcard include/config/no/hz.h) \
   include/linux/sched.h \
@@ -227,7 +227,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/debug/stack/usage.h) \
     $(wildcard include/config/group/sched.h) \
     $(wildcard include/config/mm/owner.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/param.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/param.h \
     $(wildcard include/config/hz.h) \
   include/linux/capability.h \
   include/linux/timex.h \
@@ -235,12 +235,12 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/arch/uses/gettimeoffset.h) \
   include/linux/math64.h \
   include/linux/param.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/timex.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/timex.h \
   arch/arm/mach-davinci/include/mach/timex.h \
   include/linux/jiffies.h \
   include/linux/rbtree.h \
   include/linux/errno.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/errno.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/errno.h \
   include/asm-generic/errno.h \
   include/asm-generic/errno-base.h \
   include/linux/nodemask.h \
@@ -255,7 +255,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/proc/fs.h) \
     $(wildcard include/config/mmu/notifier.h) \
   include/linux/auxvec.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/auxvec.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/auxvec.h \
   include/linux/prio_tree.h \
   include/linux/rwsem.h \
     $(wildcard include/config/rwsem/generic/spinlock.h) \
@@ -263,7 +263,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/page-debug-flags.h \
     $(wildcard include/config/page/poisoning.h) \
     $(wildcard include/config/page/debug/something/else.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/page.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/page.h \
     $(wildcard include/config/cpu/copy/v3.h) \
     $(wildcard include/config/cpu/copy/v4wt.h) \
     $(wildcard include/config/cpu/copy/v4wb.h) \
@@ -272,7 +272,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/cpu/xscale.h) \
     $(wildcard include/config/cpu/copy/v6.h) \
     $(wildcard include/config/sparsemem.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/glue.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/glue.h \
     $(wildcard include/config/cpu/arm610.h) \
     $(wildcard include/config/cpu/arm710.h) \
     $(wildcard include/config/cpu/abrt/lv4t.h) \
@@ -285,7 +285,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/cpu/pabrt/legacy.h) \
     $(wildcard include/config/cpu/pabrt/v6.h) \
     $(wildcard include/config/cpu/pabrt/v7.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/memory.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/memory.h \
     $(wildcard include/config/page/offset.h) \
     $(wildcard include/config/thumb2/kernel.h) \
     $(wildcard include/config/dram/size.h) \
@@ -296,22 +296,22 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   arch/arm/mach-davinci/include/mach/memory.h \
     $(wildcard include/config/arch/davinci/da8xx.h) \
     $(wildcard include/config/arch/davinci/dmx.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/sizes.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/sizes.h \
   include/asm-generic/memory_model.h \
     $(wildcard include/config/flatmem.h) \
     $(wildcard include/config/sparsemem/vmemmap.h) \
   include/asm-generic/getorder.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/mmu.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/mmu.h \
     $(wildcard include/config/cpu/has/asid.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/cputime.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/cputime.h \
   include/asm-generic/cputime.h \
   include/linux/smp.h \
     $(wildcard include/config/use/generic/smp/helpers.h) \
   include/linux/signal.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/signal.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/signal.h \
   include/asm-generic/signal-defs.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/sigcontext.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/siginfo.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/sigcontext.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/siginfo.h \
   include/asm-generic/siginfo.h \
   include/linux/path.h \
   include/linux/pid.h \
@@ -357,7 +357,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/topology.h \
     $(wildcard include/config/sched/smt.h) \
     $(wildcard include/config/sched/mc.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/topology.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/topology.h \
   include/asm-generic/topology.h \
   include/linux/mmdebug.h \
     $(wildcard include/config/debug/virtual.h) \
@@ -386,7 +386,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/kmemleak.h \
     $(wildcard include/config/debug/kmemleak.h) \
   include/linux/pfn.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/percpu.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/percpu.h \
   include/asm-generic/percpu.h \
   include/linux/percpu-defs.h \
     $(wildcard include/config/debug/force/weak/per/cpu.h) \
@@ -400,7 +400,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/plist.h \
     $(wildcard include/config/debug/pi/list.h) \
   include/linux/resource.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/resource.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/resource.h \
   include/asm-generic/resource.h \
   include/linux/hrtimer.h \
     $(wildcard include/config/high/res/timers.h) \
@@ -439,8 +439,8 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/netpoll/trap.h) \
   include/linux/if.h \
   include/linux/socket.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/socket.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/sockios.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/socket.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/sockios.h \
   include/linux/sockios.h \
   include/linux/hdlc/ioctl.h \
   include/linux/if_ether.h \
@@ -458,11 +458,11 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/net.h \
   include/linux/random.h \
   include/linux/ioctl.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/ioctl.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/ioctl.h \
   include/asm-generic/ioctl.h \
   include/linux/irqnr.h \
   include/linux/fcntl.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/fcntl.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/fcntl.h \
   include/asm-generic/fcntl.h \
   include/linux/ratelimit.h \
   include/linux/textsearch.h \
@@ -474,27 +474,27 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/module/unload.h) \
     $(wildcard include/config/constructors.h) \
   include/linux/stat.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/stat.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/stat.h \
   include/linux/kmod.h \
   include/linux/elf.h \
   include/linux/elf-em.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/elf.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/user.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/elf.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/user.h \
   include/linux/moduleparam.h \
     $(wildcard include/config/alpha.h) \
     $(wildcard include/config/ia64.h) \
     $(wildcard include/config/ppc64.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/local.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/local.h \
   include/asm-generic/local.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/module.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/module.h \
     $(wildcard include/config/arm/unwind.h) \
   include/trace/events/module.h \
   include/linux/err.h \
   include/net/checksum.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/uaccess.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/unified.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/uaccess.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/unified.h \
     $(wildcard include/config/arm/asm/unified.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/checksum.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/checksum.h \
   include/linux/in6.h \
   include/linux/dmaengine.h \
     $(wildcard include/config/dma/engine.h) \
@@ -508,7 +508,7 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/pm.h \
     $(wildcard include/config/pm/sleep.h) \
     $(wildcard include/config/pm/runtime.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/device.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/device.h \
     $(wildcard include/config/dmabounce.h) \
   include/linux/pm_wakeup.h \
   include/linux/dma-mapping.h \
@@ -517,17 +517,17 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
   include/linux/bug.h \
   include/linux/scatterlist.h \
     $(wildcard include/config/debug/sg.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/scatterlist.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/scatterlist.h \
   include/linux/mm.h \
     $(wildcard include/config/ksm.h) \
     $(wildcard include/config/debug/pagealloc.h) \
     $(wildcard include/config/hibernation.h) \
   include/linux/debug_locks.h \
     $(wildcard include/config/debug/locking/api/selftests.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/pgtable.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/pgtable.h \
     $(wildcard include/config/highpte.h) \
   include/asm-generic/4level-fixup.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/proc-fns.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/proc-fns.h \
     $(wildcard include/config/cpu/arm7tdmi.h) \
     $(wildcard include/config/cpu/arm720t.h) \
     $(wildcard include/config/cpu/arm740t.h) \
@@ -546,10 +546,10 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/cpu/feroceon.h) \
     $(wildcard include/config/cpu/v6.h) \
     $(wildcard include/config/cpu/v7.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/cpu-single.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/cpu-single.h \
   arch/arm/mach-davinci/include/mach/vmalloc.h \
   arch/arm/mach-davinci/include/mach/hardware.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/pgtable-hwdef.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/pgtable-hwdef.h \
   include/asm-generic/pgtable.h \
   include/linux/page-flags.h \
     $(wildcard include/config/pageflags/extended.h) \
@@ -559,14 +559,14 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/s390.h) \
   include/linux/vmstat.h \
     $(wildcard include/config/vm/event/counters.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/io.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/io.h \
   arch/arm/mach-davinci/include/mach/io.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/dma-mapping.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/dma-mapping.h \
   include/asm-generic/dma-coherent.h \
     $(wildcard include/config/have/generic/dma/coherent.h) \
   include/linux/if_packet.h \
   include/linux/delay.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/delay.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/delay.h \
   include/linux/ethtool.h \
   include/net/net_namespace.h \
     $(wildcard include/config/ipv6.h) \
@@ -643,13 +643,13 @@ deps_/home/andy/git/lejos/modules/net/rtl8192CU_linux_v2.0.939.20100726/hal/rtl8
     $(wildcard include/config/lock/kernel.h) \
   include/linux/ftrace_irq.h \
     $(wildcard include/config/ftrace/nmi/enter.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/hardirq.h \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/irq.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/hardirq.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/irq.h \
   arch/arm/mach-davinci/include/mach/irqs.h \
   include/linux/irq_cpustat.h \
   include/linux/etherdevice.h \
     $(wildcard include/config/have/efficient/unaligned/access.h) \
-  /home/andy/am1808/DaVinci-PSP-SDK-03.20.00.13/src/kernel/linux-03.20.00.13/arch/arm/include/asm/unaligned.h \
+  /home/andy/git/lejos/kernel/linux-03.20.00.13/arch/arm/include/asm/unaligned.h \
   include/linux/unaligned/le_byteshift.h \
   include/linux/unaligned/be_byteshift.h \
   include/linux/unaligned/generic.h \
