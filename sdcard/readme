@@ -4,6 +4,13 @@ For details on how to use this please see:
 https://sourceforge.net/p/lejos/wiki/Home/
 
 Change history
+0.4.0-alpha
+* Added kernel sources and build from them
+* Added backports source to get updated WiFi drivers for Netgear WNA1100
+* Changed udev rules so it does not attempt to mount SD card
+* Improved initialisation of UART sensors
+* Handle UART sensor crash
+
 0.3.0-aplha
 * fixed minor bugs in Java code
 * re-worked config scripts
