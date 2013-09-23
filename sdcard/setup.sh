@@ -18,7 +18,7 @@ cp ../kernel/uImage $img
 cp -r ../kernel/modules $img
 cp external/lmsfs.tar.bz2 $img 
 cp -r external/Linux_AM1808 $img 
-cp -r external/netmods $img
+mkdir $img/netmods
 cp ../modules/net/bin/* $img/netmods
 mkdir $img/mod
 cp ../modules/lms2012/bin/* $img/mod

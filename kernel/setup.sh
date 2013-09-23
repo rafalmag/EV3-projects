@@ -8,8 +8,10 @@
 tar xfa linux*.tgz
 cd linux*
 patch -p1 < ../lx.patch
+cd ..
 
 # do the same for the backported network modules
 tar xfa backports*.bz2
 cd backports*
 patch -p1 < ../bp.patch
+cd ..

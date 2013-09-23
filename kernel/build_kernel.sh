@@ -36,5 +36,5 @@ cp arch/arm/boot/uImage ${project}/uImage
 
 make modules ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-
 mkdir ${project}/modules 2> /dev/null
-sudo make modules_install INSTALL_MOD_PATH=${project}/modules ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-
+sudo bash -c "PATH=${AM1808_COMPILER}:$PATH; make modules_install INSTALL_MOD_PATH=${project}/modules ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-"
 
