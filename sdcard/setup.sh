@@ -5,7 +5,7 @@ LJHOME=lejosfs/home/root/lejos
 img=lejosimage
 rm -rf $img 2> /dev/null
 mkdir $img 2> /dev/null
-mkdir lejosfs/home/lejos 2> /dev/null
+mkdir lejosfs/home/lejos/programs 2> /dev/null
 mkdir $LJHOME/lib 2> /dev/null
 mkdir $LJHOME/libjna 2> /dev/null
 mkdir $LJHOME/mod 2> /dev/null
@@ -30,6 +30,7 @@ cd ../..
 cp ../ev3classes/ev3classes.jar $img
 cp ../EV3HelloWorld/bin/EV3HelloWorld.class $img/$LJHOME/samples
 cp ../EV3Splash/bin/Splash.class $img/$LJHOME/bin/utils
+cp ../EV3Menu/dist/EV3Menu.jar $img/$LJHOME/bin/utils
 cp ../EV3PowerOff/bin/PowerOff.class $img/$LJHOME/bin/utils
 git describe > $img/version
 cp readme $img
