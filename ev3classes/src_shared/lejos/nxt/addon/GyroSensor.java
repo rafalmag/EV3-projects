@@ -1,6 +1,6 @@
 package lejos.nxt.addon;
    
-import lejos.nxt.ADSensorPort;
+import lejos.nxt.AnalogPort;
 import lejos.nxt.Motor;
 //import lejos.nxt.LCD;
 import lejos.nxt.SensorConstants;
@@ -44,7 +44,7 @@ import lejos.util.Delay;
 public class GyroSensor implements SensorConstants, Gyroscope {
     /** The <code>ADSensorPort</code> passed in the constructor.
      */
-    protected ADSensorPort port;
+    protected AnalogPort port;
 	private int offset = 0;
     private float gsRawTotal =0f;
     private float gsvarianceTotal =0f;
@@ -58,7 +58,7 @@ public class GyroSensor implements SensorConstants, Gyroscope {
      * @param port The <code>SensorPort</code> the Gyro is connected to
      * @see lejos.nxt.SensorPort
      */
-    public GyroSensor(ADSensorPort port) {
+    public GyroSensor(AnalogPort port) {
 		this.port = port;
 		port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
 	    timestamp = System.currentTimeMillis();
@@ -72,7 +72,7 @@ public class GyroSensor implements SensorConstants, Gyroscope {
      * @param offset The offset to apply to <code>readValue()</code>
      * @see lejos.nxt.SensorPort
      */
-	public GyroSensor(ADSensorPort port, int offset) {
+	public GyroSensor(AnalogPort port, int offset) {
 		this(port);
 		this.offset = offset;
 	}

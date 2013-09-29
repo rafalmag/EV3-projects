@@ -25,33 +25,24 @@ public class Motor
     /**
      * Motor A.
      */
-    public static final NXTRegulatedMotor A = LocalEV3.A();
+    public static final NXTRegulatedMotor A = new NXTRegulatedMotor(LocalEV3.ev3.getPort("A"));
     /**
      * Motor B.
      */
-    public static final NXTRegulatedMotor B = LocalEV3.B();;
+    public static final NXTRegulatedMotor B = new NXTRegulatedMotor(LocalEV3.ev3.getPort("B"));
     /**
      * Motor C.
      */
-    public static final NXTRegulatedMotor C = LocalEV3.C();;
+    public static final NXTRegulatedMotor C = new NXTRegulatedMotor(LocalEV3.ev3.getPort("C"));
     
     /**
      * Motor D.
      */
-    public static final NXTRegulatedMotor D = LocalEV3.D();;
+    public static final NXTRegulatedMotor D = new NXTRegulatedMotor(LocalEV3.ev3.getPort("D"));
     
     private Motor() {
     	// Motor class cannot be instantiated
     }
 
-    /**
-     * Return the Motor with the given Id.
-     * @param id the Id, between 0 and {@link MotorPort#NUMBER_OF_PORTS}-1.
-     * @return the MotorPort object
-     */
-    public static NXTRegulatedMotor getInstance(int id)
-    {
-        return LocalEV3.ev3.getMotor(id);
-    }
 
 }

@@ -12,7 +12,7 @@ package lejos.nxt;
  * @author Lawrie Griffiths.
  * 
  */
-public interface BasicMotorPort {
+public interface BasicMotorPort extends IOPort {
     /** PWM Mode. Motor is not driven during off phase of PWM */
 	static public final int PWM_FLOAT = 0;
     /** PWM Mode. Motor is driven during off phase of PWM */

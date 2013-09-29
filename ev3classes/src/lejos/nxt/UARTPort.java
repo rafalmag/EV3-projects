@@ -1,7 +1,7 @@
 package lejos.nxt;
 
 
-public interface UARTPort extends SensorPort
+public interface UARTPort extends IOPort
 {
 
     /**

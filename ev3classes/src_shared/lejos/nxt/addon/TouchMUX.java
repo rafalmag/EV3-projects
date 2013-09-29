@@ -1,6 +1,6 @@
 package lejos.nxt.addon;
 import lejos.robotics.Touch;
-import lejos.nxt.ADSensorPort;
+import lejos.nxt.AnalogPort;
 import lejos.nxt.SensorConstants;
 
 /*
@@ -51,7 +51,7 @@ public class TouchMUX {
     }
 
 
-    private ADSensorPort port;
+    private AnalogPort port;
 
     /** Instance for the touch sensor connected to port T1 **/
     public final Touch T1 = new MuxTouchSensor(ID_T1);
@@ -64,7 +64,7 @@ public class TouchMUX {
      * Create a object to provide access to a touch sensor multiplexer
      * @param port The NXT sensor port to which the multiplexer is attached
      */
-    public TouchMUX(ADSensorPort port)
+    public TouchMUX(AnalogPort port)
     {
         this.port = port;
         port.setTypeAndMode(SensorConstants.TYPE_CUSTOM, SensorConstants.MODE_RAW);

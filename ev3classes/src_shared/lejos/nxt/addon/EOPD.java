@@ -16,13 +16,13 @@ import lejos.nxt.*;
  * 
  */
 public class EOPD implements SensorConstants{
-	ADSensorPort port;
+	AnalogPort port;
 	
 	/**
 	 * By default the sensor is short range.
 	 * @param port NXT sensor port 1-4
 	 */
-	public EOPD (ADSensorPort port){
+	public EOPD (AnalogPort port){
 		this.port = port;
 		port.setTypeAndMode(TYPE_LIGHT_INACTIVE, MODE_PCTFULLSCALE);
 	}
@@ -32,7 +32,7 @@ public class EOPD implements SensorConstants{
 	 * @param port NXT sensor port 1-4.
 	 * @param longRange true = long range false = short range.
 	 */
-	public EOPD(ADSensorPort port, boolean longRange)
+	public EOPD(AnalogPort port, boolean longRange)
 	{
 		this.port = port;
 		port.setTypeAndMode((longRange ? TYPE_LIGHT_ACTIVE : TYPE_LIGHT_INACTIVE),

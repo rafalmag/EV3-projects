@@ -21,7 +21,18 @@ public class UARTSensor
     public UARTSensor(UARTPort port)
     {
         this(port, 0);
+        System.out.println("UART constructor");
     }
+    
+    /**
+    * Standard constructor for a UARTSensor initialises things and places the 
+    * device into mode 0.
+    * @param port The port the sensor is attached to.
+    */
+   public UARTSensor(Port port)
+   {
+       this(port.open(UARTPort.class));
+   }
 
     /**
      * Create the sensor object and switch to the selected mode
@@ -34,6 +45,16 @@ public class UARTSensor
         if (!port.setMode(mode))
             throw new IllegalArgumentException("Invalid sensor mode");
         currentMode = mode;
+    }
+    
+    /**
+     * Create the sensor object and switch to the selected mode
+     * @param port The port the sensor is attached to.
+     * @param mode Operating mode for the sensor.
+     */
+    public UARTSensor(Port port, int mode)
+    {
+        this(port.open(UARTPort.class), mode);
     }
     
 

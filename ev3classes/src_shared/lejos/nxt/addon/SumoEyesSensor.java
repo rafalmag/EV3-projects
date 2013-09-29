@@ -1,6 +1,6 @@
 package lejos.nxt.addon;
 
-import lejos.nxt.ADSensorPort;
+import lejos.nxt.AnalogPort;
 import lejos.nxt.SensorConstants;
 
 /**
@@ -25,7 +25,7 @@ public class SumoEyesSensor implements SensorConstants {
     public final static int RIGHT = 3;
     
     /** The port. */
-    private ADSensorPort port;
+    private AnalogPort port;
     
     /** The long range. */
     private boolean longRange = false;
@@ -35,7 +35,7 @@ public class SumoEyesSensor implements SensorConstants {
      *
      * @param port the sensor port
      */
-    public SumoEyesSensor(ADSensorPort port) {
+    public SumoEyesSensor(AnalogPort port) {
         this.port = port;
         this.longRange = false;
         port.setTypeAndMode(TYPE_LIGHT_ACTIVE,MODE_PCTFULLSCALE);
@@ -47,7 +47,7 @@ public class SumoEyesSensor implements SensorConstants {
      * @param port the sensor port
      * @param longRange if true, enables long range
      */
-    public SumoEyesSensor(ADSensorPort port, boolean longRange) {
+    public SumoEyesSensor(AnalogPort port, boolean longRange) {
         this.port = port;
         this.longRange = longRange;
         port.setTypeAndMode(TYPE_LIGHT_ACTIVE,MODE_PCTFULLSCALE);

@@ -53,9 +53,9 @@ public class I2CSensor implements SensorConstants {
 		this.address = address;
 		// Set the EV3 pins up.
 		if (type == TYPE_LOWSPEED_9V)
-		    port.setPinMode(I2CPort.CMD_SET | I2CPort.CMD_PIN1);
+		    port.setPinMode(EV3SensorConstants.CMD_SET | EV3SensorConstants.CMD_PIN1);
 		else
-            port.setPinMode(I2CPort.CMD_SET);
+            port.setPinMode(EV3SensorConstants.CMD_SET);
 		    //port.setPinMode(I2CPort.CMD_FLOAT);
 	}
 	

@@ -15,7 +15,7 @@ import lejos.robotics.LampLightDetector;
  */
 public class LightSensor implements LampLightDetector, SensorConstants
 {
-	ADSensorPort port;
+	AnalogPort port;
 	private int _zero = 1023;
 	private int _hundred = 0;
 	private boolean floodlight = false;
@@ -25,7 +25,7 @@ public class LightSensor implements LampLightDetector, SensorConstants
 	 * The sensor will be set to floodlit mode, i.e. the LED will be turned on.
 	 * @param port port, e.g. Port.S1
 	 */
-	public LightSensor(ADSensorPort port)
+	public LightSensor(AnalogPort port)
 	{
 		this(port, true);
 	}
@@ -36,7 +36,7 @@ public class LightSensor implements LampLightDetector, SensorConstants
 	 * @param port port, e.g. Port.S1
 	 * @param floodlight true to set floodit mode, false for ambient light.
 	 */
-	public LightSensor(ADSensorPort port, boolean floodlight)
+	public LightSensor(AnalogPort port, boolean floodlight)
 	{
 	   this.port = port;
 	   this.floodlight = floodlight;

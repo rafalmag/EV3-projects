@@ -12,48 +12,27 @@ import lejos.internal.io.NativeDevice;
  * TODO: Sort out a better way to do this, or least clean up the magic numbers.
  *
  */
-public interface MotorPort extends TachoMotorPort {
+public interface MotorPort {
 	
-    /**
-     * The number of ports available.
-     */
-    public static final int PORTS = 4;
     
 	/**
 	 * MotorPort A.
 	 */
-	public static final MotorPort A = LocalEV3.ev3.getMotorPort(0);
+	public static final Port A = LocalEV3.ev3.getPort("A");
 	
 	/**
 	 * MotorPort B.
 	 */
-	public static final MotorPort B = LocalEV3.ev3.getMotorPort(1);
+	public static final Port B = LocalEV3.ev3.getPort("B");
 	
     /**
      * MotorPort C.
      */
-    public static final MotorPort C = LocalEV3.ev3.getMotorPort(2);
+    public static final Port C = LocalEV3.ev3.getPort("C");
     
     /**
      * MotorPort D.
      */
-    public static final MotorPort D = LocalEV3.ev3.getMotorPort(3);
-    
-	
-    /**
-     * Open the port and make it available for use.
-     * @param port the port number to open
-     */    
-    public boolean open(int port);
-    
-    /**
-     * Close the port, the port can not be used after this call.
-     */
-    public void close();
-    
-    /**
-     * Return the id/port number for this port.
-     * @return
-     */
-    public int getId();
+    public static final Port D = LocalEV3.ev3.getPort("D");
+
 }

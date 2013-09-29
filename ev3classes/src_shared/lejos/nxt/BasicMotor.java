@@ -47,7 +47,7 @@ public abstract class BasicMotor implements DCMotor
 	 */
 	public void forward()
 	{ 
-		updateState( MotorPort.FORWARD);
+		updateState( BasicMotorPort.FORWARD);
 	}
 	  
 
@@ -56,7 +56,7 @@ public abstract class BasicMotor implements DCMotor
 	 */
 	public void backward()
 	{
-		updateState( MotorPort.BACKWARD);
+		updateState( BasicMotorPort.BACKWARD);
 	}
 
 
@@ -67,7 +67,7 @@ public abstract class BasicMotor implements DCMotor
 	 */
 	public boolean isMoving()
 	{
-		return (mode == MotorPort.FORWARD || mode == MotorPort.BACKWARD);
+		return (mode == BasicMotorPort.FORWARD || mode == BasicMotorPort.BACKWARD);
 	}
 
 	/**
@@ -78,7 +78,7 @@ public abstract class BasicMotor implements DCMotor
 	 */   
 	public void flt()
 	{
-		updateState( MotorPort.FLOAT);
+		updateState( BasicMotorPort.FLOAT);
 	}
 
 	  
@@ -91,7 +91,7 @@ public abstract class BasicMotor implements DCMotor
 	 */
 	public void stop()
 	{
-		updateState( MotorPort.STOP);
+		updateState( BasicMotorPort.STOP);
 	}
 	  
 }

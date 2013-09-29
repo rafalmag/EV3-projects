@@ -1,4 +1,4 @@
-package lejos.nxt;
+package lejos.internal.ev3;
 
 import java.nio.ByteBuffer;
 
@@ -6,6 +6,9 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
 import lejos.internal.io.NativeDevice;
+import lejos.nxt.DeviceManager;
+import lejos.nxt.SensorException;
+import lejos.nxt.UARTPort;
 import lejos.util.Delay;
 
 /**
@@ -21,7 +24,7 @@ import lejos.util.Delay;
  * @author andy
  *
  */
-public class LocalUARTPort extends LocalSensorPort implements UARTPort
+public class EV3UARTPort extends EV3IOPort implements UARTPort
 {
     protected static NativeDevice uart;
     protected static Pointer pDev;
@@ -316,31 +319,21 @@ public class LocalUARTPort extends LocalSensorPort implements UARTPort
         waitZeroStatus(TIMEOUT);
     }
 
-    /**
-     * Open the port and set the initial operating mode.
-     * @param port port number to open
-     * @param mode operating mode
-     * @return true if post was opened, false if the operation failed
-     */
-    public boolean open(int port, int mode)
-    {
-        if (!super.open(port))
-            return false;
-        // clear mode data cache
-        modeCnt = 0;
-        if (initialiseSensor(mode))
-            return true;
-        super.close();
-        return false;
-    }
 
     
     /** {@inheritDoc}
      */    
     @Override
-    public boolean open(int port)
+    public boolean open(int typ, int port, EV3Port ref)
     {
-        return open(port, 0);
+        if (!super.open(typ, port, ref))
+            return false;
+        // clear mode data cache
+        modeCnt = 0;
+        if (initialiseSensor(0))
+            return true;
+        super.close();
+        return false;
     }
 
     /** {@inheritDoc}

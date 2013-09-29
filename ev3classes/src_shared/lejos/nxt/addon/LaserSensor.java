@@ -1,6 +1,6 @@
 package lejos.nxt.addon;
 
-import lejos.nxt.ADSensorPort;
+import lejos.nxt.AnalogPort;
 import lejos.nxt.SensorConstants;
 
 /*
@@ -19,7 +19,7 @@ import lejos.nxt.SensorConstants;
  */
 public class LaserSensor implements SensorConstants
 {
-	ADSensorPort port;
+	AnalogPort port;
 	private int _zero = 1023;
 	private int _hundred = 0;
 	private boolean laser = false;
@@ -30,7 +30,7 @@ public class LaserSensor implements SensorConstants
 	 * 
 	 * @param port port, e.g. Port.S1
 	 */
-	public LaserSensor(ADSensorPort port)
+	public LaserSensor(AnalogPort port)
 	{
 		this(port, false);
 	}
@@ -41,7 +41,7 @@ public class LaserSensor implements SensorConstants
 	 * @param port port, e.g. Port.S1
 	 * @param laser true to turn on the laser, false for laser off.
 	 */
-	public LaserSensor(ADSensorPort port, boolean laserState)
+	public LaserSensor(AnalogPort port, boolean laserState)
 	{
 	   this.port = port;
 	   this.laser = laserState;

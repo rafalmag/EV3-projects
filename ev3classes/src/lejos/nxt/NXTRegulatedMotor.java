@@ -79,10 +79,10 @@ public class NXTRegulatedMotor implements RegulatedMotor
      * Use this constructor to assign a variable of type motor connected to a particular port.
      * @param port  to which this motor is connected
      */
-    public NXTRegulatedMotor(TachoMotorPort port)
+    public NXTRegulatedMotor(Port port)
     {
-        tachoPort = port;
-        port.setPWMMode(TachoMotorPort.PWM_BRAKE);
+        tachoPort = port.open(TachoMotorPort.class);
+        tachoPort.setPWMMode(TachoMotorPort.PWM_BRAKE);
         reg = new Regulator();
         //TODO: Should we take control of the motor at this point?
         //resetTachoCount();

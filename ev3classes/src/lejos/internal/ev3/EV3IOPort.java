@@ -1,24 +1,30 @@
-package lejos.nxt;
+package lejos.internal.ev3;
+
+import lejos.nxt.DeviceManager;
+import lejos.nxt.EV3SensorConstants;
+import lejos.nxt.IOPort;
 
 /**
  * This class provides the base operations for local EV3 sensor ports.
  * @author andy
  *
  */
-public abstract class LocalSensorPort implements SensorPort
+public abstract class EV3IOPort implements IOPort, EV3SensorConstants
 {
     protected int port = -1;
+    protected int typ = -1;
+    protected EV3Port ref;
     protected static byte [] dc = new byte[3*PORTS];
     protected int currentMode = 0;
-    protected static LocalSensorPort [] openPorts = new LocalSensorPort[PORTS];
+    protected static EV3IOPort [][] openPorts = new EV3IOPort[EV3Port.MOTOR_PORT+1][PORTS];
    
 
     /** {@inheritDoc}
      */    
     @Override
-    public int getId()
+    public String getName()
     {
-        return port;
+        return ref.getName();
     }
     
     /** {@inheritDoc}
@@ -64,18 +70,24 @@ public abstract class LocalSensorPort implements SensorPort
         setMode(mode);
         return true;
     }
-   
-    /** {@inheritDoc}
-     */    
-    @Override
-    public boolean open(int port)
+
+    /**
+     * Open the sensor port. Ensure that the port is only opened once.
+     * @param typ The type of port motor/sensor
+     * @param port the port number
+     * @param ref the Port ref for this port
+     * @return
+     */
+    public boolean open(int typ, int port, EV3Port ref)
     {
         synchronized (openPorts)
         {
-            if (openPorts[port] == null)
+            if (openPorts[typ][port] == null)
             {
-                openPorts[port] = this;
+                openPorts[typ][port] = this;
                 this.port = port;
+                this.typ = typ;
+                this.ref = ref;
                 return true;
             }
             return false;
@@ -91,14 +103,9 @@ public abstract class LocalSensorPort implements SensorPort
             throw new IllegalStateException("Port is not open");
         synchronized (openPorts)
         {
-            openPorts[port] = null;
+            openPorts[typ][port] = null;
             port = -1;
         }
-    }
-    
-    public static SensorPort getInstance(int port)
-    {
-        return openPorts[port];
     }
     
     /**

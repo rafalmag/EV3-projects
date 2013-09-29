@@ -1,4 +1,4 @@
-package lejos.nxt;
+package lejos.internal.ev3;
 
 import java.nio.ByteBuffer;
 
@@ -6,6 +6,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
 import lejos.internal.io.NativeDevice;
+import lejos.nxt.I2CPort;
 import lejos.util.Delay;
 
 /**
@@ -16,7 +17,7 @@ import lejos.util.Delay;
     to be of limited use because most i2c sensors provide multiple data values etc.
     Because of this we only implement the basic i2c interface.
  */
-public class LocalI2CPort extends LocalSensorPort implements I2CPort
+public class EV3I2CPort extends EV3IOPort implements I2CPort
 {
     protected static NativeDevice i2c;
     protected static Pointer pIic;
@@ -104,9 +105,9 @@ public class LocalI2CPort extends LocalSensorPort implements I2CPort
      * allow access to the specified port
      * @param p port number to open
      */
-    public boolean open(int p)
+    public boolean open(int t, int p, EV3Port r)
     {
-        if (!super.open(p))
+        if (!super.open(t, p, r))
             return false;
         if (!initSensor())
         {
@@ -154,7 +155,7 @@ public class LocalI2CPort extends LocalSensorPort implements I2CPort
             //System.out.println("Ioctl result: " + iicdata.Result);
             if (iicdata.Result < 0)
                 return -1;
-            if (iicdata.Result == OK)
+            if (iicdata.Result == STATUS_OK)
             {
                 if (readLen > 0)
                     System.arraycopy(iicdata.RdData, 0, readBuf, readOffset,  readLen);

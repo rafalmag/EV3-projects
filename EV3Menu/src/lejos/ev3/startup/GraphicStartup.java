@@ -78,7 +78,8 @@ public class GraphicStartup {
         	version = args[0];
         }
         
-        hostname = InetAddress.getLocalHost().getHostName();
+        //hostname = InetAddress.getLocalHost().getHostName();
+        hostname= "EV3";
         System.out.println("Host name: " + hostname);
         
         TuneThread tuneThread = new TuneThread();

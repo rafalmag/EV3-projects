@@ -9,9 +9,9 @@ import lejos.robotics.Touch;
  */
 public class EV3TouchSensor implements Touch
 {
-    ADSensorPort port;
+    AnalogPort port;
     
-    public EV3TouchSensor(ADSensorPort port)
+    public EV3TouchSensor(AnalogPort port)
     {
         this.port = port;
     }
@@ -19,7 +19,7 @@ public class EV3TouchSensor implements Touch
     @Override
     public boolean isPressed()
     {
-        return port.getPin6() > ADSensorPort.ADC_RES/2;
+        return port.getPin6() > EV3SensorConstants.ADC_RES/2;
     }
 
 }

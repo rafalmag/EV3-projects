@@ -1,7 +1,8 @@
 
+import lejos.internal.ev3.EV3UARTPort;
 import lejos.nxt.Button;
+import lejos.nxt.EV3IRSensor;
 import lejos.nxt.LCD;
-import lejos.nxt.LocalUARTPort;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
@@ -66,29 +67,21 @@ public class EV3BumperCar
 
 class IRSensor extends Thread
 {
-    UARTPort ir = new LocalUARTPort();;
-    public byte control = 0;
+    EV3IRSensor ir = new EV3IRSensor(SensorPort.S1);
+    public int control = 0;
     public int distance = 255;
 
     IRSensor()
     {
-        if (!ir.open(0))
-        {
-            System.out.println("Failed to open IR sensor");
-            System.exit(0);
-        }        
+
     }
     
     public void run()
     {
         while (true)
         {
-            ir.setMode(2);
-            Delay.msDelay(200);
-            control = ir.getByte();
-            ir.setMode(0);
-            Delay.msDelay(200);
-            distance = ir.getByte() & 0xff;
+            control = ir.getRemoteCommand(0);
+            distance = (int)ir.getRange();
             System.out.println("Control: " + control + " Distance: " + distance);
             
         }

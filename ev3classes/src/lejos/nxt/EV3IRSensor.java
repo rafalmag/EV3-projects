@@ -26,6 +26,11 @@ public class EV3IRSensor extends UARTSensor implements RangeFinder
         super(port, 0);
     }
     
+    public EV3IRSensor(Port port)
+    {
+        super(port, 0);
+    }
+    
     /**
      * {@inheritDoc}
      */

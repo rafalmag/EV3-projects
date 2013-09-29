@@ -12,13 +12,13 @@ import lejos.robotics.Touch;
  * 
  */
 public class TouchSensor implements SensorConstants, Touch {
-	ADSensorPort port;
+	AnalogPort port;
 	
 	/**
 	 * Create a touch sensor object attached to the specified port.
 	 * @param port an Analog/Digital port, e.g. SensorPort.S1
 	 */
-	public TouchSensor(ADSensorPort port)
+	public TouchSensor(AnalogPort port)
 	{
 	   this.port = port;
 	   port.setTypeAndMode(TYPE_SWITCH, MODE_BOOLEAN);

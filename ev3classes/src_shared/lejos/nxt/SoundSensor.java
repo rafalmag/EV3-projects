@@ -10,14 +10,14 @@ package lejos.nxt;
  * 
  */
 public class SoundSensor implements SensorConstants {
-	ADSensorPort port;
+	AnalogPort port;
 	
 	/**
 	 * Create a sound sensor object attached to the specified port.
 	 * The sensor will be set to DB mode.
 	 * @param port port, e.g. Port.S1
 	 */
-	public SoundSensor(ADSensorPort port)
+	public SoundSensor(AnalogPort port)
 	{
 	   this.port = port;
 	   port.setTypeAndMode(TYPE_SOUND_DB,
@@ -30,7 +30,7 @@ public class SoundSensor implements SensorConstants {
 	 * @param port port, e.g. Port.S1
 	 * @param dba true to set DBA mode, false for DB mode.
 	 */
-	public SoundSensor(ADSensorPort port, boolean dba)
+	public SoundSensor(AnalogPort port, boolean dba)
 	{
 	   this.port = port;
        port.setTypeAndMode(
