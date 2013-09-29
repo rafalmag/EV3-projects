@@ -84,6 +84,8 @@ public class NXTRegulatedMotor implements RegulatedMotor
         tachoPort = port;
         port.setPWMMode(TachoMotorPort.PWM_BRAKE);
         reg = new Regulator();
+        //TODO: Should we take control of the motor at this point?
+        //resetTachoCount();
     }
 
     /**
@@ -139,13 +141,13 @@ public class NXTRegulatedMotor implements RegulatedMotor
      * maintain. Normally this will be the actual position of the motor and will
      * be the same as the value returned by getTachoCount(). However in some
      * circumstances (activeMotors that are in the process of stalling, or activeMotors
-     * that have been forced out of position), the two values may differ. Note
-     * this value is not valid if regulation has been terminated.
+     * that have been forced out of position), the two values may differ. Note that
+     * if regulation has been suspended calling this method will restart it.
      * @return the current position calculated by the regulator.
      */
     public int getPosition()
     {
-        return Math.round(reg.curCnt);
+        return Math.round(reg.getPosition());
     }
 
     /**
@@ -334,7 +336,7 @@ public class NXTRegulatedMotor implements RegulatedMotor
     {
         synchronized(reg)
         {
-            rotateTo(Math.round(reg.curCnt) + angle, immediateReturn);
+            rotateTo(Math.round(reg.getPosition()) + angle, immediateReturn);
         }
     }
 
@@ -528,6 +530,22 @@ public class NXTRegulatedMotor implements RegulatedMotor
                 } catch (Exception e)
                 {
                 }
+        }
+
+        /**
+         * return the regulations models current position. Ensure that the motor is active
+         * if needed.
+         * @return the models current position
+         */
+        synchronized public float getPosition()
+        {
+            if (!active)
+            {
+                cont.addMotor(NXTRegulatedMotor.this);
+                active = true;
+            }
+            return curCnt;
+            
         }
 
         /**
