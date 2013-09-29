@@ -15,9 +15,10 @@ fi
 NAME="EV3"
 while read LINE
 do
-#    echo $LINE
+    echo $LINE
     NAME=$LINE
-done < "/home/root/lms2012/sys/settings/BrickName"
+#done < "/home/root/lms2012/sys/settings/BrickName"
+done < "/mnt/ramdisk/settings/BrickName"
 hostname $NAME
 bluetoothd -n > /dev/null 2>&1 &
 
