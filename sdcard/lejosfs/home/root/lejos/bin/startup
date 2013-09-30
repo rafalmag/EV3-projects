@@ -5,8 +5,10 @@ ${LEJOS_HOME}/bin/startnetwork
 #echo "Mount dev system"
 #busybox mount -t nfs -o nolock legovm:/export/lejos /home/lejos
 # show lejos splash, while modules load
-(cd ${LEJOS_HOME}/bin/utils; ${LEJOS_HOME}/bin/jrun Splash `cat ${LEJOS_HOME}/version`) &
+#(cd ${LEJOS_HOME}/bin/utils; ${LEJOS_HOME}/bin/jrun Splash `cat ${LEJOS_HOME}/version`) &
 echo "Load modules"
 ${LEJOS_HOME}/bin/init
 echo "Complete"
+# Run the menu
+(cd ${LEJOS_HOME}/bin/utils; ${LEJOS_HOME}/bin/jrun -jar EV3Menu.jar `hostname` `cat ${LEJOS_HOME}/version`)
 

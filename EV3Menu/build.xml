@@ -6,6 +6,7 @@
     <property name="jar.dir"        value="dist"/>
     <property name="main-class"     value="lejos.ev3.startup.GraphicStartup"/>
     <property name="lejos.home"     value="/home/root/lejos"/>
+    <property name="ev3.host"       value="192.168.0.5"/>
 
     <path id="libraries.path">    
         <fileset dir="${lib.dir}">
@@ -36,7 +37,7 @@
     </target>
 
     <target name="copy" depends="jar">
-    	<scp todir="root:@192.168.0.13:/home/root/lejos/programs/">
+    	<scp todir="root:@${ev3.host}:/home/root/lejos/bin/utils/">
     	    <fileset file="${jar.dir}/${ant.project.name}.jar"/>
     	</scp>
     </target>

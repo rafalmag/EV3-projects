@@ -66,6 +66,7 @@ public class GraphicStartup {
     private boolean btVisibility;
     private static String version = "Unknown";
     private static String hostname;
+    private List<String> ips = getIPAddresses();
     
     /**
      * Main method
@@ -73,14 +74,16 @@ public class GraphicStartup {
 	public static void main(String[] args) throws Exception {
 		System.out.println("Menu started");
 		
-        if (args.length > 0) {
-        	System.out.println("Version: " + args[0]);
-        	version = args[0];
+        if (args.length > 0) {    	
+        	hostname = args[0];
         }
         
-        //hostname = InetAddress.getLocalHost().getHostName();
-        hostname= "EV3";
+        if (args.length > 0) {    	
+        	version = args[1];
+        }
+        
         System.out.println("Host name: " + hostname);
+        System.out.println("Version: " + version);
         
         TuneThread tuneThread = new TuneThread();
         //Fade in
@@ -120,6 +123,10 @@ public class GraphicStartup {
         do
         {
             newScreen(hostname);
+            int row = 1;
+            for(String ip: ips) {
+            	LCD.drawString(ip,8 - ip.length()/2,row++);
+            }
             selection = getSelection(menu, selection);
             switch (selection)
             {
@@ -144,7 +151,8 @@ public class GraphicStartup {
             }
         } while (selection >= 0);
         
-        //shutdown();
+        // Shit down the EV3
+        shutdown();
     }
     
     /**
@@ -679,16 +687,11 @@ public class GraphicStartup {
     private void displayVersion()
     {
         newScreen("Version");
-        LCD.drawString("Firmware:", 0, 2);
-        LCD.drawString(version, 9, 2);
+        LCD.drawString("leJOS:", 0, 2);
+        LCD.drawString(version, 6, 2);
         LCD.drawString("Menu:", 0, 3);
-        LCD.drawString(Utils.versionToString(Config.VERSION),9, 3);
+        LCD.drawString(Utils.versionToString(Config.VERSION),6, 3);
         List<String> ips = getIPAddresses();
-        int i=0;
-        for(String ip: ips) {
-        	LCD.drawString("IP " + (i+1) + ":",0,4 + i);
-        	LCD.drawString(ip,5,4 + i++);
-        }
         getButtonPress();
     }
     
@@ -773,7 +776,6 @@ public class GraphicStartup {
         newScreen();
         LCD.drawString("Size:", 0, 2);
         LCD.drawString(Long.toString(file.length()), 5, 2);
-        //TextMenu menu = new TextMenu(items, 2, fileName);
         GraphicMenu menu = new GraphicMenu(items,icons,3,fileName,1);
         menu.setParentIcon(ICFiles);
         int selection = getSelection(menu, 0);
@@ -783,9 +785,16 @@ public class GraphicStartup {
 	        {
 	            case 0:
 	            	System.out.println("Running program: " + file.getPath());
+	            	ind.suspend();
 	            	LCD.clearDisplay();
 	            	LCD.refresh();
+	            	LCD.setAutoRefresh(true);
+	            	ind.toString();
 	            	exec("jrun -jar " + file.getPath());
+	            	LCD.setAutoRefresh(false);
+	            	LCD.clearDisplay();
+	            	LCD.refresh();
+	            	ind.resume();
 	                break;
 	            case 1:
 	            case 10:
