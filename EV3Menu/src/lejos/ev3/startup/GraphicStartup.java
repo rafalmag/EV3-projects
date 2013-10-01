@@ -2,9 +2,16 @@ package lejos.ev3.startup;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -16,6 +23,7 @@ import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.LocalEV3;
 import lejos.nxt.Sound;
+import lejos.util.Delay;
 import lejos.ev3.startup.Config;
 import lejos.ev3.startup.Settings;
 
@@ -59,6 +67,7 @@ public class GraphicStartup {
 
     private IndicatorThread ind = new IndicatorThread();
     private BatteryIndicator indiBA = new BatteryIndicator();
+    private RConsole rcons = new RConsole();
     
     private GraphicMenu curMenu;
     private int timeout = 0;
@@ -78,7 +87,7 @@ public class GraphicStartup {
         	hostname = args[0];
         }
         
-        if (args.length > 0) {    	
+        if (args.length > 1) {    	
         	version = args[1];
         }
         
@@ -489,7 +498,15 @@ public class GraphicStartup {
         else
         {
         	System.out.println("Executing " + f.getPath());
-            exec("jrun -jar " + f.getPath() + ".jar");
+        	ind.suspend();
+        	LCD.clearDisplay();
+        	LCD.refresh();
+        	LCD.setAutoRefresh(true);
+            exec("jrun -jar " + f.getPath());
+        	LCD.setAutoRefresh(false);
+        	LCD.clearDisplay();
+        	LCD.refresh();
+        	ind.resume();
         }
     }
     
@@ -715,6 +732,7 @@ public class GraphicStartup {
         //bt.start();
         //usb.start();
     	ind.start();
+    	rcons.start();
     }
 	
     /**
@@ -789,7 +807,6 @@ public class GraphicStartup {
 	            	LCD.clearDisplay();
 	            	LCD.refresh();
 	            	LCD.setAutoRefresh(true);
-	            	ind.toString();
 	            	exec("jrun -jar " + file.getPath());
 	            	LCD.setAutoRefresh(false);
 	            	LCD.clearDisplay();
@@ -797,6 +814,8 @@ public class GraphicStartup {
 	            	ind.resume();
 	                break;
 	            case 1:
+	            	Settings.setProperty(defaultProgramProperty, file.getPath());
+	            	break;
 	            case 10:
 	            	System.out.println("Playing " + file.getPath());
 	                Sound.playSample(file);
@@ -811,25 +830,79 @@ public class GraphicStartup {
     }
     
     /**
-     * Execute a program and display its output to System.out
+     * Execute a program and display its output to System.out and error stream to System.err
      */
     void exec(String program) {
         try {
-            String line;
             Process p = Runtime.getRuntime().exec(program);
-            BufferedReader input = 
-            		new BufferedReader(new InputStreamReader(p.getInputStream()));
-            while ((line = input.readLine()) != null) {
-              System.out.println(line);
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader err= new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            
+            EchoThread echoIn = new EchoThread(input, System.out);
+            EchoThread echoErr = new EchoThread(err, System.err);
+            
+            echoIn.start();
+            echoErr.start();
+            
+            while(true) {
+              int b = Button.readButtons(); 
+              if (b == 6) {
+            	  System.out.println("Killing the process");
+            	  p.destroy();
+                  //echoIn.close();
+                  //echoErr.close();            
+                  break;
+              }
+              if (!echoIn.isAlive() && !echoErr.isAlive()) break;           
+              Delay.msDelay(200);
             }
-            input.close();
+            System.out.println("Waiting for process to die");;
             p.waitFor();
             System.out.println("Program finished");
           }
           catch (Exception err) {
             err.printStackTrace();
-          }
+          } 	
+    }
+    
+    static class EchoThread extends Thread {
+    	BufferedReader in;
+    	PrintStream out;
     	
+    	public EchoThread(BufferedReader in, PrintStream out) {
+    		super();
+    		this.in= in;
+    		this.out = out;
+    	}
+    	
+    	public void close() {
+    		try {
+    			System.out.println("Closing echo stream");
+				in.close();
+			} catch (IOException e) {
+				System.err.println("Close of echo stream failed");
+			}
+    		in = null;
+    	}
+    	
+		@Override
+		public void run()
+		{
+			while(in != null) {
+				try {
+					String line = in.readLine();
+					if (line == null) {
+						close();
+						break;
+					} else {
+						out.println(line);
+					}
+				} catch (IOException e) {
+					System.err.println("Echo stream Exception: " + e);
+					close();
+				}
+			}
+		}
     }
     
     /**
@@ -1090,5 +1163,111 @@ public class GraphicStartup {
             }
         }
         return result;
-    }  
+    } 
+    
+    class RConsole extends Thread
+    {
+        static final int IO_EVENT = 0;
+    	
+        static final int MODE_SWITCH = 0xff;
+        static final int MODE_LCD = 0x0;
+        static final int MODE_EVENT = 0x1;
+        
+        static final int LCD_UPDATE_PERIOD = 100;
+        
+        static final int RCONSOLE_PORT = 8001;
+    	
+        OutputStream os;
+        volatile byte[] output = null;
+        volatile int outputLen = 0;
+        
+        Socket conn;
+        
+        Object ioEvent;
+        boolean lcd = false;
+        
+        ServerSocket ss = null;
+        
+		public RConsole()
+    	{
+    		super();
+            setDaemon(true);
+    	}
+    
+        /**
+         * Main console I/O thread.
+         */
+        @Override
+        public void run()
+        {       	
+        	try {
+				ss = new ServerSocket(RCONSOLE_PORT);
+				System.out.println("Server socket created");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				return;
+			}
+        	
+            try {
+            	
+            	if (conn == null) {
+            		conn = ss.accept();
+            		System.out.println("Socket created");
+            		os = conn.getOutputStream();
+            		System.setOut(new PrintStream(os));
+            		System.setErr(new PrintStream(os));
+            		System.out.println("Output redirected");
+            	}
+                long nextUpdate = 0;
+                while (true)
+                {
+                    long now = System.currentTimeMillis();
+                    synchronized (os)
+                    {
+                        if (conn == null) 
+                            break;
+                        try
+                        {
+                            // First check to see if we have any "normal" output to go.
+                            if (output != null)
+                            {
+                                os.write(output, 0, outputLen);
+                                output = null;
+                                os.flush();
+                            }
+                            // Are we mirroring the LCD display?
+                            if (lcd)
+                            {
+                                if (now > nextUpdate)
+                                {
+                                    os.write(MODE_SWITCH);
+                                    os.write(MODE_LCD);
+                                    os.write(LCD.getDisplay());
+                                    os.flush();
+                                    nextUpdate = now + LCD_UPDATE_PERIOD;
+                                }
+                            }
+                            else
+                                nextUpdate = now + LCD_UPDATE_PERIOD;
+                        } catch (Exception e) 
+                        {
+                            conn = null;
+                            os = null;
+                            System.setOut(new PrintStream(new FileOutputStream("/dev/null")));
+                            System.setOut(new PrintStream(new FileOutputStream("/dev/null")));
+                            
+                        }
+                    }
+                    //ioEvent.waitEvent(nextUpdate - now);
+                }
+                // dump any pending output
+                output = null;
+            }
+            catch(Exception e)
+            {
+                // must have been aborted, so exit
+                return;
+            }
+        }
+    }
 }
