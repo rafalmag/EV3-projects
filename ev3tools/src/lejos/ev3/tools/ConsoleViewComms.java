@@ -89,11 +89,13 @@ public class ConsoleViewComms
      * Close the connection
      */
     public void close() {
+    	System.out.println("Closing the connection");;
     	try {
-			sock.close();
+			if (sock != null) sock.close();
 		} catch (IOException e) {
 			System.err.println("Socket failed to close");
 		}
+    	reader.setConnected(false);
     }
 
     /**

@@ -56,7 +56,7 @@ public class EV3Console implements ConsoleViewerUI {
 		ConsoleViewComms comm = new ConsoleViewComms(this, false);
 		boolean connected = comm.connectTo(name, address, protocols, false);
 		if (!connected) {
-			logMessage("Failed to connect to NXT");
+			logMessage("Failed to connect to EV3");
 			return 1;
 		}
         comm.waitComplete();
