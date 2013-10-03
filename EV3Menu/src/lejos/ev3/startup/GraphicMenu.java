@@ -205,12 +205,12 @@ public class GraphicMenu extends TextMenu{
 		if(_title != null)
 			LCD.drawString(_title, 0, _titleLine);
 		clearArea();
-		if(_parent != null) {
+		/*if(_parent != null) {
 			System.out.println("Displaying parent image");
 			Image img = new Image(32,32,_parent);
 			g.drawRegion(img, X_AREA+X_OFFSET+(2*X_WIDTH), yArea+Y_OFFSET+18, 32, 32, 0,0,0,0);
 			//LCD.bitBlt(_parent, 16, 16, 0, 0, X_AREA+X_OFFSET+(2*X_WIDTH),yArea+Y_OFFSET+18, 16, 16, LCD.ROP_COPY);
-		}
+		}*/
 		//Prepare Index Locations
 		int length = _length;
 		int[] index = new int[5];

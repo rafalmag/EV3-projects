@@ -2,9 +2,7 @@ package lejos.ev3.startup;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -94,7 +92,20 @@ public class GraphicStartup {
         System.out.println("Host name: " + hostname);
         System.out.println("Version: " + version);
         
+        // Check for autorun
+    	File f = getDefaultProgram();
+    	if (f != null)
+    	{
+        	String auto = Settings.getProperty(defaultProgramAutoRunProperty, "");        	
+    		if (auto.equals("ON") && !Button.LEFT.isDown())
+            {
+            	System.out.println("Executing " + f.getPath());
+                exec("jrun -jar " + f.getPath());
+            }
+    	}
+        
         TuneThread tuneThread = new TuneThread();
+        
         //Fade in
         tuneThread.start();
         
@@ -111,8 +122,6 @@ public class GraphicStartup {
         
         initThread.menu.mainMenu();
         
-        LCD.clearDisplay();
-        LCD.refresh();
         System.out.println("Menu finished");
         
         System.exit(0);
@@ -126,8 +135,8 @@ public class GraphicStartup {
     {
         GraphicMenu menu = new GraphicMenu(new String[]
                 {
-                    "Run Default", "Files", "Bluetooth", "Sound", "System", "Version"
-                },new String[] {ICDefault,ICFiles,ICBlue,ICSound,ICNXT,ICLeJOS},3);
+                    "Run Default", "Files", "Samples", "Bluetooth", "Sound", "System", "Version"
+                },new String[] {ICDefault,ICFiles,ICFiles,ICBlue,ICSound,ICNXT,ICLeJOS},3);
         int selection = 0;
         do
         {
@@ -146,19 +155,29 @@ public class GraphicStartup {
                     filesMenu();
                     break;
                 case 2:
-                    bluetoothMenu();
+                    samplesMenu();
                     break;
                 case 3:
-                    soundMenu();
+                    bluetoothMenu();
                     break;
                 case 4:
-                    systemMenu();
+                    soundMenu();
                     break;
                 case 5:
+                    systemMenu();
+                    break;
+                case 6:
                     displayVersion();
                     break;
             }
-        } while (selection >= 0);
+            
+            if (selection < 0)  {
+            	LCD.bitBlt(null, 0, 0, 0, 0, 0, 64, 178, 64, LCD.ROP_CLEAR);
+            	LCD.refresh();
+            	if (getYesNo("  Shut down EV3 ?", false) == 1)
+            		break;
+            }
+        } while (true);
         
         // Shit down the EV3
         shutdown();
@@ -499,13 +518,7 @@ public class GraphicStartup {
         {
         	System.out.println("Executing " + f.getPath());
         	ind.suspend();
-        	LCD.clearDisplay();
-        	LCD.refresh();
-        	LCD.setAutoRefresh(true);
             exec("jrun -jar " + f.getPath());
-        	LCD.setAutoRefresh(false);
-        	LCD.clearDisplay();
-        	LCD.refresh();
         	ind.resume();
         }
     }
@@ -517,8 +530,9 @@ public class GraphicStartup {
      */
     private void systemMenu()
     {
-        String[] menuData = {"Format", "", "Auto Run", "Unset default"};
+        String[] menuData = {"Delete all", "", "Auto Run", "Unset default"};
         String[] iconData = {ICFormat,ICSleep,ICAutoRun,ICDefault};
+        boolean rechargeable = false;
         GraphicMenu menu = new GraphicMenu(menuData,iconData,4);
         menu.setParentIcon(ICNXT);
         int selection = 0;
@@ -531,7 +545,7 @@ public class GraphicStartup {
             LCD.drawInt((millis - millis % 1000) / 1000, 11, 2);
             LCD.drawString(".", 12, 2);
             LCD.drawInt((millis % 1000) / 100, 13, 2);
-            if (false)
+            if (rechargeable)
                 LCD.drawString("R", 15, 2);
             menuData[1] = "Sleep time: " + (timeout == 0 ? "off" : String.valueOf(timeout));
             File f = getDefaultProgram();
@@ -543,9 +557,15 @@ public class GraphicStartup {
             selection = getSelection(menu, selection);
             switch (selection)
             {
-                case 0:
-                    if (getYesNo("Delete all files?", false) == 1)
-                        /* File.format() */;
+                case 0:              	
+                    if (getYesNo("Delete all files?", false) == 1) {
+                    	File dir = new File("/home/lejos/programs");
+                        for (String fn : dir.list()) {
+                            File aFile = new File(dir,fn);
+                            System.out.println("Deleting " + aFile.getPath());
+                            //aFile.delete();
+                        }
+                    }
                     break;
                 case 1:
                     timeout++;
@@ -776,8 +796,8 @@ public class GraphicStartup {
         if (ext.equals("jar"))
         {
         	selectionAdd = 0;
-            items = new String[]{"Execute program", "Set as Default", "Delete file"}; 
-            icons = new String[]{ICProgram,ICDefault,ICDelete};
+            items = new String[]{"Execute program", "Debug program", "Set as Default", "Delete file"}; 
+            icons = new String[]{ICProgram,ICProgram,ICDefault,ICDelete};
         }
         else if (ext.equals("wav"))
         {
@@ -804,23 +824,23 @@ public class GraphicStartup {
 	            case 0:
 	            	System.out.println("Running program: " + file.getPath());
 	            	ind.suspend();
-	            	LCD.clearDisplay();
-	            	LCD.refresh();
-	            	LCD.setAutoRefresh(true);
 	            	exec("jrun -jar " + file.getPath());
-	            	LCD.setAutoRefresh(false);
-	            	LCD.clearDisplay();
-	            	LCD.refresh();
 	            	ind.resume();
 	                break;
 	            case 1:
+	            	System.out.println("Debugging program: " + file.getPath());
+	            	ind.suspend();
+	            	exec("jrun -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=y -jar " + file.getPath());
+	            	ind.resume();
+	                break;
+	            case 2:
 	            	Settings.setProperty(defaultProgramProperty, file.getPath());
 	            	break;
 	            case 10:
 	            	System.out.println("Playing " + file.getPath());
 	                Sound.playSample(file);
 	                break;
-	            case 2:
+	            case 3:
 	            case 11:
 	            case 20:
 	                file.delete();
@@ -832,8 +852,11 @@ public class GraphicStartup {
     /**
      * Execute a program and display its output to System.out and error stream to System.err
      */
-    void exec(String program) {
+    static void exec(String program) {
         try {
+        	LCD.clearDisplay();
+        	LCD.refresh();
+        	LCD.setAutoRefresh(false);
             Process p = Runtime.getRuntime().exec(program);
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
             BufferedReader err= new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -859,6 +882,9 @@ public class GraphicStartup {
             System.out.println("Waiting for process to die");;
             p.waitFor();
             System.out.println("Program finished");
+        	LCD.setAutoRefresh(false);
+        	LCD.clearDisplay();
+        	LCD.refresh();
           }
           catch (Exception err) {
             err.printStackTrace();
@@ -925,6 +951,45 @@ public class GraphicStartup {
                 return;
             }
             newScreen("Files");
+            String fileNames[] = new String[len];
+            String[] icons = new String[len];
+            for (int i = 0; i < len; i++){
+                fileNames[i] = files[i].getName();
+                String ext = Utils.getExtension(files[i].getName());
+               if (ext.equals("jar"))
+                	icons[i] = ICMProgram;
+                else if (ext.equals("wav"))
+                	icons[i] = ICMSound;
+                else
+                	icons[i] = ICMFile;
+            }
+            menu.setItems(fileNames,icons);
+            selection = getSelection(menu, selection);
+            if (selection >= 0)
+                fileMenu(files[selection]);
+        } while (selection >= 0);
+    }
+    
+    /**
+     * Display the samples in the file system.
+     * Allow the user to choose a file for further operations.
+     */
+    private void samplesMenu()
+    {
+    	GraphicListMenu menu = new GraphicListMenu(null,null);
+    	System.out.println("Finding files ...");
+        int selection = 0;
+        do {
+            File[] files = (new File("/home/root/lejos/samples")).listFiles();
+            int len = 0;
+            for (int i = 0; i < files.length && files[i] != null; i++)
+                len++;
+            if (len == 0)
+            {
+                msg("No samples found");
+                return;
+            }
+            newScreen("Samples");
             String fileNames[] = new String[len];
             String[] icons = new String[len];
             for (int i = 0; i < len; i++){
@@ -1016,9 +1081,10 @@ public class GraphicStartup {
      */
     void shutdown() {
     	System.out.println("Shutting down the EV3");
-    	LCD.clearDisplay();
-    	LCD.refresh();
-    	exec("init 0");  	
+        ind.suspend();
+    	exec("init 0");
+        LCD.drawString("  Shutting down", 0, 6);
+        LCD.refresh();
     }
     
     /**
@@ -1167,39 +1233,28 @@ public class GraphicStartup {
     
     class RConsole extends Thread
     {
-        static final int IO_EVENT = 0;
-    	
-        static final int MODE_SWITCH = 0xff;
-        static final int MODE_LCD = 0x0;
-        static final int MODE_EVENT = 0x1;
-        
-        static final int LCD_UPDATE_PERIOD = 100;
-        
-        static final int RCONSOLE_PORT = 8001;
-    	
-        OutputStream os;
-        volatile byte[] output = null;
-        volatile int outputLen = 0;
-        
-        Socket conn;
-        
-        Object ioEvent;
-        boolean lcd = false;
-        
+        static final int RCONSOLE_PORT = 8001;    
         ServerSocket ss = null;
+        Socket conn = null;
+        PrintStream origOut = System.out, origErr = System.err;
         
 		public RConsole()
     	{
     		super();
             setDaemon(true);
     	}
+		
+		public boolean isConnected() {
+			return (conn != null && conn.isConnected());
+		}
     
         /**
          * Main console I/O thread.
          */
         @Override
         public void run()
-        {       	
+        {      
+        	// Create a server socket
         	try {
 				ss = new ServerSocket(RCONSOLE_PORT);
 				System.out.println("Server socket created");
@@ -1208,66 +1263,36 @@ public class GraphicStartup {
 				return;
 			}
         	
-            try {
-            	
-            	if (conn == null) {
+        	// Loop accepting remote console connections
+        	while (true) {
+	            try {
+	            	System.out.println("Waiting for a connection");
             		conn = ss.accept();
-            		System.out.println("Socket created");
-            		os = conn.getOutputStream();
+            		OutputStream os = conn.getOutputStream();
+            		BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             		System.setOut(new PrintStream(os));
             		System.setErr(new PrintStream(os));
             		System.out.println("Output redirected");
-            	}
-                long nextUpdate = 0;
-                while (true)
-                {
-                    long now = System.currentTimeMillis();
-                    synchronized (os)
-                    {
-                        if (conn == null) 
-                            break;
-                        try
-                        {
-                            // First check to see if we have any "normal" output to go.
-                            if (output != null)
-                            {
-                                os.write(output, 0, outputLen);
-                                output = null;
-                                os.flush();
-                            }
-                            // Are we mirroring the LCD display?
-                            if (lcd)
-                            {
-                                if (now > nextUpdate)
-                                {
-                                    os.write(MODE_SWITCH);
-                                    os.write(MODE_LCD);
-                                    os.write(LCD.getDisplay());
-                                    os.flush();
-                                    nextUpdate = now + LCD_UPDATE_PERIOD;
-                                }
-                            }
-                            else
-                                nextUpdate = now + LCD_UPDATE_PERIOD;
-                        } catch (Exception e) 
-                        {
-                            conn = null;
-                            os = null;
-                            System.setOut(new PrintStream(new FileOutputStream("/dev/null")));
-                            System.setOut(new PrintStream(new FileOutputStream("/dev/null")));
-                            
-                        }
-                    }
-                    //ioEvent.waitEvent(nextUpdate - now);
-                }
-                // dump any pending output
-                output = null;
-            }
-            catch(Exception e)
-            {
-                // must have been aborted, so exit
-                return;
-            }
+	                
+	                // Loop waiting for commands
+	                while (true)
+	                {
+	                	// Process commands
+	                    String line = input.readLine();                
+	                    if (line == null) break;
+	                }
+	                os.close();
+	                input.close();
+	                conn.close();
+	                System.setOut(origOut);
+	                System.setErr(origErr);
+	                System.out.println("System output set back to original");
+	            }
+	            catch(IOException e)
+	            {
+	            	System.err.println("Error accepting connection " + e);
+	            }
+        	}
         }
     }
 }

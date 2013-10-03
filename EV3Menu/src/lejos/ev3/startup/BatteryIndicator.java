@@ -40,9 +40,11 @@ public class BatteryIndicator
 	private long title_time;
 	private String titleString;
 	
+	private boolean rechargeable = false;
+	
     public BatteryIndicator()
     {
-    	if (false)
+    	if (rechargeable)
     	{
     		this.levelMin = RECHARGE_MIN;
     		this.levelOk = RECHARGE_OK;
@@ -118,7 +120,7 @@ public class BatteryIndicator
         if (titleString == null) titleString = "";
         
         LCD.drawString(titleString, 8 - (titleString.length()/2), 0);
-        if (true) return;
+        /*
         
         int len = this.title.length;
         int x1, x2;
@@ -149,10 +151,13 @@ public class BatteryIndicator
         }   
         
         System.arraycopy(this.title, x1, buf, Config.TEXT_POS + x2, len);
-        
+        */
         if (isOk || (time % (2*Config.ICON_BATTERY_BLINK)) < Config.ICON_BATTERY_BLINK)
         {
-        	int width = (level - levelMin) * BATTERY_REAL_WIDTH / (levelHigh - levelMin);
+            LCD.drawInt((level - level % 1000) / 1000, 0, 0);
+            LCD.drawString(".", 1, 0);
+            LCD.drawInt((level % 1000) / 100, 2, 0);
+        	/*int width = (level - levelMin) * BATTERY_REAL_WIDTH / (levelHigh - levelMin);
 
         	int p = Config.ICON_BATTERY_POS;
         	buf[p++] = BATTERY_TOKEN_FULL;
@@ -161,7 +166,7 @@ public class BatteryIndicator
         	for (int i=width; i<BATTERY_REAL_WIDTH; i++)
         		buf[p++] = BATTERY_TOKEN_EMPTY;
         	buf[p++] = BATTERY_TOKEN_FULL;
-        	buf[p] = BATTERY_TOKEN_NOB;
+        	buf[p] = BATTERY_TOKEN_NOB;*/
         }
     }
 }
