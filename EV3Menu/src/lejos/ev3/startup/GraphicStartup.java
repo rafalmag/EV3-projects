@@ -27,6 +27,9 @@ import lejos.ev3.startup.Settings;
 
 public class GraphicStartup {
 	
+	static final String JAVA_RUN_JAR = "/home/root/lejos/ejre1.7.0_21/bin/java -jar ";
+	static final String JAVA_DEBUG_JAR = "/home/root/lejos/ejre1.7.0_21/bin/java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=y -jar ";
+	
 	static final String defaultProgramProperty = "lejos.default_program";
     static final String defaultProgramAutoRunProperty = "lejos.default_autoRun";
     static final String sleepTimeProperty = "lejos.sleep_time";
@@ -100,7 +103,7 @@ public class GraphicStartup {
     		if (auto.equals("ON") && !Button.LEFT.isDown())
             {
             	System.out.println("Executing " + f.getPath());
-                exec("jrun -jar " + f.getPath());
+                exec(JAVA_RUN_JAR + f.getPath());
             }
     	}
         
@@ -518,7 +521,7 @@ public class GraphicStartup {
         {
         	System.out.println("Executing " + f.getPath());
         	ind.suspend();
-            exec("jrun -jar " + f.getPath());
+            exec(JAVA_RUN_JAR + f.getPath());
         	ind.resume();
         }
     }
@@ -824,13 +827,13 @@ public class GraphicStartup {
 	            case 0:
 	            	System.out.println("Running program: " + file.getPath());
 	            	ind.suspend();
-	            	exec("jrun -jar " + file.getPath());
+	            	exec(JAVA_RUN_JAR + file.getPath());
 	            	ind.resume();
 	                break;
 	            case 1:
 	            	System.out.println("Debugging program: " + file.getPath());
 	            	ind.suspend();
-	            	exec("jrun -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=y -jar " + file.getPath());
+	            	exec(JAVA_DEBUG_JAR + file.getPath());
 	            	ind.resume();
 	                break;
 	            case 2:
@@ -871,9 +874,7 @@ public class GraphicStartup {
               int b = Button.readButtons(); 
               if (b == 6) {
             	  System.out.println("Killing the process");
-            	  p.destroy();
-                  //echoIn.close();
-                  //echoErr.close();            
+            	  p.destroy();           
                   break;
               }
               if (!echoIn.isAlive() && !echoErr.isAlive()) break;           
@@ -882,7 +883,9 @@ public class GraphicStartup {
             System.out.println("Waiting for process to die");;
             p.waitFor();
             System.out.println("Program finished");
-        	LCD.setAutoRefresh(false);
+            //echoIn.close();
+            //echoErr.close();
+        	LCD.setAutoRefresh(true);
         	LCD.clearDisplay();
         	LCD.refresh();
           }
@@ -904,7 +907,7 @@ public class GraphicStartup {
     	public void close() {
     		try {
     			System.out.println("Closing echo stream");
-				in.close();
+				if (in != null) in.close();
 			} catch (IOException e) {
 				System.err.println("Close of echo stream failed");
 			}
