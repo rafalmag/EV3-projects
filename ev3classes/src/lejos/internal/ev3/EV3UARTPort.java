@@ -7,7 +7,7 @@ import com.sun.jna.Structure;
 
 import lejos.internal.io.NativeDevice;
 import lejos.nxt.DeviceManager;
-import lejos.nxt.SensorException;
+import lejos.nxt.DeviceException;
 import lejos.nxt.UARTPort;
 import lejos.util.Delay;
 
@@ -386,13 +386,13 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
     protected void checkSensor()
     {
         if (ldm.getPortType(port) != CONN_INPUT_UART)
-            throw new SensorException("Sensor unavailable");
+            throw new DeviceException("Sensor unavailable");
         if ((getStatus() & UART_PORT_CHANGED) != 0)
         {
             System.out.println("port " + port + " Changed ");
             // try and reinitialze it
             if (!initialiseSensor(getMode()))
-                throw new SensorException("Sensor changed unable to reset");
+                throw new DeviceException("Sensor changed unable to reset");
                 
         }
         

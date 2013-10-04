@@ -1,8 +1,8 @@
 package lejos.nxt.addon;
 
 import lejos.nxt.NXTMotor;
+import lejos.nxt.Port;
 import lejos.nxt.TachoMotorPort;
-
 import lejos.robotics.EncoderMotor;
 import lejos.robotics.LinearActuator;
 
@@ -73,7 +73,7 @@ public class LnrActrFirgelliNXT implements LinearActuator{
      * @see lejos.nxt.MotorPort
      * @see NXTMotor
      */
-    public LnrActrFirgelliNXT(TachoMotorPort port) {
+    public LnrActrFirgelliNXT(Port port) {
         this(new NXTMotor(port));
     }
     

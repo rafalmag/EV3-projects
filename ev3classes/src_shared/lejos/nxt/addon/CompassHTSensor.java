@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.robotics.*;
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
@@ -28,18 +29,28 @@ public class CompassHTSensor extends I2CSensor implements DirectionFinder {
      */
 	public CompassHTSensor(I2CPort port, int address)
 	{
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
+		super(port, address);
 	}
 
    /**
      * Create a compass sensor object
      * @param port Sensor port for the compass
      */
-	public CompassHTSensor(I2CPort port)
+    public CompassHTSensor(I2CPort port)
     {
         this(port, DEFAULT_I2C_ADDRESS);
     }
-	
+    
+    public CompassHTSensor(Port port)
+    {
+        super(port);
+    }
+    
+    public CompassHTSensor(Port port, int address)
+    {
+        super(port, address);
+    }
+    
 	/**
 	 * Returns the directional heading in degrees. (0 to 359.9)
 	 * 0 is due North. Readings increase clockwise.

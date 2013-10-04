@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.robotics.RangeFinder;
 
 /*
@@ -66,23 +67,40 @@ public class OpticalDistanceSensor extends I2CSensor implements RangeFinder{
 	private final static byte ARPA_ON = 0x4E;
 	private final static byte ARPA_OFF = 0x4F; //(default)
 	
-	/**
-	 *
-	 * @param port NXT sensor port 1-4
-	 */
-	public OpticalDistanceSensor(I2CPort port){
-		this(port, DEFAULT_I2C_ADDRESS);
-	}
+    /**
+    *
+    * @param port NXT sensor port 1-4
+    */
+   public OpticalDistanceSensor(I2CPort port){
+       this(port, DEFAULT_I2C_ADDRESS);
+   }
 
-	/**
-	 *
-     * @param port NXT sensor port 1-4
-     * @param address I2C address for the sensor
-	 */
-	public OpticalDistanceSensor(I2CPort port, int address){
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
-		powerOn();
-	}
+   /**
+    *
+    * @param port NXT sensor port 1-4
+    * @param address I2C address for the sensor
+    */
+   public OpticalDistanceSensor(I2CPort port, int address){
+       super(port, address);
+       powerOn();
+   }
+   /**
+   *
+   * @param port NXT sensor port 1-4
+   */
+  public OpticalDistanceSensor(Port port){
+      this(port, DEFAULT_I2C_ADDRESS);
+  }
+
+  /**
+   *
+   * @param port NXT sensor port 1-4
+   * @param address I2C address for the sensor
+   */
+  public OpticalDistanceSensor(Port port, int address){
+      super(port, address, TYPE_LOWSPEED);
+      powerOn();
+  }
 
 	/**
 	 * This only needs the be run if you are changing the sensor.

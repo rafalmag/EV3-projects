@@ -7,15 +7,19 @@ import lejos.robotics.Touch;
  * @author andy
  *
  */
-public class EV3TouchSensor implements Touch
+public class EV3TouchSensor extends AnalogSensor implements Touch
 {
-    AnalogPort port;
     
     public EV3TouchSensor(AnalogPort port)
     {
-        this.port = port;
+        super(port);
     }
 
+    public EV3TouchSensor(Port port)
+    {
+        super(port);
+    }
+    
     @Override
     public boolean isPressed()
     {

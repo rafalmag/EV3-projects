@@ -14,7 +14,7 @@ import java.lang.IllegalArgumentException;
  * @author Lawrie Griffiths (lawrie.griffiths@ntlworld.com) and Andy Shaw.
  *
  */
-public class I2CSensor implements SensorConstants {
+public class I2CSensor extends Device implements SensorConstants {
 	/**
 	 * Register number of sensor version string, as defined by standard Lego I2C register layout.
 	 * @see #getVersion() 
@@ -37,27 +37,48 @@ public class I2CSensor implements SensorConstants {
 	protected int address;
 	private byte[] ioBuf = new byte[32];
 
+	/**
+	 * Create the sensor using an already open sensor port. Do not configure the hardware
+	 * @param port the open port
+	 * @param address I2C address
+	 */
+	public I2CSensor(I2CPort port, int address)
+	{
+	    this.port = port;
+	    this.address = address;
+    }
+	
 	public I2CSensor(I2CPort port)
 	{
-        this(port, DEFAULT_I2C_ADDRESS, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
-    }
-
-	public I2CSensor(I2CPort port, int mode)
-	{
-		this(port, DEFAULT_I2C_ADDRESS, mode, TYPE_LOWSPEED);
+	    this(port, DEFAULT_I2C_ADDRESS);
 	}
-	
-	public I2CSensor(I2CPort port, int address, int mode, int type)
+
+	/**
+	 * Create the sensor using the specified port. Configure the hardware as required.
+	 * @param port port the sensor is attached to
+	 * @param address I2C address
+	 * @param type type of I2C sensor
+	 */
+	public I2CSensor(Port port, int address, int type)
 	{
-		this.port = port;
-		this.address = address;
+        this(port.open(I2CPort.class), address);
+        releaseOnClose(this.port);
 		// Set the EV3 pins up.
 		if (type == TYPE_LOWSPEED_9V)
-		    port.setPinMode(EV3SensorConstants.CMD_SET | EV3SensorConstants.CMD_PIN1);
+		    this.port.setPinMode(EV3SensorConstants.CMD_SET | EV3SensorConstants.CMD_PIN1);
 		else
-            port.setPinMode(EV3SensorConstants.CMD_SET);
-		    //port.setPinMode(I2CPort.CMD_FLOAT);
+            this.port.setPinMode(EV3SensorConstants.CMD_SET);
 	}
+	
+    public I2CSensor(Port port)
+    {
+        this(port, DEFAULT_I2C_ADDRESS, TYPE_LOWSPEED);
+    }
+    
+    public I2CSensor(Port port, int address)
+    {
+        this(port, address, TYPE_LOWSPEED);
+    }
 	
 	/**
 	 * Executes an I2C read transaction and waits for the result.

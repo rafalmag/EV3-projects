@@ -106,7 +106,6 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
     @Override
     public int readValue()
     {
-        // TODO Auto-generated method stub
         return (getPin1() + 3)/4;
     }
 

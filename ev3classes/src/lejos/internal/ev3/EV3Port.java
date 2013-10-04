@@ -5,7 +5,7 @@ import lejos.nxt.EV3SensorConstants;
 import lejos.nxt.I2CPort;
 import lejos.nxt.IOPort;
 import lejos.nxt.Port;
-import lejos.nxt.SensorException;
+import lejos.nxt.DeviceException;
 import lejos.nxt.TachoMotorPort;
 import lejos.nxt.UARTPort;
 
@@ -66,7 +66,7 @@ public class EV3Port implements Port
         if (p == null)
             throw new IllegalArgumentException("Invalid port interface");
         if (!p.open(typ,  portNum, this))
-            throw new SensorException("unable to open port");
+            throw new DeviceException("unable to open port");
         return portclass.cast(p);
     }
 }

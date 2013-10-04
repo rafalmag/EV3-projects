@@ -1,6 +1,8 @@
 package lejos.nxt.addon;
 
 import lejos.nxt.AnalogPort;
+import lejos.nxt.AnalogSensor;
+import lejos.nxt.Port;
 import lejos.nxt.SensorConstants;
 
 /*
@@ -11,20 +13,29 @@ import lejos.nxt.SensorConstants;
 /**
  * Support for HiTechnic Magnetic sensor
  */
-public class MagneticSensor implements SensorConstants {
-    protected AnalogPort port;
+public class MagneticSensor extends AnalogSensor implements SensorConstants {
 	private int offset = 0;
 	
     public MagneticSensor(AnalogPort port) {
-		this.port = port;
-		port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
-	}
+        super(port);
+        //port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+    }
     
-	public MagneticSensor(AnalogPort port, int offset) {
-		this(port);
-		this.offset = offset;
-	}
-	
+    public MagneticSensor(AnalogPort port, int offset) {
+        this(port);
+        this.offset = offset;
+    }
+    
+    public MagneticSensor(Port port) {
+        super(port);
+        this.port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+    }
+    
+    public MagneticSensor(Port port, int offset) {
+        this(port);
+        this.offset = offset;
+    }
+    
 	/**
 	 * Get the relative magnetic field strength
 	 * @return the relative magnetic field strength

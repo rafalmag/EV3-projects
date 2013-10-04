@@ -1,5 +1,7 @@
 package lejos.nxt.addon;
 
+import lejos.nxt.I2CPort;
+import lejos.nxt.Port;
 import lejos.nxt.SensorPort;
 
 /*
@@ -31,11 +33,11 @@ public class LDCMotor extends LMotor{
 	 * @param SPI_PORT
 	 *  
 	 */
-	public LDCMotor(SensorPort port, int location, String DCMotorName, byte SPI_PORT){
+	public LDCMotor(I2CPort port, int location, String DCMotorName, byte SPI_PORT){
 		super(port,location,DCMotorName,SPI_PORT);
 	}
 
-	public LDCMotor(SensorPort port, int location, String DCMotorName, byte SPI_PORT,int forwardMinSpeed,int forwardMaxSpeed,int backwardMinSpeed, int backwardMaxSpeed){
+	public LDCMotor(I2CPort port, int location, String DCMotorName, byte SPI_PORT,int forwardMinSpeed,int forwardMaxSpeed,int backwardMinSpeed, int backwardMaxSpeed){
 		super(port,location,DCMotorName,SPI_PORT);
 		
 		this.forward_min_speed = forwardMinSpeed;

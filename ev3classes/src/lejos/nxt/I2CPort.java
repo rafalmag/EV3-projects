@@ -6,7 +6,7 @@ package lejos.nxt;
  * @author Lawrie Griffiths
  *
  */
-public interface I2CPort extends IOPort {
+public interface I2CPort extends IOPort, BasicSensorPort {
 	
     public static final int STANDARD_MODE = 0;
     public static final int LEGO_MODE = 1;

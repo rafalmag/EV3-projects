@@ -78,24 +78,45 @@ public class NXTLineLeader extends I2CSensor {
 		final Command calibrationCommand;
 	};
 
-	/**
-	 * Constructor
-	 *
+    /**
+     * Constructor
+     *
      * @param port
      * @param address I2C address for the device
-	 */
-	public NXTLineLeader(I2CPort port, int address) {
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED_9V);
-	}
+     */
+    public NXTLineLeader(I2CPort port, int address) {
+        super(port, address);
+    }
 
-	/**
-	 * Constructor
-	 *
-	 * @param port
-	 */
-	public NXTLineLeader(I2CPort port) {
-		this(port, DEFAULT_I2C_ADDRESS);
-	}
+    /**
+     * Constructor
+     *
+     * @param port
+     */
+    public NXTLineLeader(I2CPort port) {
+        this(port, DEFAULT_I2C_ADDRESS);
+    }
+    
+    /**
+     * Constructor
+     *
+     * @param port
+     * @param address I2C address for the device
+     */
+    public NXTLineLeader(Port port, int address) {
+        super(port, address, TYPE_LOWSPEED_9V);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param port
+     */
+    public NXTLineLeader(Port port) {
+        this(port, DEFAULT_I2C_ADDRESS);
+    }
+    
+	
 
 	/**
 	 * Send a single byte command represented by a letter

@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.robotics.Color;
 import lejos.robotics.ColorDetector;
 
@@ -33,6 +34,11 @@ public class ColorHTSensor extends I2CSensor implements ColorDetector {
     		Color.PINK, Color.PINK, Color.MAGENTA, Color.WHITE};
     
     public ColorHTSensor(I2CPort port)
+    {
+        super(port);
+    }
+
+    public ColorHTSensor(Port port)
     {
         super(port);
     }

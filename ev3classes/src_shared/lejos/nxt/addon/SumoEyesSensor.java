@@ -1,6 +1,8 @@
 package lejos.nxt.addon;
 
 import lejos.nxt.AnalogPort;
+import lejos.nxt.AnalogSensor;
+import lejos.nxt.Port;
 import lejos.nxt.SensorConstants;
 
 /**
@@ -9,7 +11,7 @@ import lejos.nxt.SensorConstants;
  * @author Daniele Benedettelli
  * @version 1.0
  */
-public class SumoEyesSensor implements SensorConstants {
+public class SumoEyesSensor extends AnalogSensor implements SensorConstants {
 
 	
     /** The Constant NO_DETECTION (0). */
@@ -23,10 +25,7 @@ public class SumoEyesSensor implements SensorConstants {
     
     /** The Constant RIGHT (3). */
     public final static int RIGHT = 3;
-    
-    /** The port. */
-    private AnalogPort port;
-    
+        
     /** The long range. */
     private boolean longRange = false;
 
@@ -36,9 +35,7 @@ public class SumoEyesSensor implements SensorConstants {
      * @param port the sensor port
      */
     public SumoEyesSensor(AnalogPort port) {
-        this.port = port;
-        this.longRange = false;
-        port.setTypeAndMode(TYPE_LIGHT_ACTIVE,MODE_PCTFULLSCALE);
+        this(port, false);
     }
 
     /**
@@ -48,9 +45,29 @@ public class SumoEyesSensor implements SensorConstants {
      * @param longRange if true, enables long range
      */
     public SumoEyesSensor(AnalogPort port, boolean longRange) {
-        this.port = port;
+        super(port);
         this.longRange = longRange;
-        port.setTypeAndMode(TYPE_LIGHT_ACTIVE,MODE_PCTFULLSCALE);
+        //port.setTypeAndMode(TYPE_LIGHT_ACTIVE,MODE_PCTFULLSCALE);
+    }
+
+    /**
+     * Default constructor.
+     *
+     * @param port the sensor port
+     */
+    public SumoEyesSensor(Port port) {
+        this(port, false);
+    }
+
+    /**
+     * Constructor with range specification.
+     *
+     * @param port the sensor port
+     * @param longRange if true, enables long range
+     */
+    public SumoEyesSensor(Port port, boolean longRange) {
+        super(port);
+        setLongRange(longRange);
     }
 
     /**

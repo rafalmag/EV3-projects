@@ -11,19 +11,29 @@ import lejos.robotics.Touch;
  * Also works with RCX touch sensors.
  * 
  */
-public class TouchSensor implements SensorConstants, Touch {
-	AnalogPort port;
+public class TouchSensor extends AnalogSensor implements SensorConstants, Touch {
 	
 	/**
-	 * Create a touch sensor object attached to the specified port.
-	 * @param port an Analog/Digital port, e.g. SensorPort.S1
+	 * Create a touch sensor object attached to the specified open port. Note this
+	 * port will not be configured. Any configuration od the sensor port must take
+	 * place externally.
+	 * @param open an open Analog port
 	 */
 	public TouchSensor(AnalogPort port)
 	{
-	   this.port = port;
+	   super(port);
 	   port.setTypeAndMode(TYPE_SWITCH, MODE_BOOLEAN);
 	}
-	
+
+	/**
+	 * Create an NXT touch sensor object attached to the specified port.
+	 * @param port the port that has the sensor attached
+	 */
+	public TouchSensor(Port port)
+	{
+	    super(port);
+	    this.port.setTypeAndMode(TYPE_SWITCH, MODE_BOOLEAN);	    
+	}
 	/**
 	 * Check if the sensor is pressed.
 	 * @return <code>true</code> if sensor is pressed, <code>false</code> otherwise.

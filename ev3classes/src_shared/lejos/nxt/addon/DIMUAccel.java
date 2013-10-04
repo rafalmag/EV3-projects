@@ -3,6 +3,7 @@ import java.io.*;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.robotics.Accelerometer;
 
 /**
@@ -182,12 +183,18 @@ public class DIMUAccel extends I2CSensor implements Accelerometer {
 	 * 
 	 * @param port
 	 */
-	public DIMUAccel(I2CPort port) {
-		super(port, DEFAULT_I2C_ADDRESS, I2CPort.HIGH_SPEED, TYPE_LOWSPEED);
-		sendData(MODE_REG, (byte) 0x01);
-		load();
-	}
-	
+    public DIMUAccel(I2CPort port) {
+        super(port, DEFAULT_I2C_ADDRESS);
+        sendData(MODE_REG, (byte) 0x01);
+        load();
+    }
+    
+    public DIMUAccel(Port port) {
+        super(port, DEFAULT_I2C_ADDRESS);
+        sendData(MODE_REG, (byte) 0x01);
+        load();
+    }
+    
 	/**
 	 * 
 	 * Calibrates a single axis. The calibration process consists of determining

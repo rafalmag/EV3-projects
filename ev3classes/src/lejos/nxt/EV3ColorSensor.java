@@ -32,7 +32,6 @@ public class EV3ColorSensor extends UARTSensor implements LampLightDetector,
     public EV3ColorSensor(UARTPort port)
     {
         super(port);
-        System.out.println("Color constructor");
     }
 
     public EV3ColorSensor(Port port)

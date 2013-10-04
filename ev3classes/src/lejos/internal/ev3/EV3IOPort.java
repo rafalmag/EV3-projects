@@ -1,5 +1,6 @@
 package lejos.internal.ev3;
 
+import lejos.nxt.BasicSensorPort;
 import lejos.nxt.DeviceManager;
 import lejos.nxt.EV3SensorConstants;
 import lejos.nxt.IOPort;
@@ -9,7 +10,7 @@ import lejos.nxt.IOPort;
  * @author andy
  *
  */
-public abstract class EV3IOPort implements IOPort, EV3SensorConstants
+public abstract class EV3IOPort implements IOPort, BasicSensorPort, EV3SensorConstants
 {
     protected int port = -1;
     protected int typ = -1;

@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.util.EndianTools;
 
 /*
@@ -27,9 +28,13 @@ public class AngleSensor extends I2CSensor {
    protected static final int HTANGLE_MODE_RESET = 0x52;
 
    public AngleSensor(I2CPort port) {
-      super(port, DEFAULT_I2C_ADDRESS, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
-   }
-   
+       super(port, DEFAULT_I2C_ADDRESS);
+    }
+    
+   public AngleSensor(Port port) {
+       super(port);
+    }
+    
    /** 
     * reads the current angle
     *

@@ -1,6 +1,8 @@
 package lejos.nxt.addon;
 
 import lejos.nxt.AnalogPort;
+import lejos.nxt.AnalogSensor;
+import lejos.nxt.Port;
 import lejos.nxt.SensorConstants;
 import lejos.robotics.PressureDetector;
 
@@ -16,9 +18,7 @@ import lejos.robotics.PressureDetector;
  * @author Lawrie Griffiths
  *
  */
-public class DPressure250 implements SensorConstants, PressureDetector {
-	private AnalogPort port;
-	
+public class DPressure250 extends AnalogSensor implements SensorConstants, PressureDetector {
 	/*
 	 * Formula from DPRESS-driver.h:
 	 * vRef = 4.85
@@ -36,8 +36,13 @@ public class DPressure250 implements SensorConstants, PressureDetector {
 	private static final float DPRESS_OFFSET = (float)(CAL1 / CAL2);
 	
     public DPressure250(AnalogPort port) {
-		this.port = port;
-		port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        super(port);
+        //port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+    }
+    
+    public DPressure250(Port port) {
+        super(port);
+        this.port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
     }
     
     /**

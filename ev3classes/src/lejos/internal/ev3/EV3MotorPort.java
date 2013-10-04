@@ -115,11 +115,6 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     {
     }
     
-    public int getId()
-    {
-        return this.port;
-    }
-    
     private static void initDeviceIO()
     {
         tacho = new NativeDevice("/dev/lms_motor");

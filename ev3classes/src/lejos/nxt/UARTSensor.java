@@ -7,7 +7,7 @@ import lejos.util.Delay;
  * @author andy
  *
  */
-public class UARTSensor
+public class UARTSensor extends Device
 {
     protected UARTPort port;
     protected int currentMode;
@@ -21,7 +21,6 @@ public class UARTSensor
     public UARTSensor(UARTPort port)
     {
         this(port, 0);
-        System.out.println("UART constructor");
     }
     
     /**
@@ -31,7 +30,7 @@ public class UARTSensor
     */
    public UARTSensor(Port port)
    {
-       this(port.open(UARTPort.class));
+       this(port, 0);
    }
 
     /**
@@ -55,6 +54,7 @@ public class UARTSensor
     public UARTSensor(Port port, int mode)
     {
         this(port.open(UARTPort.class), mode);
+        releaseOnClose(this.port);
     }
     
 

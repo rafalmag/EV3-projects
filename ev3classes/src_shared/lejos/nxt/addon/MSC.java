@@ -69,7 +69,32 @@ public class MSC extends I2CSensor {
 	private MServo[] arrServo; //ServoController manages up to 8 RC Servos
 
 	//I2C	
-	private SensorPort portConnected;
+	private I2CPort portConnected;
+
+
+	private void init(I2CPort port)
+	{
+        portConnected = port;
+        
+        servo1 = new MServo(portConnected,1);
+        servo2 = new MServo(portConnected,2);
+        servo3 = new MServo(portConnected,3);
+        servo4 = new MServo(portConnected,4);
+        servo5 = new MServo(portConnected,5);
+        servo6 = new MServo(portConnected,6);
+        servo7 = new MServo(portConnected,7);
+        servo8 = new MServo(portConnected,8);
+    
+        arrServo = new MServo[8];
+        arrServo[0] = servo1;
+        arrServo[1] = servo2;
+        arrServo[2] = servo3;
+        arrServo[3] = servo4;
+        arrServo[4] = servo5;
+        arrServo[5] = servo6;
+        arrServo[6] = servo7;
+        arrServo[7] = servo8;
+	}
 
 	/**
 	 * 
@@ -78,32 +103,15 @@ public class MSC extends I2CSensor {
 	 * @param port the NXTServo is connected to
 	 * 
 	 */
-	public MSC(SensorPort port){
-		super(port);
-		port.setType(TYPE_LOWSPEED_9V);
-		this.setAddress(NXTSERVO_ADDRESS);
-		
-		portConnected = port;
-		
-		servo1 = new MServo(portConnected,1);
-		servo2 = new MServo(portConnected,2);
-		servo3 = new MServo(portConnected,3);
-		servo4 = new MServo(portConnected,4);
-		servo5 = new MServo(portConnected,5);
-		servo6 = new MServo(portConnected,6);
-		servo7 = new MServo(portConnected,7);
-		servo8 = new MServo(portConnected,8);
+    public MSC(Port port){
+        super(port);
+        this.port.setType(TYPE_LOWSPEED_9V);
+        this.setAddress(NXTSERVO_ADDRESS);
+    }
 
-		arrServo = new MServo[8];
-		arrServo[0] = servo1;
-		arrServo[1] = servo2;
-		arrServo[2] = servo3;
-		arrServo[3] = servo4;
-		arrServo[4] = servo5;
-		arrServo[5] = servo6;
-		arrServo[6] = servo7;
-		arrServo[7] = servo8;
-	}
+    public MSC(I2CPort port){
+        super(port);
+    }
 
 	/**
 	 * Method to get an RC Servo in from the NXTServo

@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 
 import java.awt.*;
 
@@ -47,14 +48,24 @@ public class NXTCam extends I2CSensor {
 	
 	public NXTCam(I2CPort port, int address)
 	{
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED_9V);
+		super(port, address);
 	}
 
 	public NXTCam(I2CPort port)
 	{
 		this(port, DEFAULT_I2C_ADDRESS);
 	}
-	
+
+    public NXTCam(Port port, int address)
+    {
+        super(port, address, TYPE_LOWSPEED_9V);
+    }
+    
+    public NXTCam(Port port)
+    {
+        this(port, DEFAULT_I2C_ADDRESS);
+    }
+
 	/**
 	 * Get the number of objects being tracked
 	 * 

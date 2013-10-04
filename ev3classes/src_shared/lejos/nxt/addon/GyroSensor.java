@@ -1,7 +1,9 @@
 package lejos.nxt.addon;
    
 import lejos.nxt.AnalogPort;
+import lejos.nxt.AnalogSensor;
 import lejos.nxt.Motor;
+import lejos.nxt.Port;
 //import lejos.nxt.LCD;
 import lejos.nxt.SensorConstants;
 import lejos.robotics.Gyroscope;
@@ -41,10 +43,9 @@ import lejos.util.Delay;
  * @author Kirk Thompson
  *
  */
-public class GyroSensor implements SensorConstants, Gyroscope {
+public class GyroSensor extends AnalogSensor implements SensorConstants, Gyroscope {
     /** The <code>ADSensorPort</code> passed in the constructor.
      */
-    protected AnalogPort port;
 	private int offset = 0;
     private float gsRawTotal =0f;
     private float gsvarianceTotal =0f;
@@ -59,11 +60,24 @@ public class GyroSensor implements SensorConstants, Gyroscope {
      * @see lejos.nxt.SensorPort
      */
     public GyroSensor(AnalogPort port) {
-		this.port = port;
-		port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
-	    timestamp = System.currentTimeMillis();
-	}
-	
+        super(port);
+        this.port = port;
+        port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        timestamp = System.currentTimeMillis();
+    }
+    
+    /**
+     * Creates and initializes a new <code>GyroSensor</code> bound to passed <code>ADSensorPort</code>.
+     * 
+     * @param port The <code>SensorPort</code> the Gyro is connected to
+     * @see lejos.nxt.SensorPort
+     */
+    public GyroSensor(Port port) {
+        super(port);
+        this.port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        timestamp = System.currentTimeMillis();
+    }
+    
     /**
      * Creates and initializes a new <code>GyroSensor</code> bound to passed <code>ADSensorPort</code> and sets the 
      * offset to be used in <code>{@link #readValue}</code>.

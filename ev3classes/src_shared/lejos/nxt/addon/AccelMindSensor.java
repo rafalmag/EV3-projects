@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.robotics.Accelerometer;
 import lejos.util.EndianTools;
 
@@ -39,9 +40,17 @@ public class AccelMindSensor extends I2CSensor implements Accelerometer {
 		this(port, DEFAULT_I2C_ADDRESS);
 	}
 
-	public AccelMindSensor(I2CPort port, int address) {
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED_9V);
-	}
+    public AccelMindSensor(I2CPort port, int address) {
+        super(port, address);
+    }
+
+    public AccelMindSensor(Port port, int address) {
+        super(port, address, TYPE_LOWSPEED_9V);
+    }
+
+    public AccelMindSensor(Port port) {
+        this(port, DEFAULT_I2C_ADDRESS);
+    }
 
 	/**
 	 * Tilt of sensor along X-axis (see top of Mindsensors.com sensor for

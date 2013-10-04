@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.nxt.rcxcomm.Opcode;
 import lejos.util.Delay;
 
@@ -66,9 +67,13 @@ public class RCXLink extends I2CSensor implements Opcode, IRTransmitter {
 	public final static int EEPROM_BUFFER = 0x78;
 	public final static int DELAY = 10;
 	
-	public RCXLink(I2CPort port) {
-		super(port);
-	}
+    public RCXLink(I2CPort port) {
+        super(port);
+    }
+
+    public RCXLink(Port port) {
+        super(port);
+    }
 
 	public void runMacro(int addr) {
 		buf[0] = RUN;

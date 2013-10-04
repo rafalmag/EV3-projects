@@ -18,13 +18,21 @@ public class SensorMux extends I2CSensor {
 	private final byte digitalRegisters[] = {0x40,0x50,0x60,0x70};
 	private final byte analogRegisters[] = {0x36,0x38,0x3A,0x3C};
 	
-	/**
-	 * Constructor
-	 * @param port the port
-	 */
-	public SensorMux(I2CPort port) {
-		super(port, 0x10, I2CPort.LEGO_MODE, TYPE_LOWSPEED_9V);
-	}
+    /**
+     * Constructor
+     * @param port the port
+     */
+    public SensorMux(I2CPort port) {
+        super(port, 0x10);
+    }
+   
+    /**
+     * Constructor
+     * @param port the port
+     */
+    public SensorMux(Port port) {
+        super(port, 0x10, TYPE_LOWSPEED_9V);
+    }
    
    /**
     * Return the type

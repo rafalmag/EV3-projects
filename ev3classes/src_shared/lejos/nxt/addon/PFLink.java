@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CSensor; 
 import lejos.nxt.I2CPort;
+import lejos.nxt.Port;
 import lejos.util.Delay;
 
 /*
@@ -152,10 +153,18 @@ public class PFLink extends I2CSensor {
     }; 
 
     public PFLink(I2CPort _Port, int address) {
-        super(_Port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
+        super(_Port, address);
     }
 
     public PFLink(I2CPort _Port) {
+        super(_Port);
+    }
+
+    public PFLink(Port _Port, int address) {
+        super(_Port, address, TYPE_LOWSPEED);
+    }
+
+    public PFLink(Port _Port) {
         super(_Port);
     }
 

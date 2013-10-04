@@ -5,28 +5,28 @@ package lejos.nxt;
  * @author andy
  *
  */
-public class SensorException extends RuntimeException
+public class DeviceException extends RuntimeException
 {
     /**
      * 
      */
     private static final long serialVersionUID = 5846698127613306496L;
 
-    public SensorException()
+    public DeviceException()
     {
     }
 
-    public SensorException(String message)
+    public DeviceException(String message)
     {
         super (message);
     }
 
-    public SensorException(Throwable cause)
+    public DeviceException(Throwable cause)
     {
         super (cause);
     }
 
-    public SensorException(String message, Throwable cause)
+    public DeviceException(String message, Throwable cause)
     {
         super (message, cause);
     }

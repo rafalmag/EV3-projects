@@ -1,6 +1,8 @@
 package lejos.nxt.addon;
 
 import lejos.nxt.AnalogPort;
+import lejos.nxt.AnalogSensor;
+import lejos.nxt.Port;
 import lejos.nxt.SensorConstants;
 
 /*
@@ -17,9 +19,8 @@ import lejos.nxt.SensorConstants;
  *  <li>it takes about 5 ms to turn off
  * 
  */
-public class LaserSensor implements SensorConstants
+public class LaserSensor extends AnalogSensor implements SensorConstants
 {
-	AnalogPort port;
 	private int _zero = 1023;
 	private int _hundred = 0;
 	private boolean laser = false;
@@ -32,7 +33,7 @@ public class LaserSensor implements SensorConstants
 	 */
 	public LaserSensor(AnalogPort port)
 	{
-		this(port, false);
+		super(port);
 	}
 	
 	/**
@@ -41,15 +42,20 @@ public class LaserSensor implements SensorConstants
 	 * @param port port, e.g. Port.S1
 	 * @param laser true to turn on the laser, false for laser off.
 	 */
-	public LaserSensor(AnalogPort port, boolean laserState)
+	public LaserSensor(Port port, boolean laserState)
 	{
-	   this.port = port;
+	   super(port);
 	   this.laser = laserState;
-       port.setTypeAndMode(
+       this.port.setTypeAndMode(
     		   (laserState ? TYPE_LIGHT_ACTIVE
     				       : TYPE_LIGHT_INACTIVE),
     		   MODE_PCTFULLSCALE); 
 	}
+	
+    public LaserSensor(Port port)
+    {
+        this(port, false);
+    }
 	
 	public void setLaser(boolean laserState)
 	{	

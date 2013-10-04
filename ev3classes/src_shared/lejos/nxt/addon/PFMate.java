@@ -28,30 +28,55 @@ public class PFMate extends I2CSensor{
 	private final static int SPEED_B_REG = 0x47;  // register for speed of motor B
 	
 	private byte [] buffer = new byte[1];
-	
-	/**
-	 * Constructor takes in the sensor port and the PF channel you will be using
-	 * @param port sensor port
-	 * @param channel PF Channel 1-4
-	 */
-	public PFMate(I2CPort port, int channel){
-        this(port, channel, DEFAULT_PFMATE_ADDRESS);
-	}
 
-	/**
-	 * Constructor takes in the sensor port and the PF channel you will be using
-	 * @param port sensor port
+	private void init(int channel)
+	{
+        setChannel(channel);
+        setMotor(0);
+
+        A = new PFMateMotor(this, OPER_A_REG, SPEED_A_REG);
+        B = new PFMateMotor(this, OPER_B_REG, SPEED_B_REG);
+	    
+	}
+    /**
+     * Constructor takes in the sensor port and the PF channel you will be using
+     * @param port sensor port
+     * @param channel PF Channel 1-4
+     */
+    public PFMate(I2CPort port, int channel){
+        this(port, channel, DEFAULT_PFMATE_ADDRESS);
+    }
+
+    /**
+     * Constructor takes in the sensor port and the PF channel you will be using
+     * @param port sensor port
      * @param channel PF Channel 1-4
      * @param address I2C address of the controller
-	 */
-	public PFMate(I2CPort port, int channel, int address){
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
-		setChannel(channel);
-		setMotor(0);
+     */
+    public PFMate(I2CPort port, int channel, int address){
+        super(port, address);
+        init(channel);
+    }
 
-		A = new PFMateMotor(this, OPER_A_REG, SPEED_A_REG);
-		B = new PFMateMotor(this, OPER_B_REG, SPEED_B_REG);
-	}
+    /**
+     * Constructor takes in the sensor port and the PF channel you will be using
+     * @param port sensor port
+     * @param channel PF Channel 1-4
+     */
+    public PFMate(Port port, int channel){
+        this(port, channel, DEFAULT_PFMATE_ADDRESS);
+    }
+
+    /**
+     * Constructor takes in the sensor port and the PF channel you will be using
+     * @param port sensor port
+     * @param channel PF Channel 1-4
+     * @param address I2C address of the controller
+     */
+    public PFMate(Port port, int channel, int address){
+        super(port, address, TYPE_LOWSPEED);
+        init(channel);
+    }
 
 	/**
 	 * Sends command to PF IR receiver to apply changes made to the registers. Call this after

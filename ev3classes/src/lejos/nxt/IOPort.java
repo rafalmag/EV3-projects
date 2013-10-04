@@ -9,7 +9,7 @@ import java.io.Closeable;
  * @author andy
  *
  */
-public interface IOPort extends BasicSensorPort, Closeable   {
+public interface IOPort extends Closeable   {
    
     /**
      * Close the port, the port can not be used after this call.
