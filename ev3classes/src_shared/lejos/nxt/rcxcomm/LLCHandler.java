@@ -23,7 +23,7 @@ public class LLCHandler extends PacketHandler {
   private byte [] ackPacket = new byte [2];
   private int inPacketLength;
 
-  public LLCHandler(SensorPort port) {
+  public LLCHandler(I2CPort port) {
     LLC.init(port);
   }
 
