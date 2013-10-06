@@ -803,6 +803,7 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
          */
         synchronized void removeMotor(NXTRegulatedMotor m)
         {
+            m.tachoPort.controlMotor(0, TachoMotorPort.FLOAT);
             NXTRegulatedMotor [] newMotors = new NXTRegulatedMotor[activeMotors.length-1];
             int j = 0;
             for(int i = 0; i < activeMotors.length; i++)
