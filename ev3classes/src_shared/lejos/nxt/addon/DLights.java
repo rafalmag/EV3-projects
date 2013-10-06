@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 
 /**
  * The DLights class drives up to four dLights on a single sensor port.
@@ -260,16 +261,27 @@ public class DLights {
 
 		private byte[]	buf	= new byte[4];
 
-		protected LED(I2CPort port, int address) {
-			super(port, address, I2CPort.HIGH_SPEED, TYPE_LOWSPEED);
-			setRegister(MODE1, MODE1MASK);
-			setRegister(MODE2, MODE2MASK);
-			setRegister(LEDOUT, BLINKINGOFF);
-			setColor(0, 0, 0);
-			setExternalLED(0);
-			setRegister(GRPPWM, 0xff);
-			setRegister(GRPFREQ, 0);
+		protected void init()
+		{
+            setRegister(MODE1, MODE1MASK);
+            setRegister(MODE2, MODE2MASK);
+            setRegister(LEDOUT, BLINKINGOFF);
+            setColor(0, 0, 0);
+            setExternalLED(0);
+            setRegister(GRPPWM, 0xff);
+            setRegister(GRPFREQ, 0);
+		    
 		}
+		
+        protected LED(I2CPort port, int address) {
+            super(port, address);
+            init();
+        }
+
+        protected LED(Port port, int address) {
+            super(port, address);
+            init();
+        }
 
 		public void disable() {
 			setRegister(MODE1, MODE1MASK + SLEEPMODE);

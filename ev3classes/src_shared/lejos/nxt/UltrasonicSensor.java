@@ -65,6 +65,15 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 		nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
 		return ret;
 	}
+	
+	protected void init()
+	{
+        nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
+        // Perform a reset, to clean up settings from previous program
+        if (this.reset() >= 0)
+            setMode(MODE_CONTINUOUS);
+        // Not sure what we should do if the reset fails!	    
+	}
 
 	/*
 	 * Over-ride the standard send function to ensure the correct inter-command
@@ -82,12 +91,14 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	public UltrasonicSensor(I2CPort port)
 	{
 		// Set correct sensor type, default is TYPE_LOWSPEED
-		super(port, DEFAULT_I2C_ADDRESS, I2CPort.LEGO_MODE, TYPE_LOWSPEED_9V);
-		nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
-		// Perform a reset, to clean up settings from previous program
-		if (this.reset() >= 0)
-            setMode(MODE_CONTINUOUS);
-        // Not sure what we should do if the reset fails!
+		super(port, DEFAULT_I2C_ADDRESS);
+		init();
+	}
+	
+	public UltrasonicSensor(Port port)
+	{
+	    super(port, DEFAULT_I2C_ADDRESS, TYPE_LOWSPEED_9V);
+	    init();
 	}
 
 	/**

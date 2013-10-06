@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
@@ -27,22 +28,38 @@ public class RCXSensorMultiplexer extends I2CSensor{
 
     public static final int DEFAULT_RCXSMUX_ADDRESS = 0x7e;
 	
-	/**
-	 *
-	 * @param port NXT Sensor port
-	 */
-	public RCXSensorMultiplexer(I2CPort port){
-		this(port, DEFAULT_RCXSMUX_ADDRESS);
-	}
+    /**
+    *
+    * @param port NXT Sensor port
+    */
+   public RCXSensorMultiplexer(I2CPort port){
+       this(port, DEFAULT_RCXSMUX_ADDRESS);
+   }
 
-	/**
-	 *
-     * @param port NXT Sensor port
-     * @param address I2C address
-	 */
-	public RCXSensorMultiplexer(I2CPort port, int address){
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
-	}
+   /**
+    *
+    * @param port NXT Sensor port
+    * @param address I2C address
+    */
+   public RCXSensorMultiplexer(I2CPort port, int address){
+       super(port, address);
+   }
+   /**
+   *
+   * @param port NXT Sensor port
+   */
+  public RCXSensorMultiplexer(Port port){
+      this(port, DEFAULT_RCXSMUX_ADDRESS);
+  }
+
+  /**
+   *
+   * @param port NXT Sensor port
+   * @param address I2C address
+   */
+  public RCXSensorMultiplexer(Port port, int address){
+      super(port, address, TYPE_LOWSPEED);
+  }
 
 	/**
 	 * Selects channel one

@@ -1,5 +1,6 @@
 package lejos.nxt.addon;
 
+import lejos.nxt.Port;
 import lejos.nxt.SensorPort;
 import lejos.nxt.I2CSensor;
 import lejos.nxt.I2CPort;
@@ -47,19 +48,30 @@ public class PSPNXController extends I2CSensor {
 
 	private byte[] buf = new byte[2];
 
-	public PSPNXController(SensorPort port)	{
+	private void init()
+	{
+        // Set proper mode (power on, etc..):
+        powerUp(true);
+        setDigitalMode(true);
+	}
+	
+    public PSPNXController(I2CPort port) {
         this(port, DEFAULT_I2C_ADDRESS);
     }
 
-	public PSPNXController(SensorPort port, int address)	{
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
-		// Set correct sensor type, default is TYPE_LOWSPEED
-		// port.setType(TYPE_LOWSPEED_9V);
+    public PSPNXController(I2CPort port, int address)    {
+        super(port, address);
+        init();
+    }
 
-		// Set proper mode (power on, etc..):
-		powerUp(true);
-		setDigitalMode(true);
-	}
+    public PSPNXController(Port port) {
+        this(port, DEFAULT_I2C_ADDRESS);
+    }
+
+    public PSPNXController(Port port, int address)    {
+        super(port, address, TYPE_LOWSPEED);
+        init();
+    }
 
 	/*
 	 * Set the sensor into the specified mode. Keep track of which mode we are

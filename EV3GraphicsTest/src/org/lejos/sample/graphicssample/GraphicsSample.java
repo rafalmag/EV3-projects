@@ -8,13 +8,13 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.Sprite;
 
+import lejos.internal.ev3.EV3I2CPort;
+import lejos.internal.ev3.EV3UARTPort;
 import lejos.nxt.Button;
 import lejos.nxt.DeviceManager;
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
 import lejos.nxt.LCD;
-import lejos.nxt.LocalI2CPort;
-import lejos.nxt.LocalUARTPort;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.Sound;
@@ -451,14 +451,14 @@ public class GraphicsSample extends Thread
                     if (typ == DeviceManager.CONN_INPUT_UART)
                     {
                         System.out.println("Open port " + i);
-                        UARTPort u = new LocalUARTPort();
+                        UARTPort u = new EV3UARTPort();
                         if (u.open(i))
                             uarts[i] = u;
                         break;
                     }
                     else if (typ == DeviceManager.CONN_NXT_IIC)
                     {
-                        I2CPort ii = new LocalI2CPort();
+                        I2CPort ii = new EV3I2CPort();
                         ii.open(i);
                         i2c[i] = ii;
                     }
@@ -974,7 +974,7 @@ public class GraphicsSample extends Thread
 
     public static void main(String[] options) throws Exception
     {
-        LocalUARTPort.resetAll();
+        EV3UARTPort.resetAll();
         GraphicsSample sample = new GraphicsSample();
         sample.sensorPorts();
         /*

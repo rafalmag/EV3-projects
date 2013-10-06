@@ -8,6 +8,7 @@ package lejos.nxt;
 public interface EV3SensorConstants
 {
     public static final int PORTS = 4;
+    public static final int MOTORS = 4;
     
     public static final int CONN_UNKNOWN    = 111;  //!< Connection is fake (test)
     public static final int CONN_DAISYCHAIN = 117;  //!< Connection is daisy chained
@@ -43,10 +44,10 @@ public interface EV3SensorConstants
     public static final int UART_MAX_MODES = 8;
     public static final int MAX_DEVICE_DATALENGTH = 32;
     public static final int IIC_DATA_LENGTH = MAX_DEVICE_DATALENGTH;
-    public static final int OK = 0;
-    public static final int BUSY = 1;
-    public static final int FAIL = 2;
-    public static final int STOP = 4;
+    public static final int STATUS_OK = 0;
+    public static final int STATUS_BUSY = 1;
+    public static final int STATUS_FAIL = 2;
+    public static final int STATUS_STOP = 4;
     
     public static final byte CMD_NONE = (byte)'-';
     public static final byte CMD_FLOAT = (byte)'f';

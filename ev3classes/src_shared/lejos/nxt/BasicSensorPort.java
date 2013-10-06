@@ -14,15 +14,18 @@ package lejos.nxt;
  */
 public interface BasicSensorPort extends SensorConstants {
 
-	public int getMode();
+    public int getMode();
 	
-	public int getType();
+    @Deprecated
+    public int getType();
 	
-	public boolean setMode(int mode);
+    public boolean setMode(int mode);
 	
-	public boolean setType(int type);
+    @Deprecated
+    public boolean setType(int type);
 	
-	public boolean setTypeAndMode(int type, int mode);
+    @Deprecated
+    public boolean setTypeAndMode(int type, int mode);
 
 }
 

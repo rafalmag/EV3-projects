@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
@@ -16,11 +17,16 @@ import lejos.nxt.I2CSensor;
 public class IRSeeker extends I2CSensor {
 	byte[] buf = new byte[1];
 	
-	public IRSeeker(I2CPort port)
-	{
-		super(port);
-	}
-	
+    public IRSeeker(I2CPort port)
+    {
+        super(port);
+    }
+    
+    public IRSeeker(Port port)
+    {
+        super(port);
+    }
+    
 	/**
 	 * Returns the direction of the target (1-9)
 	 * or zero if no target. 

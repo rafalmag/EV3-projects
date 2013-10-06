@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 
 /**
  * This class supports the <a href="http://www.hitechnic.com">HiTechnic</a>
@@ -26,7 +27,7 @@ public class BarometricHTSensor extends I2CSensor {
 	 *            the {@link I2CPort} the sensor is connected to.
 	 */
 	public BarometricHTSensor(final I2CPort port) {
-		super(port);
+		super(port, DEFAULT_I2C_ADDRESS);
 	}
 
 	/**
@@ -38,8 +39,16 @@ public class BarometricHTSensor extends I2CSensor {
 	 *            the address
 	 */
 	public BarometricHTSensor(final I2CPort port, final int address) {
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
+		super(port, address);
 	}
+
+	public BarometricHTSensor(final Port port, final int address) {
+	        super(port, address, TYPE_LOWSPEED);
+	}
+
+    public BarometricHTSensor(final Port port) {
+        this(port, DEFAULT_I2C_ADDRESS);
+    }
 
 	/**
 	 * @return the barometric pressure measured by the sensor in units of 1/1000

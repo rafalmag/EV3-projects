@@ -20,12 +20,16 @@ public class EV3GyroSensor extends UARTSensor implements Gyroscope
     
     protected final static int OFFSET_SAMPLES = 100;
     
-    protected float offset;
+    protected float offset = 0.0f;
     
     public EV3GyroSensor(UARTPort p)
     {
         super(p, RATE_MODE);
-        offset = 0.0f;
+    }
+    
+    public EV3GyroSensor(Port p)
+    {
+        super(p, RATE_MODE);
     }
     
     /** Calculate and return the angular velocity in degrees per second.

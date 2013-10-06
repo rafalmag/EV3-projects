@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.util.EndianTools;
 
 /*
@@ -54,7 +55,11 @@ public class GPSSensor extends I2CSensor {
 	* @param sensorPort the sensor port the sensor is connected to
 	*/
     public GPSSensor(I2CPort sensorPort) {
-        super(sensorPort, DGPS_I2C_ADDR, I2CPort.STANDARD_MODE, TYPE_LOWSPEED);
+        super(sensorPort, DGPS_I2C_ADDR);
+    }
+    
+    public GPSSensor(Port sensorPort) {
+        super(sensorPort, DGPS_I2C_ADDR);
     }
     
     /**

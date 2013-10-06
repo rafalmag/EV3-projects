@@ -32,4 +32,20 @@ public class PFMotorPort implements BasicMotorPort {
 	public void setPWMMode(int mode) {
 		// Not implemented
 	}
+
+    @Override
+    public void close()
+    {
+    }
+
+    @Override
+    public String getName()
+    {
+        return null;
+    }
+
+    @Override
+    public void setPinMode(int mode)
+    {
+    }
 }

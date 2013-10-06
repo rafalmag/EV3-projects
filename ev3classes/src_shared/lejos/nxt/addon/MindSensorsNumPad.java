@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.util.Delay;
 
 /**
@@ -41,41 +42,60 @@ public class MindSensorsNumPad extends I2CSensor {
 	public static final int ID_HASH = (1 << 11);
 
 
-	/**
-	 * Constructor for objects of the NumericPad of Mindsensors. It assumes that
-	 * you didn't change the I²C address of the device.
-	 * 
-	 * @param port
-	 *            the port number (SensorPort.S1 ... SensorPort.S4) to which the
-	 *            numeric pad is connected.
-	 */
-	public MindSensorsNumPad(I2CPort port) {
-		super(port, NP_ADDRESS, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
+	protected void init()
+	{
 
-		// This is the initialization used by the Xander's RobotC driver
-		// and the code submitted by Rudolf Lapie.
-		sendGroup(0x2B, "\001\001\000\000\001\001\377\002");
-		sendGroup(0x41, "\017\012\017\012\017\012\017\012\017\012\017\012\017\012");
-		sendGroup(0x4F, "\017\012\017\012\017\012\017\012\017\012\017\012");
-		sendGroup(0x5C, "\013\040\014");
-		sendGroup(0x7B, "\013");
-		sendGroup(0x7D, "\234\145\214");
-		
-		// This are the initialization as in the NXC driver by MindSensors.
-		// For some reason, it differs from the one the RobotC driver and
-		// the driver submitted by Rudolf Lapie.
-		// sendGroup(0x2B, "\001\001\000\000\001\001\377\002");
-		// sendGroup(0x41, "\017\012\017\012\017\012\017\012\017");
-		// sendGroup(0x4A, "\012\017\012\017\012\017\012\017");
-		// sendGroup(0x52, "\012\017\012\017\012\017\012\017");
-		// sendGroup(0x5C, "\013\040\014");
-		// sendGroup(0x7D, "\234\145\214");
-		
-		int k = this.readButtonsRaw();
-		if (k == ERROR)
-			k = 0;
-		this.curButtons = k;
+        // This is the initialization used by the Xander's RobotC driver
+        // and the code submitted by Rudolf Lapie.
+        sendGroup(0x2B, "\001\001\000\000\001\001\377\002");
+        sendGroup(0x41, "\017\012\017\012\017\012\017\012\017\012\017\012\017\012");
+        sendGroup(0x4F, "\017\012\017\012\017\012\017\012\017\012\017\012");
+        sendGroup(0x5C, "\013\040\014");
+        sendGroup(0x7B, "\013");
+        sendGroup(0x7D, "\234\145\214");
+        
+        // This are the initialization as in the NXC driver by MindSensors.
+        // For some reason, it differs from the one the RobotC driver and
+        // the driver submitted by Rudolf Lapie.
+        // sendGroup(0x2B, "\001\001\000\000\001\001\377\002");
+        // sendGroup(0x41, "\017\012\017\012\017\012\017\012\017");
+        // sendGroup(0x4A, "\012\017\012\017\012\017\012\017");
+        // sendGroup(0x52, "\012\017\012\017\012\017\012\017");
+        // sendGroup(0x5C, "\013\040\014");
+        // sendGroup(0x7D, "\234\145\214");
+        
+        int k = this.readButtonsRaw();
+        if (k == ERROR)
+            k = 0;
+        this.curButtons = k;
+
 	}
+
+    /**
+     * Constructor for objects of the NumericPad of Mindsensors. It assumes that
+     * you didn't change the I²C address of the device.
+     * 
+     * @param port
+     *            the port number (SensorPort.S1 ... SensorPort.S4) to which the
+     *            numeric pad is connected.
+     */
+    public MindSensorsNumPad(I2CPort port) {
+        super(port, NP_ADDRESS);
+        init();
+    }
+    
+    /**
+     * Constructor for objects of the NumericPad of Mindsensors. It assumes that
+     * you didn't change the I²C address of the device.
+     * 
+     * @param port
+     *            the port number (SensorPort.S1 ... SensorPort.S4) to which the
+     *            numeric pad is connected.
+     */
+    public MindSensorsNumPad(Port port) {
+        super(port, NP_ADDRESS);
+        init();
+    }
 
 	private void sendGroup(int reg, String data) {
 		int len = data.length();

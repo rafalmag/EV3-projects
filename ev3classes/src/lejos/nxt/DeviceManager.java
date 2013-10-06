@@ -1,5 +1,6 @@
 package lejos.nxt;
 
+import lejos.internal.ev3.EV3AnalogPort;
 import lejos.internal.io.NativeDevice;
 
 public class DeviceManager implements EV3SensorConstants
@@ -30,7 +31,7 @@ public class DeviceManager implements EV3SensorConstants
     public int getPortType(int port)
     {
 
-        return LocalAnalogPort.getPortType(port);
+        return EV3AnalogPort.getPortType(port);
     }
 
     /**
@@ -43,7 +44,7 @@ public class DeviceManager implements EV3SensorConstants
      */
     public int getSensorType(int port)
     {
-        return LocalAnalogPort.getAnalogSensorType(port);
+        return EV3AnalogPort.getAnalogSensorType(port);
     }
 
     /**

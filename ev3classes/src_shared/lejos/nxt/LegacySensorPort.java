@@ -1,6 +1,6 @@
 package lejos.nxt;
 
-import lejos.nxt.ADSensorPort;
+import lejos.nxt.AnalogPort;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
@@ -13,7 +13,7 @@ import lejos.nxt.ADSensorPort;
  * @author Lawrie Griffiths.
  *
  */
-public interface LegacySensorPort extends ADSensorPort {
+public interface LegacySensorPort extends AnalogPort {
 	public void activate();	
 	public void passivate();
 }

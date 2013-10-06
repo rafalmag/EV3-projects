@@ -1,8 +1,9 @@
-package lejos.nxt;
+package lejos.internal.ev3;
 
 import java.nio.ByteBuffer;
 
 import lejos.internal.io.NativeDevice;
+import lejos.nxt.AnalogPort;
 
 import com.sun.jna.Pointer;
 
@@ -13,7 +14,7 @@ import com.sun.jna.Pointer;
  * @author andy
  *
  */
-public class LocalAnalogPort extends LocalSensorPort implements ADSensorPort
+public class EV3AnalogPort extends EV3IOPort implements AnalogPort
 {
     protected static final int ANALOG_SIZE = 5172;
     protected static final int ANALOG_PIN1_OFF = 0;
@@ -35,16 +36,7 @@ public class LocalAnalogPort extends LocalSensorPort implements ADSensorPort
         initDeviceIO();
     }
 
-    
-    /**
-     * allow access to the specified port
-     * @param p port number to open
-     */
-    public boolean open(int p)
-    {
-        return super.open(p);
-    }
-    
+        
     /**
      * Return the analog voltage reading from pin 1
      * @return the voltage in mV
@@ -114,7 +106,6 @@ public class LocalAnalogPort extends LocalSensorPort implements ADSensorPort
     @Override
     public int readValue()
     {
-        // TODO Auto-generated method stub
         return (getPin1() + 3)/4;
     }
 
@@ -174,7 +165,7 @@ public class LocalAnalogPort extends LocalSensorPort implements ADSensorPort
      * @param port
      * @return
      */
-    protected static int getPortType(int port)
+    public static int getPortType(int port)
     {
         if (port > PORTS || port < 0)
             return CONN_ERROR;
@@ -186,7 +177,7 @@ public class LocalAnalogPort extends LocalSensorPort implements ADSensorPort
      * @param port
      * @return
      */
-    protected static int getAnalogSensorType(int port)
+    public static int getAnalogSensorType(int port)
     {
         if (port > PORTS || port < 0)
             return CONN_ERROR;

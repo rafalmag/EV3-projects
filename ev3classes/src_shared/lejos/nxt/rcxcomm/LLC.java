@@ -22,7 +22,7 @@ public class LLC {
   /** 
    * Initialize LLC and set port
    **/
-  public static void init(SensorPort port){
+  public static void init(I2CPort port){
 	  link = new RCXLink(port);
 	  link.setDefaultSpeed();
 	  link.flush();
@@ -39,7 +39,7 @@ public class LLC {
   /** 
    * Set sensor port
    **/
-  public static void setPort(SensorPort port) {
+  public static void setPort(I2CPort port) {
 	  link = new RCXLink(port);
   }
 

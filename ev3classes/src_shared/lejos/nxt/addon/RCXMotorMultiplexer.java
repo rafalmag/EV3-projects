@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
@@ -25,14 +26,23 @@ public class RCXMotorMultiplexer extends I2CSensor {
 	public RCXMotor D = new RCXMotor(new RCXPlexedMotorPort(this,3));
 	
 	
-	public RCXMotorMultiplexer(I2CPort port) {
-		this(port, DEFAULT_RCXMMUX_ADDRESS);
+    public RCXMotorMultiplexer(I2CPort port) {
+        this(port, DEFAULT_RCXMMUX_ADDRESS);
 
-	}
+    }
 
-	public RCXMotorMultiplexer(I2CPort port, int address) {
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED_9V);
-	}
+    public RCXMotorMultiplexer(I2CPort port, int address) {
+        super(port, address);
+    }
+
+    public RCXMotorMultiplexer(Port port) {
+        this(port, DEFAULT_RCXMMUX_ADDRESS);
+
+    }
+
+    public RCXMotorMultiplexer(Port port, int address) {
+        super(port, address, TYPE_LOWSPEED_9V);
+    }
 
 	public void setSpeed(int speed, int id) {
 		buf[0] = (byte) speed;

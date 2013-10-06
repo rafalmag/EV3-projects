@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.nxt.SensorPort;
 import lejos.util.Delay;
 import lejos.util.EndianTools;
@@ -254,39 +255,56 @@ public class NXTMMX extends I2CSensor {
         }
     }
 
-	/**
-	 * Constructor for the NXTMMX
-	 * @param port - the port its plugged in to
-	 */
-    public NXTMMX(SensorPort port) {
-    	this(port, DEFAULT_MMX_ADDRESS);
-    }
-    
     /**
-	 * Constructor for the NXTMMX
+     * Constructor for the NXTMMX
+     * @param port - the port its plugged in to
+     */
+    public NXTMMX(I2CPort port) {
+        this(port, DEFAULT_MMX_ADDRESS);
+    }
+
+    /**
+     * Constructor for the NXTMMX
+     * @param port - the port its plugged in to
+     */
+    public NXTMMX(Port port) {
+        this(port, DEFAULT_MMX_ADDRESS);
+    }
+
+    private void init()
+    {
+        // resets mux values to default and stops all tasks. This includes zeroing the tachos.
+        sendData(REG_MMXCOMMAND, MMXCOMMAND_RESET);
+        Delay.msDelay(50);
+        // init motor operation parameters
+        for (int i=0;i<CHANNELS;i++){
+            motorParams[MOTPARAM_RAMPING][i] = MOTPARAM_OP_TRUE;
+            motorParams[MOTPARAM_ENCODER_BRAKING][i] = MOTPARAM_OP_TRUE;
+            motorParams[MOTPARAM_POWER][i] = 0;
+            motorParams[MOTPARAM_REGULATE][i] = MOTPARAM_OP_TRUE;
+            doCommand(CMD_SETPOWER, 100, i); // will set motorParams[MOTPARAM_POWER][channel]
+        }
+        
+    }
+    /**
+     * Constructor for the NXTMMX
      * @param port - the sensor port its plugged in to
      * @param address The I2C address for the device
-	 */
-	public NXTMMX(SensorPort port, int address) {
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
-	    this.address = address;
-//	    if (!(getVendorID().equalsIgnoreCase(TetrixControllerFactory.TETRIX_VENDOR_ID) && 
-//	        getProductID().equalsIgnoreCase(TetrixControllerFactory.TETRIX_MOTORCON_PRODUCT_ID))) {
-//	        throw new IllegalStateException("Not a motor controller");
-//		}
-	    
-	    // resets mux values to default and stops all tasks. This includes zeroing the tachos.
-	 	sendData(REG_MMXCOMMAND, MMXCOMMAND_RESET);
-	 	Delay.msDelay(50);
-	 	// init motor operation parameters
-	 	for (int i=0;i<CHANNELS;i++){
-	 		motorParams[MOTPARAM_RAMPING][i] = MOTPARAM_OP_TRUE;
-	 		motorParams[MOTPARAM_ENCODER_BRAKING][i] = MOTPARAM_OP_TRUE;
-	 		motorParams[MOTPARAM_POWER][i] = 0;
-	 		motorParams[MOTPARAM_REGULATE][i] = MOTPARAM_OP_TRUE;
-	 		doCommand(CMD_SETPOWER, 100, i); // will set motorParams[MOTPARAM_POWER][channel]
-	 	}
-	}
+     */
+    public NXTMMX(I2CPort port, int address) {
+        super(port, address);
+        init();
+    }
+
+    /**
+     * Constructor for the NXTMMX
+     * @param port - the sensor port its plugged in to
+     * @param address The I2C address for the device
+     */
+    public NXTMMX(Port port, int address) {
+        super(port, address, TYPE_LOWSPEED);
+        init();
+    }
 	
     /**
      * Get a <code>MMXRegulatedMotor</code> instance that is associated with the <code>motorID</code>. 

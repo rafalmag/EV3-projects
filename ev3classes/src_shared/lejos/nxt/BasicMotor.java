@@ -1,5 +1,7 @@
 package lejos.nxt;
 
+import java.io.Closeable;
+
 import lejos.robotics.DCMotor;
 
 /*
@@ -13,7 +15,7 @@ import lejos.robotics.DCMotor;
  * @author Lawrie Griffiths.
  *
  */
-public abstract class BasicMotor implements DCMotor
+public abstract class BasicMotor extends Device implements DCMotor
 {
     protected static int INVALID_MODE = -1;
 	protected int mode = INVALID_MODE;
@@ -47,7 +49,7 @@ public abstract class BasicMotor implements DCMotor
 	 */
 	public void forward()
 	{ 
-		updateState( MotorPort.FORWARD);
+		updateState( BasicMotorPort.FORWARD);
 	}
 	  
 
@@ -56,7 +58,7 @@ public abstract class BasicMotor implements DCMotor
 	 */
 	public void backward()
 	{
-		updateState( MotorPort.BACKWARD);
+		updateState( BasicMotorPort.BACKWARD);
 	}
 
 
@@ -67,7 +69,7 @@ public abstract class BasicMotor implements DCMotor
 	 */
 	public boolean isMoving()
 	{
-		return (mode == MotorPort.FORWARD || mode == MotorPort.BACKWARD);
+		return (mode == BasicMotorPort.FORWARD || mode == BasicMotorPort.BACKWARD);
 	}
 
 	/**
@@ -78,7 +80,7 @@ public abstract class BasicMotor implements DCMotor
 	 */   
 	public void flt()
 	{
-		updateState( MotorPort.FLOAT);
+		updateState( BasicMotorPort.FLOAT);
 	}
 
 	  
@@ -91,8 +93,7 @@ public abstract class BasicMotor implements DCMotor
 	 */
 	public void stop()
 	{
-		updateState( MotorPort.STOP);
+		updateState( BasicMotorPort.STOP);
 	}
-	  
 }
 

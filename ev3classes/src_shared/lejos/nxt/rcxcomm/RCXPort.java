@@ -23,7 +23,7 @@ import java.io.IOException;
  * 
  */
 public class RCXPort extends RCXAbstractPort {
-  public RCXPort(SensorPort port) throws IOException {
+  public RCXPort(I2CPort port) throws IOException {
     super((PacketHandler) new LLCReliableHandler(
                        (PacketHandler) new LLCHandler(port)));
   }

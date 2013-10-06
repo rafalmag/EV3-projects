@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.nxt.rcxcomm.Opcode;
 
 import java.util.*;
@@ -78,10 +79,14 @@ public class IRLink extends I2CSensor implements Opcode, IRTransmitter {
 	private BitSet bits = new BitSet(MAX_BITS);
 	private int nextBit = 0;
 
-	public IRLink(I2CPort port) {
-		super(port);
-	}
-	
+    public IRLink(I2CPort port) {
+        super(port);
+    }
+    
+    public IRLink(Port port) {
+        super(port);
+    }
+    
 	/**
 	 * Send commands to both motors.
 	 * Uses PF Combo direct mode.

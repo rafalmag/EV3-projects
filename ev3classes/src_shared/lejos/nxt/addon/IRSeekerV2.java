@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort; 
 import lejos.nxt.I2CSensor; 
+import lejos.nxt.Port;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
@@ -30,7 +31,13 @@ public class IRSeekerV2 extends I2CSensor
 
    public IRSeekerV2(I2CPort port, Mode mode) 
    { 
-      super(port, address, I2CPort.STANDARD_MODE, TYPE_LOWSPEED);
+      super(port, address);
+      setMode(mode); 
+   } 
+
+   public IRSeekerV2(Port port, Mode mode) 
+   { 
+      super(port, address);
       setMode(mode); 
    } 
 

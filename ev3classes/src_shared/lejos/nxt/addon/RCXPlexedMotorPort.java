@@ -35,4 +35,22 @@ public class RCXPlexedMotorPort implements BasicMotorPort {
 	public void setPWMMode(int mode) {
 		// Not implemented
 	}
+
+    @Override
+    public void close()
+    {
+        // not implemented
+    }
+
+    @Override
+    public String getName()
+    {
+        return null;
+    }
+
+    @Override
+    public void setPinMode(int mode)
+    {
+
+    }
 }

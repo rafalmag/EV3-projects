@@ -59,4 +59,22 @@ public class RCXRemoteMotorPort implements BasicMotorPort {
 	
 	public void setPWMMode(int mode) {
 	}
+    @Override
+    public void close()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public String getName()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    @Override
+    public void setPinMode(int mode)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

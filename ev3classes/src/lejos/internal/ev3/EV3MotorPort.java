@@ -1,9 +1,11 @@
-package lejos.nxt;
+package lejos.internal.ev3;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import lejos.internal.io.NativeDevice;
+import lejos.nxt.BasicMotorPort;
+import lejos.nxt.TachoMotorPort;
 
 /**
  * 
@@ -12,7 +14,7 @@ import lejos.internal.io.NativeDevice;
  * TODO: Sort out a better way to do this, or least clean up the magic numbers.
  *
  */
-public class LocalMotorPort implements MotorPort {
+public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     static final byte OUTPUT_POWER = (byte)0xa4;
     static final byte OUTPUT_START = (byte)0xa6;
     static final byte OUTPUT_STOP = (byte)0xa3;
@@ -25,47 +27,11 @@ public class LocalMotorPort implements MotorPort {
     {
         initDeviceIO();
     }
-    protected static LocalMotorPort [] openPorts = new LocalMotorPort[PORTS];    
-    protected int port;
     protected int curMode = FLOAT+1; // current mode is unknown
     protected byte[] cmd = new byte[8];
     
-    /** {@inheritDoc}
-     */    
-    @Override
-    public boolean open(int port)
-    {
-        synchronized (openPorts)
-        {
-            if (openPorts[port] == null)
-            {
-                openPorts[port] = this;
-                this.port = port;
-                return true;
-            }
-            return false;
-        }
-    }
    
-    /** {@inheritDoc}
-     */    
-    @Override
-    public void close()
-    {
-        if (port == -1)
-            throw new IllegalStateException("Port is not open");
-        synchronized (openPorts)
-        {
-            openPorts[port] = null;
-            port = -1;
-        }
-    }
     
-    public static MotorPort getInstance(int port)
-    {
-        return openPorts[port];
-    }
-
 
     /**
      * Low-level method to control a motor. 
@@ -147,11 +113,6 @@ public class LocalMotorPort implements MotorPort {
     
     public void setPWMMode(int mode)
     {
-     }
-    
-    public int getId()
-    {
-        return this.port;
     }
     
     private static void initDeviceIO()

@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.nxt.SensorPort;
 import lejos.util.Delay;
 import lejos.util.EndianTools;
@@ -40,11 +41,16 @@ public class DThermalIR extends I2CSensor {
 	 * Construct a sensor instance that is connected to <code>port</code>.
 	 * @param port The NXT port to use
 	 */
-	public DThermalIR(SensorPort port) {
-		super(port, I2C_ADDRESS, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
-		Delay.msDelay(100);
-	}
-	
+    public DThermalIR(I2CPort port) {
+        super(port, I2C_ADDRESS);
+        Delay.msDelay(100);
+    }
+    
+    public DThermalIR(Port port) {
+        super(port, I2C_ADDRESS);
+        Delay.msDelay(100);
+    }
+    
 	private int readRawInt(int register){
 		return EndianTools.decodeUShortLE(readRaw(register), 0);
 	}

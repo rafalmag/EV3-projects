@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.robotics.Accelerometer;
 import lejos.robotics.Gyroscope;
 import lejos.util.Delay;
@@ -60,10 +61,14 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 	 *
 	 * @param port the port the sensor is attached to
 	 */
-	public CruizcoreGyro(I2CPort port) {
-		super(port, GYRO_ADDRESS, I2CPort.HIGH_SPEED, TYPE_LOWSPEED);
-	}
-	
+    public CruizcoreGyro(I2CPort port) {
+        super(port, GYRO_ADDRESS);
+    }
+    
+    public CruizcoreGyro(Port port) {
+        super(port, GYRO_ADDRESS);
+    }
+    
 	/**
 	 * Read all data from the sensor and save values in the private properties of the class. 
 	 * Use {@link #getLastAccel} and similar methods to retrieve values.

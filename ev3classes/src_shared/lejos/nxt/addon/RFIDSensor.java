@@ -1,6 +1,7 @@
 package lejos.nxt.addon;
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.util.Delay;
 
 /*
@@ -59,6 +60,13 @@ public class RFIDSensor extends I2CSensor
     private byte buf1[] = new byte[1];
     private long nextRead = now();
 
+    private void init()
+    {
+        // We seem to need to give the device a bit of a kick to get it going
+        // doing a read seems to do the job...
+        wakeUp();
+        readTransponder(false);
+    }
     /**
      * Create a class to provide access to the device. Perform device
      * initialization.
@@ -66,15 +74,19 @@ public class RFIDSensor extends I2CSensor
      */
     public RFIDSensor(I2CPort port)
     {
-        super(port);
-        // We need 9V to make the sensor work
-        port.setType(I2CPort.TYPE_LOWSPEED_9V);
-        // Default address is not standard
-        setAddress(DEFAULT_ADDRESS);
-        // We seem to need to give the device a bit of a kick to get it going
-        // doing a read seems to do the job...
-        wakeUp();
-        readTransponder(false);
+        super(port, DEFAULT_ADDRESS);
+        init();
+    }
+    
+    /**
+     * Create a class to provide access to the device. Perform device
+     * initialization.
+     * @param port The sensor port to use for this device.
+     */
+    public RFIDSensor(Port port)
+    {
+        super(port, DEFAULT_ADDRESS, TYPE_LOWSPEED);
+        init();
     }
 
     /**

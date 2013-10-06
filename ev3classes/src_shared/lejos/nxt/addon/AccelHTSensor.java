@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.robotics.Accelerometer;
 
 /*
@@ -47,8 +48,16 @@ public class AccelHTSensor extends I2CSensor implements Accelerometer {
 	public AccelHTSensor(I2CPort port, int address) {
 		// TODO: Needs to be able to accept high-speed! Might be problem I was
 		// having.
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED_9V);
+		super(port, address);
 	}
+	
+    public AccelHTSensor(Port port, int address) {
+        super(port, address, TYPE_LOWSPEED_9V);
+    }
+
+    public AccelHTSensor(Port port) {
+        this(port, DEFAULT_I2C_ADDRESS);
+    }
 
 	/**
 	 * Acceleration along X axis. Positive or negative values.

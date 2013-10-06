@@ -1,4 +1,7 @@
-package lejos.nxt;
+package lejos.internal.ev3;
+
+import lejos.nxt.Battery;
+import lejos.nxt.EV3SensorConstants;
 
 /**
  * Class which provides information about the EV3 battery.<br>
@@ -7,7 +10,7 @@ package lejos.nxt;
  * @author andy
  *
  */
-public class LocalBattery implements Battery
+public class EV3Battery implements Battery
 {
     protected final static float SHUNT_IN = 0.11f;
     protected final static float AMP_CIN = 22.0f;
@@ -40,8 +43,8 @@ public class LocalBattery implements Battery
     @Override
     public float getVoltage()
     {
-        float CinV = convert(LocalAnalogPort.getBatteryCurrent())/AMP_CIN;
-        return convert(LocalAnalogPort.getBatteryVoltage())/AMP_VIN + CinV + VCE;
+        float CinV = convert(EV3AnalogPort.getBatteryCurrent())/AMP_CIN;
+        return convert(EV3AnalogPort.getBatteryVoltage())/AMP_VIN + CinV + VCE;
     }
 
     /**
@@ -50,7 +53,7 @@ public class LocalBattery implements Battery
     @Override
     public float getBatteryCurrent()
     {
-        return (convert(LocalAnalogPort.getBatteryCurrent())/AMP_CIN)/SHUNT_IN;
+        return (convert(EV3AnalogPort.getBatteryCurrent())/AMP_CIN)/SHUNT_IN;
     }
 
     /**
@@ -59,7 +62,7 @@ public class LocalBattery implements Battery
     @Override
     public float getMotorCurrent()
     {
-        return (convert(LocalAnalogPort.getMotorCurrent())/AMP_COUT)/SHUNT_OUT;
+        return (convert(EV3AnalogPort.getMotorCurrent())/AMP_COUT)/SHUNT_OUT;
     }
 
 }

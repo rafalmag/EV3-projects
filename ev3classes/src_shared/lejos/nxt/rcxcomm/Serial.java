@@ -34,7 +34,7 @@ public class Serial {
 	 * 
 	 * @param port the sensor port the link is connected to
 	 */
-	public static void setPort(SensorPort port) {
+	public static void setPort(I2CPort port) {
 		link = new RCXLink(port);
 		link.setDefaultSpeed();
 		link.flush();

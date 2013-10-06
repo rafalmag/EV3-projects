@@ -2,6 +2,7 @@ package lejos.nxt.addon;
 
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
+import lejos.nxt.Port;
 import lejos.robotics.Gyroscope;
 
 /**
@@ -195,10 +196,15 @@ public class DIMUGyro extends I2CSensor {
 	float[] t = new float[3];
 	float multiplier;
 
-	public DIMUGyro(I2CPort port) {
-		super(port, address, I2CPort.LEGO_MODE, TYPE_LOWSPEED);
-		init();
-	}
+    public DIMUGyro(I2CPort port) {
+        super(port, address);
+        init();
+    }
+
+    public DIMUGyro(Port port) {
+        super(port, address);
+        init();
+    }
 
 	/**
 	 * This method returns an instance of one of the three axes (X, Y, or Z) that the dIMU can supply.

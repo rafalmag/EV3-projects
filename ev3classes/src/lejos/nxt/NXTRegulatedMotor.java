@@ -46,7 +46,7 @@ import lejos.util.Delay;
  * </pre></code>
  * @author Roger Glassey/Andy Shaw
  */
-public class NXTRegulatedMotor implements RegulatedMotor
+public class NXTRegulatedMotor extends Device implements RegulatedMotor
 {
 
     protected static final int NO_LIMIT = 0x7fffffff;
@@ -82,10 +82,30 @@ public class NXTRegulatedMotor implements RegulatedMotor
     public NXTRegulatedMotor(TachoMotorPort port)
     {
         tachoPort = port;
-        port.setPWMMode(TachoMotorPort.PWM_BRAKE);
+        tachoPort.setPWMMode(TachoMotorPort.PWM_BRAKE);
         reg = new Regulator();
         //TODO: Should we take control of the motor at this point?
         //resetTachoCount();
+    }
+    
+    /**
+     * Use this constructor to assign a variable of type motor connected to a particular port.
+     * @param port  to which this motor is connected
+     */
+    public NXTRegulatedMotor(Port port)
+    {
+        this(port.open(TachoMotorPort.class));
+        releaseOnClose(tachoPort);
+    }
+
+    /**
+     * Close the motor regulator. Release the motor from regulation and free any
+     * associated resources.
+     */
+    public void close()
+    {
+        suspendRegulation();
+        super.close();
     }
 
     /**
@@ -783,6 +803,7 @@ public class NXTRegulatedMotor implements RegulatedMotor
          */
         synchronized void removeMotor(NXTRegulatedMotor m)
         {
+            m.tachoPort.controlMotor(0, TachoMotorPort.FLOAT);
             NXTRegulatedMotor [] newMotors = new NXTRegulatedMotor[activeMotors.length-1];
             int j = 0;
             for(int i = 0; i < activeMotors.length; i++)

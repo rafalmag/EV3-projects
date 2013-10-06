@@ -28,7 +28,13 @@ public class EV3ColorSensor extends UARTSensor implements LampLightDetector,
     
     protected int light = Color.RED;
     
+
     public EV3ColorSensor(UARTPort port)
+    {
+        super(port);
+    }
+
+    public EV3ColorSensor(Port port)
     {
         super(port);
     }

@@ -1,5 +1,7 @@
 package lejos.nxt.addon;
 
+import lejos.nxt.I2CPort;
+import lejos.nxt.Port;
 import lejos.nxt.SensorPort;
 import lejos.nxt.I2CSensor;
 
@@ -26,25 +28,40 @@ public class LMotor extends I2CSensor{
 	public static final int arrMotorUnload[] = {0x01,0x02,0x04,0x08,0x20,0x40,0x80,0x100,0x200};
 	public static final int arrMotorLoad[] = {0x3FE,0x3FD,0x3FB,0x3F7,0x3EF,0x3DF,0x3BF,0x37F,0x2FF,0x1FF};
 	
-	/**
-	 * Constructor
-	 * 
-	 * @param port the port
-	 * @param location the location 
-	 * @param name the name of the servo
-	 * @param SPI_PORT the SPI port
-	 *  
-	 */
-	public LMotor(SensorPort port, int location, String name, byte SPI_PORT){
-		super(port);
-		this.name = name;
-		this.LSC_position = location;
-		
-		this.SPI_PORT = SPI_PORT;
-		
-		this.setAddress((int) NXTe.NXTE_ADDRESS);
-	}	
-	
+    /**
+     * Constructor
+     * 
+     * @param port the port
+     * @param location the location 
+     * @param name the name of the servo
+     * @param SPI_PORT the SPI port
+     *  
+     */
+    public LMotor(I2CPort port, int location, String name, byte SPI_PORT){
+        super(port, NXTe.NXTE_ADDRESS);
+        this.name = name;
+        this.LSC_position = location;
+        
+        this.SPI_PORT = SPI_PORT;
+    }   
+    
+    /**
+     * Constructor
+     * 
+     * @param port the port
+     * @param location the location 
+     * @param name the name of the servo
+     * @param SPI_PORT the SPI port
+     *  
+     */
+    public LMotor(Port port, int location, String name, byte SPI_PORT){
+        super(port, NXTe.NXTE_ADDRESS);
+        this.name = name;
+        this.LSC_position = location;
+        
+        this.SPI_PORT = SPI_PORT;
+    }   
+    
 	/**
 	 * 
 	 * private method to know internal information about 

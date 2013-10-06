@@ -6,7 +6,7 @@ package lejos.nxt;
  * @author Lawrie Griffiths
  *
  */
-public interface I2CPort extends SensorPort {
+public interface I2CPort extends IOPort, BasicSensorPort {
 	
     public static final int STANDARD_MODE = 0;
     public static final int LEGO_MODE = 1;
@@ -17,7 +17,7 @@ public interface I2CPort extends SensorPort {
     /** Use high speed I/O (125KHz) */
     public static final int HIGH_SPEED = 8;
     /** Maximum read/write request length */
-    public static final int MAX_IO = IIC_DATA_LENGTH;
+    public static final int MAX_IO = EV3SensorConstants.IIC_DATA_LENGTH;
     
     /**
      * High level i2c interface. Perform a complete i2c transaction and return
