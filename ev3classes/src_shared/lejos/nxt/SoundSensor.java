@@ -12,12 +12,12 @@ package lejos.nxt;
 public class SoundSensor extends AnalogSensor implements SensorConstants {
 	
 	/**
-	 * Create a sound sensor object attached to the specified open port.
-	 * This sensor will not be configured. All configuration of the sensor port
-	 * must be made externally.
+	 * Create a sound sensor object attached to the specified open port,
+	 * and sets DB or DBA mode.
 	 * @param port open analog sensor port.
+     * @param dba true to set DBA mode, false for DB mode.
 	 */
-	public SoundSensor(AnalogPort port)
+	public SoundSensor(AnalogPort port, boolean dba)
 	{
 	    super(port);
 	    this.port.setTypeAndMode(
