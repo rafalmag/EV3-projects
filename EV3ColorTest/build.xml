@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
     <project name="ColorTest" basedir="." default="copy">
     <property name="source.dir"     value="src"/>
-    <property name="lib.dir"        value="/home/lejosdev/git/ev3/ev3classes"/>
+    <property name="lib.dir"        value="../ev3classes"/>
     <property name="class.dir"      value="build"/>
     <property name="jar.dir"        value="dist"/>
     <property name="main-class"     value="EV3ColorTest"/>
     <property name="lejos.home"     value="/home/root/lejos"/>
-    <property name="ev3.host"       value="192.168.0.6"/>
+    <property name="ev3.host"       value="192.168.0.9"/>
 
     <path id="libraries.path">    
         <fileset dir="${lib.dir}">
