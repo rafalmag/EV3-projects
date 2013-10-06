@@ -47,7 +47,7 @@ public class SumoEyesSensor extends AnalogSensor implements SensorConstants {
     public SumoEyesSensor(AnalogPort port, boolean longRange) {
         super(port);
         this.longRange = longRange;
-        //port.setTypeAndMode(TYPE_LIGHT_ACTIVE,MODE_PCTFULLSCALE);
+        port.setTypeAndMode(TYPE_LIGHT_ACTIVE,MODE_PCTFULLSCALE);
     }
 
     /**

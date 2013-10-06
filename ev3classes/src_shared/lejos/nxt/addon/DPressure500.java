@@ -37,7 +37,7 @@ public class DPressure500 extends AnalogSensor implements SensorConstants, Press
 	
     public DPressure500(AnalogPort port) {
         super(port);
-        //port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
     }
     
     public DPressure500(Port port) {

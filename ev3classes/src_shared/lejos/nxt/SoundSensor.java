@@ -20,6 +20,10 @@ public class SoundSensor extends AnalogSensor implements SensorConstants {
 	public SoundSensor(AnalogPort port)
 	{
 	    super(port);
+	    this.port.setTypeAndMode(
+               (dba ? TYPE_SOUND_DBA
+                    : TYPE_SOUND_DB),
+               MODE_PCTFULLSCALE);   
 	}
 
 	/**

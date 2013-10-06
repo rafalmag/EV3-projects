@@ -22,7 +22,7 @@ public class EOPD extends AnalogSensor implements SensorConstants{
      */
     public EOPD (AnalogPort port){
         super(port);
-        //port.setTypeAndMode(TYPE_LIGHT_INACTIVE, MODE_PCTFULLSCALE);
+        port.setTypeAndMode(TYPE_LIGHT_INACTIVE, MODE_PCTFULLSCALE);
     }
     /**
      * By default the sensor is short range.

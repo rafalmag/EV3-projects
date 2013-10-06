@@ -24,17 +24,33 @@ public class LaserSensor extends AnalogSensor implements SensorConstants
 	private int _zero = 1023;
 	private int _hundred = 0;
 	private boolean laser = false;
-	
-	/**
-	 * Create a laser sensor object attached to the specified port.
-	 * The laser will be turned off by default.
-	 * 
-	 * @param port port, e.g. Port.S1
-	 */
-	public LaserSensor(AnalogPort port)
-	{
-		super(port);
-	}
+    
+    /**
+     * Create a laser sensor object attached to the specified port,
+     * and sets the laser on or off.
+     * @param port port, e.g. Port.S1
+     * @param laser true to turn on the laser, false for laser off.
+     */
+    public LaserSensor(AnalogPort port, boolean laserState)
+    {
+        super(port);
+        this.laser = laserState;
+        this.port.setTypeAndMode(
+               (laserState ? TYPE_LIGHT_ACTIVE
+                           : TYPE_LIGHT_INACTIVE),
+               MODE_PCTFULLSCALE); 
+    }
+    
+    /**
+     * Create a laser sensor object attached to the specified port.
+     * The laser will be turned off by default.
+     * 
+     * @param port port, e.g. Port.S1
+     */
+    public LaserSensor(AnalogPort port)
+    {
+        this(port, false);
+    }
 	
 	/**
 	 * Create a laser sensor object attached to the specified port,

@@ -18,7 +18,7 @@ public class MagneticSensor extends AnalogSensor implements SensorConstants {
 	
     public MagneticSensor(AnalogPort port) {
         super(port);
-        //port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
     }
     
     public MagneticSensor(AnalogPort port, int offset) {
