@@ -37,7 +37,7 @@
     </target>
 
     <target name="copy" depends="jar">
-    	<scp todir="root:@${ev3.host}:/home/root/lejos/samples/">
+    	<scp todir="root:@${ev3.host}:/home/root/lejos/samples/" trust="true">
     	    <fileset file="${jar.dir}/${ant.project.name}.jar"/>
     	</scp>
     </target>
