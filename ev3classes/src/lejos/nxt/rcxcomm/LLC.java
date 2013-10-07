@@ -3,7 +3,7 @@ package lejos.nxt.rcxcomm;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.sensor.RCXLink;
 import lejos.nxt.*;
-import lejos.nxt.addon.*;
+
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

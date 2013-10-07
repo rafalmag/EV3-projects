@@ -69,4 +69,25 @@ public class RemoteMotorPort implements NXTProtocol, TachoMotorPort
 	
 	public void setPWMMode(int mode) {
 	}
+
+    @Override
+    public void close()
+    {
+        // TODO Need to work out what we need to do if anything for this
+        
+    }
+
+    @Override
+    public String getName()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setPinMode(int mode)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

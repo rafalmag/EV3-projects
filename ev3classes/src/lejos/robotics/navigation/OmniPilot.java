@@ -65,6 +65,7 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 	private float spinLinSpeed = 0; // units/s
 	private float spinAngSpeed = 0; // deg/s
 	private float spinTravelDirection = 0; // deg
+	private Battery battery;
 	
 	private double minTurnRadius = 0; // This vehicle can turn withgout moving therefore minimum turn radius = 0
 	
@@ -92,12 +93,14 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 	 */
 	public OmniPilot (float wheelDistanceFromCenter, float wheelDiameter, 
 					RegulatedMotor centralMotor, RegulatedMotor CW120degMotor, RegulatedMotor CCW120degMotor,  
-					boolean centralWheelFrontal, boolean motorReverse) {
+					boolean centralWheelFrontal, boolean motorReverse,
+					Battery battery) {
 		this.wheelBase = wheelDistanceFromCenter;
 		this.wheelDiameter = wheelDiameter;
 		this.motor1 = centralMotor;
 		this.motor2 = CCW120degMotor;
 		this.motor3 = CW120degMotor;
+		this.battery = battery;
 		motor1.addListener(this);
 		motor2.addListener(this);
 		motor3.addListener(this);
@@ -124,9 +127,10 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 	 */
 	public OmniPilot(float wheelDistanceFromCenter, float wheelDiameter, 
 			RegulatedMotor centralMotor, RegulatedMotor CW120degMotor, RegulatedMotor CCW120degMotor,  
-			boolean centralWheelFrontal, boolean motorReverse, Port gyroPort) {
+			boolean centralWheelFrontal, boolean motorReverse, 
+			Battery battery, Port gyroPort) {
 		this(wheelDistanceFromCenter, wheelDiameter,centralMotor, CW120degMotor, CCW120degMotor,  
-				centralWheelFrontal, motorReverse);
+				centralWheelFrontal, motorReverse, battery);
 		gyro = new CruizcoreGyro(gyroPort);
 //		gyro = new CruizcoreGyro(gyroPort), I2CPort.HIGH_SPEED);
 //		gyro = new CruizcoreGyro(gyroPort, I2CPort.LEGO_MODE);
@@ -364,7 +368,7 @@ private void initMatrices(boolean centralWheelForward, boolean motorReverse) {
 	public double getMaxTravelSpeed() {
 		// it is generally assumed, that the maximum accurate speed of Motor is
 		// 100 degree/second * Voltage
-		double maxRadSec = Math.toRadians(Battery.getVoltage()*100f);
+		double maxRadSec = Math.toRadians(battery.getVoltage()*100f);
 		double[] spd = {0, maxRadSec, -maxRadSec};
 		Matrix wheelSpeeds = new Matrix(spd, 3);		
 		Matrix robotSpeeds = kMatrix.times(wheelSpeeds);
@@ -384,7 +388,7 @@ private void initMatrices(boolean centralWheelForward, boolean motorReverse) {
 	public double getRotateMaxSpeed() {
 		// it is generally assumed, that the maximum accurate speed of Motor is
 		// 100 degree/second * Voltage
-		double maxRadSec = Math.toRadians(Battery.getVoltage()*100f);
+		double maxRadSec = Math.toRadians(battery.getVoltage()*100f);
 		Matrix wheelSpeeds = new Matrix(3, 1, maxRadSec);
 		Matrix robotSpeeds = kMatrix.times(wheelSpeeds);
 		return (float) Math.abs(Math.toDegrees(robotSpeeds.get(2,0)));
