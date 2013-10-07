@@ -1,8 +1,8 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import lejos.nxt.Motor;
-import lejos.nxt.NXTRegulatedMotor;
+import lejos.hardware.motor.Motor;
+import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.robotics.RegulatedMotorListener;
 
 

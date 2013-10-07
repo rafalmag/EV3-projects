@@ -2,8 +2,8 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.*; 
 
-import lejos.nxt.Motor;
-import lejos.nxt.NXTRegulatedMotor;
+import lejos.hardware.motor.Motor;
+import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.robotics.navigation.DifferentialPilot;
  
 public class RmiServer {

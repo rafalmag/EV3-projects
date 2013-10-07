@@ -1,7 +1,7 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import lejos.nxt.LocalEV3;
+import lejos.hardware.ev3.LocalEV3;
 
 public class RemoteBattery extends UnicastRemoteObject implements Battery {
 

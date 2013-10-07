@@ -5,13 +5,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-import lejos.nxt.AnalogPort;
-import lejos.nxt.DeviceManager;
-import lejos.nxt.I2CPort;
-import lejos.nxt.I2CSensor;
-import lejos.nxt.Port;
-import lejos.nxt.SensorPort;
-import lejos.nxt.UARTPort;
+import lejos.hardware.port.AnalogPort;
+import lejos.hardware.DeviceManager;
+import lejos.hardware.port.I2CPort;
+import lejos.hardware.sensor.I2CSensor;
+import lejos.hardware.port.Port;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.port.UARTPort;
 
 public class MonitorSensors {
     HashMap<String,String> sensorClasses = new HashMap<String,String>();
