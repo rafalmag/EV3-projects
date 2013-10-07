@@ -1,9 +1,9 @@
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
-import lejos.nxt.LCD;
-import lejos.nxt.Button;
-import lejos.nxt.Sound;
+import lejos.hardware.Button;
+import lejos.hardware.LCD;
+import lejos.hardware.Sound;
 import lejos.util.Delay;
 public class EV3HelloWorld
 {

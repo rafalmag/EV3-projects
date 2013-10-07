@@ -9,8 +9,8 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import lejos.nxt.Button;
-import lejos.nxt.LCD;
+import lejos.hardware.Button;
+import lejos.hardware.LCD;
 
 
 public class Splash

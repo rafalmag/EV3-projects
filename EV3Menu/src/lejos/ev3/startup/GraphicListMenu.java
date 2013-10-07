@@ -1,6 +1,6 @@
 package lejos.ev3.startup;
 
-import lejos.nxt.LCD;
+import lejos.hardware.LCD;
 
 /**
  * Abrams version of a more detailed GraphicMenu for the file menu.

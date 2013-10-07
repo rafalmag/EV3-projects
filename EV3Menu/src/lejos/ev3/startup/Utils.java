@@ -3,7 +3,7 @@ package lejos.ev3.startup;
 import java.io.File;
 import java.io.IOException;
 
-import lejos.nxt.LCD;
+import lejos.hardware.LCD;
 import lejos.util.Delay;
 
 public class Utils

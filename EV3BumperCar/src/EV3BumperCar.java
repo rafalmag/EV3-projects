@@ -1,13 +1,13 @@
 
+import lejos.hardware.Button;
+import lejos.hardware.LCD;
+import lejos.hardware.motor.Motor;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.port.UARTPort;
+import lejos.hardware.sensor.EV3IRSensor;
+import lejos.hardware.sensor.TouchSensor;
+import lejos.hardware.sensor.UltrasonicSensor;
 import lejos.internal.ev3.EV3UARTPort;
-import lejos.nxt.Button;
-import lejos.nxt.EV3IRSensor;
-import lejos.nxt.LCD;
-import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
-import lejos.nxt.TouchSensor;
-import lejos.nxt.UARTPort;
-import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.MirrorMotor;
 //import lejos.robotics.MirrorMotor;
 import lejos.robotics.RegulatedMotor;

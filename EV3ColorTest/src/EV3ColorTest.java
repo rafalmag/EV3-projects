@@ -3,14 +3,14 @@ import java.io.File;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
+import lejos.hardware.LCD;
+import lejos.hardware.Sound;
+import lejos.hardware.motor.Motor;
+import lejos.hardware.motor.NXTRegulatedMotor;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.port.UARTPort;
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.internal.ev3.EV3UARTPort;
-import lejos.nxt.EV3ColorSensor;
-import lejos.nxt.LCD;
-import lejos.nxt.Motor;
-import lejos.nxt.NXTRegulatedMotor;
-import lejos.nxt.SensorPort;
-import lejos.nxt.Sound;
-import lejos.nxt.UARTPort;
 import lejos.util.Delay;
 
 

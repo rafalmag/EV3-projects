@@ -1,7 +1,7 @@
 package lejos.ev3.startup;
 
-import lejos.nxt.LCD;
-import lejos.nxt.LocalEV3;
+import lejos.hardware.LCD;
+import lejos.hardware.ev3.LocalEV3;
 
 /**
  * Draws a battery and the name of the NXT.

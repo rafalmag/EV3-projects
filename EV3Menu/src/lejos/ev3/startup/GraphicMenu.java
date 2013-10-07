@@ -4,8 +4,8 @@ package lejos.ev3.startup;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import lejos.nxt.Button;
-import lejos.nxt.LCD;
+import lejos.hardware.Button;
+import lejos.hardware.LCD;
 import lejos.util.Delay;
 import lejos.util.TextMenu;
 

@@ -2,9 +2,9 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import lejos.hardware.Button;
+import lejos.hardware.LCD;
 import lejos.internal.io.NativeDevice;
-import lejos.nxt.Button;
-import lejos.nxt.LCD;
 
 
 

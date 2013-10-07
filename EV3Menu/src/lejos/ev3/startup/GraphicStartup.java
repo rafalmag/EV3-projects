@@ -17,13 +17,13 @@ import java.util.List;
 
 import lejos.ev3.startup.GraphicListMenu;
 import lejos.ev3.startup.Utils;
-import lejos.nxt.Button;
-import lejos.nxt.LCD;
-import lejos.nxt.LocalEV3;
-import lejos.nxt.Sound;
 import lejos.util.Delay;
 import lejos.ev3.startup.Config;
 import lejos.ev3.startup.Settings;
+import lejos.hardware.Button;
+import lejos.hardware.LCD;
+import lejos.hardware.Sound;
+import lejos.hardware.ev3.LocalEV3;
 
 public class GraphicStartup {
 	

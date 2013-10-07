@@ -8,17 +8,17 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.Sprite;
 
+import lejos.hardware.Button;
+import lejos.hardware.DeviceManager;
+import lejos.hardware.LCD;
+import lejos.hardware.Sound;
+import lejos.hardware.motor.Motor;
+import lejos.hardware.motor.NXTRegulatedMotor;
+import lejos.hardware.port.I2CPort;
+import lejos.hardware.port.UARTPort;
+import lejos.hardware.sensor.I2CSensor;
 import lejos.internal.ev3.EV3I2CPort;
 import lejos.internal.ev3.EV3UARTPort;
-import lejos.nxt.Button;
-import lejos.nxt.DeviceManager;
-import lejos.nxt.I2CPort;
-import lejos.nxt.I2CSensor;
-import lejos.nxt.LCD;
-import lejos.nxt.Motor;
-import lejos.nxt.NXTRegulatedMotor;
-import lejos.nxt.Sound;
-import lejos.nxt.UARTPort;
 import lejos.util.Delay;
 
 /**
