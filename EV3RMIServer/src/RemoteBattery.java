@@ -11,22 +11,22 @@ public class RemoteBattery extends UnicastRemoteObject implements Battery {
 
 	@Override
 	public int getVoltageMilliVolt() throws RemoteException {
-		return LocalEV3.battery().getVoltageMilliVolt();
+		return LocalEV3.get().getBattery().getVoltageMilliVolt();
 	}
 
 	@Override
 	public float getVoltage() throws RemoteException {
-		return LocalEV3.battery().getVoltage();
+		return LocalEV3.get().getBattery().getVoltage();
 	}
 
 	@Override
 	public float getBatteryCurrent() throws RemoteException {
-		return LocalEV3.battery().getBatteryCurrent();
+		return LocalEV3.get().getBattery().getBatteryCurrent();
 	}
 
 	@Override
 	public float getMotorCurrent() throws RemoteException {
-		return LocalEV3.battery().getMotorCurrent();
+		return LocalEV3.get().getBattery().getMotorCurrent();
 	}
 
 }
