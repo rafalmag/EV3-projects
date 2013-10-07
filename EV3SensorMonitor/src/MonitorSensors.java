@@ -3,11 +3,9 @@ import static java.lang.System.out;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
+import lejos.nxt.AnalogPort;
 import lejos.nxt.DeviceManager;
 import lejos.nxt.I2CPort;
 import lejos.nxt.I2CSensor;
@@ -26,14 +24,17 @@ public class MonitorSensors {
     	sensorClasses.put("HiTechncColor   ","lejos.nxt.addon.ColorHTSensor");
     	sensorClasses.put("HiTechncIRLink  ","lejos.nxt.addon.IRLink");
     	sensorClasses.put("HiTechncCompass ","lejos.nxt.addon.CompassHTSensor");
-    	sensorClasses.put("NXTColor","lejos.nxt.ColorSensor");
+    	sensorClasses.put("NXT Color","lejos.nxt.ColorSensor");
+    	// Use LightSensor class for NXT dumb sensors
+    	sensorClasses.put("NXT Dumb","lejos.nxt.LightSensor");
+    	// Use TouchSensor for EV3 dumb sensors
+    	sensorClasses.put("Dumb","lejos.nxt.TouchSensor");
     	sensorClasses.put("LEGOSonar","lejos.nxt.UltrasonicSensor");
     	sensorClasses.put("IR-PROX","lejos.nxt.EV3IRSensor");
     	sensorClasses.put("COL-REFLECT","lejos.nxt.EV3ColorSensor");
     	
         int [] current = new int[DeviceManager.PORTS];
-        UARTPort[] uarts = new UARTPort[DeviceManager.PORTS];
-        I2CPort[] i2c = new I2CPort[DeviceManager.PORTS];
+
         Port[] port = {SensorPort.S1, SensorPort.S2, SensorPort.S3, SensorPort.S4};
         DeviceManager dm = new DeviceManager();
         
@@ -48,41 +49,42 @@ public class MonitorSensors {
                     if (typ == DeviceManager.CONN_INPUT_UART) {
                         out.println("Open port " + i);
                         UARTPort u = port[i].open(UARTPort.class);
-                        uarts[i] = u;
-                        String modeName = uarts[i].getModeName(0);
+                        String modeName = u.getModeName(0);
                         if (modeName.indexOf(0) >= 0)modeName = modeName.substring(0, modeName.indexOf(0));
                         out.println("Uart sensor: " + modeName);
                         String className = sensorClasses.get(modeName);
                         out.println("Sensor class for " + modeName + " is " + className);
                         callGetMethods(className, UARTPort.class, u);
+                        u.close();
                     } else if (typ == DeviceManager.CONN_NXT_IIC){
                         I2CPort ii = port[i].open(I2CPort.class);
-                        i2c[i] = ii;
-                        I2CSensor s = new I2CSensor(i2c[i]);
+                        I2CSensor s = new I2CSensor(ii);
                         String product = s.getProductID();
                         String vendor = s.getVendorID();
                         s.close();
                         out.println("I2c sensor: " + vendor + " " + product);
                         String className = sensorClasses.get(vendor + product);
                         out.println("Sensor class for " + vendor + product + " is " + className);
+                        if (className == null) {
+                        	out.println("Cannot find sensor class, using I2CSensor");
+                        	className = "lejos.nxt.I2CSensor";
+                        }
                         callGetMethods(className, I2CPort.class, ii);
-                    } else {       	
-                    	if (typ == DeviceManager.CONN_NXT_COLOR) {
-                    		String className = sensorClasses.get("NXTColor");
-                    		out.println("Sensor class is " + className);
-                    		// TODO: Call methods of analog port
-                    	}
-                        if (uarts[i] != null) uarts[i].close();
-                        if (i2c[i] != null) i2c[i].close();
-                        uarts[i] = null;
-                        i2c[i] = null;
+                        ii.close();
+                    } else if (typ != DeviceManager.CONN_NONE  && typ != DeviceManager.CONN_ERROR) {       	
+                    	String key = dm.getPortTypeName(typ);
+                		AnalogPort a = port[i].open(AnalogPort.class);
+                		String className = sensorClasses.get(key);
+                		out.println("Sensor class is " + className);
+                		callGetMethods(className,AnalogPort.class, a);
+                		a.close();
                     } 
                 }
             }
         }
     }
     
-    // Construct an instance of the class with a single parameter, and call its parameterless get methods
+    // Construct an instance of the class with a single parameter, and call its parameterless get and is methods
     private void callGetMethods(String className, Class<?> paramClass, Object param) {
     	if (className != null) {
         	Class<?> c;
@@ -103,12 +105,12 @@ public class MonitorSensors {
         }
     }
     
-    // Call the parameterless get methods of the instance of the class
+    // Call the parameterless get and is methods of the instance of the class
     void callGetMethods(Class<?> c, Object o) {
 		try {	    
 		    Method[] allMethods = c.getDeclaredMethods();
 		    for (Method m : allMethods) {
-		        if (!m.getName().startsWith("get")) continue;
+		        if (!m.getName().startsWith("get") && !m.getName().startsWith("is")) continue;
 		        Class<?>[] pType  = m.getParameterTypes();
 		        if (pType.length > 0) continue;
 
