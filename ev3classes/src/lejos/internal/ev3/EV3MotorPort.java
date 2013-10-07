@@ -3,9 +3,9 @@ package lejos.internal.ev3;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import lejos.hardware.port.BasicMotorPort;
+import lejos.hardware.port.TachoMotorPort;
 import lejos.internal.io.NativeDevice;
-import lejos.nxt.BasicMotorPort;
-import lejos.nxt.TachoMotorPort;
 
 /**
  * 

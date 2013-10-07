@@ -1,6 +1,6 @@
 package lejos.util;
-import lejos.nxt.Button;
-import lejos.nxt.LCD;
+import lejos.hardware.Button;
+import lejos.hardware.LCD;
 
 /**
  *Displays a list of items.  The select() method allows the user to scroll the list using the right and left keys to scroll forward and backward 

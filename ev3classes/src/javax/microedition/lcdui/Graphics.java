@@ -1,6 +1,7 @@
 package javax.microedition.lcdui;
 
-import lejos.nxt.LCD;
+import lejos.hardware.LCD;
+
 import javax.microedition.lcdui.game.Sprite;
 
 /**

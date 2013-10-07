@@ -1,7 +1,7 @@
 package lejos.internal.ev3;
 
-import lejos.nxt.Battery;
-import lejos.nxt.EV3SensorConstants;
+import lejos.hardware.Battery;
+import lejos.hardware.sensor.EV3SensorConstants;
 
 /**
  * Class which provides information about the EV3 battery.<br>

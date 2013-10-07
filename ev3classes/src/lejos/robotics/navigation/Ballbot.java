@@ -1,7 +1,7 @@
 package lejos.robotics.navigation;
 
-import lejos.nxt.LCD; // TODO: Use System.out instead. Alt constructor to suppress visual info.
-import lejos.nxt.Sound; // TODO: Visual count-down only, no sound.
+import lejos.hardware.LCD;
+import lejos.hardware.Sound;
 import lejos.robotics.EncoderMotor;
 import lejos.robotics.Gyroscope;
 

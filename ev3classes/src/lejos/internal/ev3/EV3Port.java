@@ -1,13 +1,13 @@
 package lejos.internal.ev3;
-import lejos.nxt.AnalogPort;
-import lejos.nxt.BasicMotorPort;
-import lejos.nxt.EV3SensorConstants;
-import lejos.nxt.I2CPort;
-import lejos.nxt.IOPort;
-import lejos.nxt.Port;
-import lejos.nxt.DeviceException;
-import lejos.nxt.TachoMotorPort;
-import lejos.nxt.UARTPort;
+import lejos.hardware.DeviceException;
+import lejos.hardware.port.AnalogPort;
+import lejos.hardware.port.BasicMotorPort;
+import lejos.hardware.port.I2CPort;
+import lejos.hardware.port.IOPort;
+import lejos.hardware.port.Port;
+import lejos.hardware.port.TachoMotorPort;
+import lejos.hardware.port.UARTPort;
+import lejos.hardware.sensor.EV3SensorConstants;
 
 public class EV3Port implements Port
 {

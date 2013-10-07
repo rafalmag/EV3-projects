@@ -5,8 +5,8 @@ import java.nio.ByteBuffer;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
+import lejos.hardware.port.I2CPort;
 import lejos.internal.io.NativeDevice;
-import lejos.nxt.I2CPort;
 import lejos.util.Delay;
 
 /**

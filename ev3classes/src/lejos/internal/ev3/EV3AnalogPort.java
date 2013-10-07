@@ -2,8 +2,8 @@ package lejos.internal.ev3;
 
 import java.nio.ByteBuffer;
 
+import lejos.hardware.port.AnalogPort;
 import lejos.internal.io.NativeDevice;
-import lejos.nxt.AnalogPort;
 
 import com.sun.jna.Pointer;
 

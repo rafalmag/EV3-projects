@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
+import lejos.hardware.DeviceException;
+import lejos.hardware.DeviceManager;
+import lejos.hardware.port.UARTPort;
 import lejos.internal.io.NativeDevice;
-import lejos.nxt.DeviceManager;
-import lejos.nxt.DeviceException;
-import lejos.nxt.UARTPort;
 import lejos.util.Delay;
 
 /**

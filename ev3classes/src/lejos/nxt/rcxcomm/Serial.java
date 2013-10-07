@@ -1,5 +1,7 @@
 package lejos.nxt.rcxcomm;
 
+import lejos.hardware.port.I2CPort;
+import lejos.hardware.sensor.RCXLink;
 import lejos.nxt.*;
 import lejos.nxt.addon.*;
 import lejos.util.Delay;

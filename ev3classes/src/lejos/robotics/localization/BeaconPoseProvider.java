@@ -2,7 +2,7 @@ package lejos.robotics.localization;
 
 import java.util.ArrayList;
 
-import lejos.nxt.Sound;
+import lejos.hardware.Sound;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.localization.PoseProvider;
 import lejos.robotics.navigation.*;

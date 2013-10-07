@@ -1,9 +1,9 @@
 package lejos.internal.ev3;
 
-import lejos.nxt.BasicSensorPort;
-import lejos.nxt.DeviceManager;
-import lejos.nxt.EV3SensorConstants;
-import lejos.nxt.IOPort;
+import lejos.hardware.DeviceManager;
+import lejos.hardware.port.BasicSensorPort;
+import lejos.hardware.port.IOPort;
+import lejos.hardware.sensor.EV3SensorConstants;
 
 /**
  * This class provides the base operations for local EV3 sensor ports.

@@ -1,6 +1,8 @@
 package lejos.nxt.rcxcomm;
 
+import lejos.hardware.port.I2CPort;
 import lejos.nxt.*;
+
 import java.io.IOException;
 
 /*

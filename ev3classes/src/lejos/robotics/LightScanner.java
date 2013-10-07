@@ -1,6 +1,6 @@
 package lejos.robotics;
 
-import lejos.nxt.Sound;
+import lejos.hardware.Sound;
 import lejos.robotics.RangeReadings;
 import lejos.robotics.RangeReading;
 

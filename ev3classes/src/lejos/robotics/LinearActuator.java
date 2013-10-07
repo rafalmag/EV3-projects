@@ -14,7 +14,7 @@ package lejos.robotics;
  * (ie. mm/sec) rate due to encoder tick granularity of the linear actuator. It is up to the implementor to decide if the 
  * <code>move()</code>  and <code>moveTo()</code> methods should produce regulated movement.
  * 
- * @see lejos.nxt.addon.LnrActrFirgelliNXT
+ * @see lejos.hardware.sensor.LnrActrFirgelliNXT
  * @author Kirk P. Thompson
  */
 public interface LinearActuator extends Encoder {
