@@ -1,7 +1,6 @@
 package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
-import lejos.nxt.*;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

@@ -3,8 +3,8 @@ package lejos.hardware.sensor;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
-import lejos.util.Delay;
-import lejos.util.EndianTools;
+import lejos.utility.Delay;
+import lejos.utility.EndianTools;
 
 /**
  * Support for the Dexter Industries Thermal Infrared Sensor.

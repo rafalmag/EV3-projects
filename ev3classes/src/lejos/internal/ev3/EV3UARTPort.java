@@ -9,7 +9,7 @@ import lejos.hardware.DeviceException;
 import lejos.hardware.DeviceManager;
 import lejos.hardware.port.UARTPort;
 import lejos.internal.io.NativeDevice;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
  * Provide access to EV3 sensor ports operating in UART mode.<p><p>

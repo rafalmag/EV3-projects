@@ -6,8 +6,8 @@ import javax.microedition.lcdui.Image;
 
 import lejos.hardware.Button;
 import lejos.hardware.LCD;
-import lejos.util.Delay;
-import lejos.util.TextMenu;
+import lejos.utility.Delay;
+import lejos.utility.TextMenu;
 
 /**
  * Displays a list of items using icons (32x32).  The select() method allows the user to scroll the list using the right and left keys to scroll forward and backward 

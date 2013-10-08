@@ -4,7 +4,7 @@ import javax.microedition.lcdui.Graphics;
 import lejos.hardware.Button;
 import lejos.hardware.LCD;
 import lejos.hardware.Sound;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 public class EV3HelloWorld
 {
 

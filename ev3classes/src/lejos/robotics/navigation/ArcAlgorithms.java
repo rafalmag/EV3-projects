@@ -2,7 +2,7 @@ package lejos.robotics.navigation; // TODO: Move to lejos.geom?
 
 import java.awt.geom.*;
 
-import lejos.geom.*;
+import lejos.robotics.geometry.*;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

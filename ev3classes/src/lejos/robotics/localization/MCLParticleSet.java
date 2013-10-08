@@ -1,13 +1,14 @@
 package lejos.robotics.localization;
 
 
-import lejos.geom.*;
 import java.io.*;
 import lejos.robotics.*;
 import lejos.robotics.mapping.RangeMap;
 import lejos.robotics.navigation.Move;
 import lejos.robotics.navigation.Pose;
 import java.util.Random;
+
+import lejos.robotics.geometry.*;
 import lejos.robotics.localization.MCLParticle;
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

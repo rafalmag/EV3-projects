@@ -8,8 +8,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import lejos.geom.Line;
-import lejos.geom.Rectangle;
+import lejos.robotics.geometry.Line;
+import lejos.robotics.geometry.Rectangle;
 
 /**
  * <p>This class loads map data from an SVG and produces a LineMap object, which can

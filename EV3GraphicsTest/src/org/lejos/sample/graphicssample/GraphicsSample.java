@@ -19,7 +19,7 @@ import lejos.hardware.port.UARTPort;
 import lejos.hardware.sensor.I2CSensor;
 import lejos.internal.ev3.EV3I2CPort;
 import lejos.internal.ev3.EV3UARTPort;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
  * Demonstrate various leJOS graphics techniques.

@@ -2,7 +2,7 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.LegacySensorPort;
 import lejos.robotics.Tachometer;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

@@ -3,7 +3,7 @@ package lejos.robotics.objectdetection;
 import java.util.ArrayList;
 import lejos.robotics.RangeReading;
 import lejos.robotics.Touch;
-import lejos.geom.Point;
+import lejos.robotics.geometry.Point;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

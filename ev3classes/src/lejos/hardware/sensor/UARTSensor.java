@@ -3,7 +3,7 @@ package lejos.hardware.sensor;
 import lejos.hardware.Device;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.UARTPort;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
  * Base class for EV3 UART based sensors. UART sensor drivers should extend this class

@@ -3,7 +3,7 @@ package lejos.hardware;
 import java.nio.ByteBuffer;
 
 import lejos.internal.io.NativeDevice;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
  * Abstraction for an NXT button.

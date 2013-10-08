@@ -1,7 +1,6 @@
 package lejos.hardware.sensor;
 
 import lejos.hardware.port.LegacySensorPort;
-import lejos.nxt.*;
 import lejos.robotics.*;
 
 /*

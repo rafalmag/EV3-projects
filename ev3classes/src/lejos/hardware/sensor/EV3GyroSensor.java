@@ -3,7 +3,7 @@ package lejos.hardware.sensor;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.UARTPort;
 import lejos.robotics.Gyroscope;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
  * Simple driver for the Lego EV3 Gyro sensor.<br>

@@ -2,16 +2,16 @@ package lejos.robotics.navigation;
 
 import java.util.ArrayList;
 
-import lejos.geom.Point;
 import lejos.hardware.Battery;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.CruizcoreGyro;
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.RegulatedMotorListener;
+import lejos.robotics.geometry.Point;
 import lejos.robotics.navigation.Pose;
-import lejos.util.Delay;
-import lejos.util.Matrix;
+import lejos.utility.Delay;
+import lejos.utility.Matrix;
 
 /*
  *          

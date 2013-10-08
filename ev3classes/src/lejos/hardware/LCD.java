@@ -2,7 +2,8 @@ package lejos.hardware;
 
 
 import lejos.internal.io.NativeDevice;
-import lejos.util.Delay;
+import lejos.utility.Delay;
+
 import com.sun.jna.Pointer;
 /**
  * Provide access to the EV3 LCD display

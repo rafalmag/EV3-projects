@@ -5,7 +5,7 @@ import lejos.hardware.port.AnalogPort;
 import lejos.hardware.port.Port;
 //import lejos.nxt.LCD;
 import lejos.robotics.Gyroscope;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

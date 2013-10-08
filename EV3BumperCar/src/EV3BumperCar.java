@@ -13,7 +13,7 @@ import lejos.robotics.MirrorMotor;
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
  * Demonstration of the Behavior subsumption classes.

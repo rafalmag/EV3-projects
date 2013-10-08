@@ -11,7 +11,7 @@ import lejos.hardware.port.SensorPort;
 import lejos.hardware.port.UARTPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.internal.ev3.EV3UARTPort;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 
 public class EV3ColorTest

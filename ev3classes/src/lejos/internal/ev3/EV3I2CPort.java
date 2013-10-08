@@ -7,7 +7,7 @@ import com.sun.jna.Structure;
 
 import lejos.hardware.port.I2CPort;
 import lejos.internal.io.NativeDevice;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
     Provide access to EV3 I2C sensors.<BR>

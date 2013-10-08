@@ -17,7 +17,7 @@ import java.util.List;
 
 import lejos.ev3.startup.GraphicListMenu;
 import lejos.ev3.startup.Utils;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 import lejos.ev3.startup.Config;
 import lejos.ev3.startup.Settings;
 import lejos.hardware.Button;

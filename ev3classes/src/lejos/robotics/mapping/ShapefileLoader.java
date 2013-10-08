@@ -2,8 +2,9 @@ package lejos.robotics.mapping;
 
 import java.io.*;
 import java.util.ArrayList;
-import lejos.geom.Line;
-import lejos.geom.Rectangle;
+
+import lejos.robotics.geometry.Line;
+import lejos.robotics.geometry.Rectangle;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

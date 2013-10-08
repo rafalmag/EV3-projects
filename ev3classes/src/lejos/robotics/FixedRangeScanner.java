@@ -1,7 +1,7 @@
 package lejos.robotics;
 
 import lejos.robotics.navigation.RotateMoveController;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

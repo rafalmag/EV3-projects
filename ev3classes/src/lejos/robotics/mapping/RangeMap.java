@@ -1,6 +1,6 @@
 package lejos.robotics.mapping;
 
-import lejos.geom.*;
+import lejos.robotics.geometry.*;
 import lejos.robotics.navigation.Pose;
 
 /*

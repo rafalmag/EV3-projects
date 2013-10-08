@@ -4,8 +4,8 @@ import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
 import lejos.robotics.Accelerometer;
 import lejos.robotics.Gyroscope;
-import lejos.util.Delay;
-import lejos.util.EndianTools;
+import lejos.utility.Delay;
+import lejos.utility.EndianTools;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

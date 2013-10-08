@@ -6,7 +6,7 @@ import lejos.hardware.port.Port;
 import lejos.hardware.port.TachoMotorPort;
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.RegulatedMotorListener;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
  * Abstraction for a NXT motor.

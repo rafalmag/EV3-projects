@@ -1,7 +1,7 @@
 package lejos.robotics.navigation;
 
-import lejos.geom.Point;
 import lejos.robotics.*;
+import lejos.robotics.geometry.Point;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

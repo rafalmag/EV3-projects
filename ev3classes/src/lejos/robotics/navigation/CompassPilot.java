@@ -2,7 +2,7 @@ package lejos.robotics.navigation;
 
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.DirectionFinder;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

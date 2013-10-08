@@ -3,7 +3,7 @@ package lejos.hardware.sensor;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
 import lejos.robotics.Accelerometer;
-import lejos.util.EndianTools;
+import lejos.utility.EndianTools;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

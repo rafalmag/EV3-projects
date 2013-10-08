@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import lejos.hardware.LCD;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 public class Utils
 {

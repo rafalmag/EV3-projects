@@ -1,6 +1,6 @@
 package lejos.robotics.localization;
 
-import lejos.geom.Point;
+import lejos.robotics.geometry.Point;
 import lejos.robotics.navigation.Pose;
 
 /**

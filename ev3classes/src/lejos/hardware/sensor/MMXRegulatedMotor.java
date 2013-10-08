@@ -2,7 +2,7 @@ package lejos.hardware.sensor;
 
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.RegulatedMotorListener;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
 * Abstraction to drive a regulated encoder motor with the NXTMMX motor multiplexer. 

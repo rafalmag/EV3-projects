@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import lejos.geom.Point;
-import lejos.geom.Rectangle;
 import lejos.robotics.RangeReading;
 import lejos.robotics.RangeReadings;
+import lejos.robotics.geometry.Point;
+import lejos.robotics.geometry.Rectangle;
 import lejos.robotics.mapping.RangeMap;
 import lejos.robotics.navigation.DestinationUnreachableException;
 import lejos.robotics.navigation.Pose;

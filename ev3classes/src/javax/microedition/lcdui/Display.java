@@ -3,9 +3,9 @@ package javax.microedition.lcdui;
 import lejos.hardware.Button;
 import lejos.hardware.ButtonListener;
 import lejos.hardware.LCD;
-import lejos.util.Timer;
-import lejos.util.TimerListener;
-import lejos.util.Delay;
+import lejos.utility.Delay;
+import lejos.utility.Timer;
+import lejos.utility.TimerListener;
 
 /**
  * 

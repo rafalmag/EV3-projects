@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import lejos.internal.io.NativeDevice;
-import lejos.util.Delay;
+import lejos.utility.Delay;
 
 /**
  * EV3 sound routines.
