@@ -1,4 +1,4 @@
-package lejos.nxt.rcxcomm;
+package lejos.rcx.remote;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

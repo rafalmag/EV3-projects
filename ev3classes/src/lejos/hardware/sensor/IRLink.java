@@ -2,7 +2,7 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.nxt.rcxcomm.Opcode;
+import lejos.rcx.remote.Opcode;
 
 import java.util.*;
 

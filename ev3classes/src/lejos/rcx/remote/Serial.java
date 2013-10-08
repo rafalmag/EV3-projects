@@ -1,4 +1,4 @@
-package lejos.nxt.rcxcomm;
+package lejos.rcx.remote;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.sensor.RCXLink;

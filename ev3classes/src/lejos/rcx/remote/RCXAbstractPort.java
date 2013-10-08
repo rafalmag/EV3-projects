@@ -1,4 +1,4 @@
-package lejos.nxt.rcxcomm;
+package lejos.rcx.remote;
 
 import java.io.IOException;
 import java.io.InputStream;
