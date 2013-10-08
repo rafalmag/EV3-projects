@@ -2,15 +2,13 @@ package lejos.nxt.remote;
 
 import java.io.*;
 
-/*
- * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
- * DO NOT EDIT THE VERSION IN pccomms AS IT WILL BE OVERWRITTEN WHEN THE PROJECT IS BUILT.
- */
+import lejos.hardware.Battery;
+
 
 /**
  * Battery readings from a remote NXT.
  */
-public class RemoteBattery implements NXTProtocol {
+public class RemoteBattery implements Battery, NXTProtocol {
 	
 	private NXTCommand nxtCommand;
 	
@@ -39,6 +37,18 @@ public class RemoteBattery implements NXTProtocol {
 	 */
 	public float getVoltage() {
 	   return (float)(getVoltageMilliVolt() * 0.001);
+	}
+
+	@Override
+	public float getBatteryCurrent() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public float getMotorCurrent() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
 
