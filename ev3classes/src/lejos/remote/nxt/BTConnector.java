@@ -23,7 +23,7 @@ public class BTConnector extends NXTCommConnector  {
 		
 		socket.connect(sa, sa.size());
 		
-		return new BTConnection(socket);
+		return new BTConnection(socket, mode);
 	}
 
 	@Override
