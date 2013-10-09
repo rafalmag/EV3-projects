@@ -26,6 +26,8 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
     protected static final int ANALOG_BAT_V_OFF = 30;
     protected static final int ANALOG_INDCM_OFF = 5156;
     protected static final int ANALOG_INCONN_OFF = 5160;
+    protected static final int ANALOG_NXTCOL_OFF = 4856;
+    protected static final int ANALOG_NXTCOL_SZ = 72;
     protected static NativeDevice dev;
     protected static Pointer pAnalog;
     protected static ByteBuffer inDcm;

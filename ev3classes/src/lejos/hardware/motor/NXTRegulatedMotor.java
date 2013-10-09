@@ -65,6 +65,7 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
     protected int stallTime = 1000;
     protected static final Controller cont = new Controller();
 
+
     static {
         // Start the single controller thread
         cont.setPriority(Thread.MAX_PRIORITY);
@@ -88,6 +89,7 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
         tachoPort = port;
         tachoPort.setPWMMode(TachoMotorPort.PWM_BRAKE);
         reg = new Regulator();
+        reg.resetTachoCount();
         //TODO: Should we take control of the motor at this point?
         //resetTachoCount();
     }
@@ -157,7 +159,7 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
      */
     public int getTachoCount()
     {
-        return tachoPort.getTachoCount();
+        return reg.getTachoCount();
     }
 
     /**
@@ -330,8 +332,8 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
         synchronized(reg)
         {
             // Make sure we are stopped!
-            reg.newMove(0, acceleration, NO_LIMIT, true, true);
-            tachoPort.resetTachoCount();
+            reg.newMove(0, acceleration, NO_LIMIT, false, true);
+            reg.resetTachoCount();
             reg.reset();
         }
     }
@@ -465,11 +467,14 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
         //static final float MOVE_P = 6f;
         //static final float MOVE_I = 0.04f;
         //static final float MOVE_D = 22f;
+        //static final float MOVE_P = 4f;
+        //static final float MOVE_I = 0.04f;
+        //static final float MOVE_D = 10f;
         static final float MOVE_P = 4f;
-        static final float MOVE_I = 0.04f;
-        static final float MOVE_D = 10f;
+        static final float MOVE_I = 0.02f;
+        static final float MOVE_D = 8f;
         static final float HOLD_P = 2f;
-        static final float HOLD_I = 0.04f;
+        static final float HOLD_I = 0.02f;
         static final float HOLD_D = 8f;
         float basePower = 0; //used to calculate power
         float err1 = 0; // used in smoothing
@@ -495,17 +500,28 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
         int newLimit = 0;
         boolean newHold = true;
         int tachoCnt;
+        int zeroTachoCnt;
         public int power;
         int mode;
         boolean active = false;
         int stallCnt = 0;
 
+        int getTachoCount()
+        {
+            return tachoPort.getTachoCount() - zeroTachoCnt;
+        }
+        
+        void resetTachoCount()
+        {
+            zeroTachoCnt = tachoPort.getTachoCount();
+        }
+        
         /**
          * Reset the tachometer readings
          */
         synchronized void reset()
         {
-            curCnt = tachoCnt = tachoPort.getTachoCount();
+            curCnt = tachoCnt = getTachoCount();
             baseTime = now = System.currentTimeMillis();
         }
 
@@ -735,6 +751,7 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
                 // not moving, hold position
                 error = curCnt - tachoCnt;
                 calcPower(error, HOLD_P, HOLD_I, HOLD_D, (float)delta/Controller.UPDATE_PERIOD);
+//System.out.println("" + error + " bp " + basePower);
             }
             else
             {
@@ -768,6 +785,7 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
                 basePower = TachoMotorPort.MAX_POWER;
             else if (basePower < -TachoMotorPort.MAX_POWER)
                 basePower = -TachoMotorPort.MAX_POWER;
+            //newPower = (float) (power*0.75 + newPower*0.25);
             power = (newPower > TachoMotorPort.MAX_POWER ? TachoMotorPort.MAX_POWER : newPower < -TachoMotorPort.MAX_POWER ? -TachoMotorPort.MAX_POWER : Math.round(newPower));
 
             //mode = (power == 0 ? TachoMotorPort.STOP : TachoMotorPort.FORWARD);
@@ -784,9 +802,10 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
      */
     protected static class Controller extends Thread
     {
-        static final int UPDATE_PERIOD = 4;
+        static final int UPDATE_PERIOD = 10;
         NXTRegulatedMotor [] activeMotors = new NXTRegulatedMotor[0];
         boolean running = false;
+        int [] deltas = new int[11];
 
         /**
          * Add a motor to the set of active motors.
@@ -822,7 +841,9 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
             running = false;
             for(NXTRegulatedMotor m : activeMotors)
                 m.tachoPort.controlMotor(0, TachoMotorPort.FLOAT);
-            activeMotors = new NXTRegulatedMotor[0];            
+            activeMotors = new NXTRegulatedMotor[0];
+            for(int i = 0; i < deltas.length; i++)
+                System.out.println("" + ((i+1)*10) + ": " + deltas[i]);
         }
 
 
@@ -840,12 +861,16 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
                     NXTRegulatedMotor [] motors = activeMotors;
                     now += delta;
                     for(NXTRegulatedMotor m : motors)
-                        m.reg.tachoCnt = m.tachoPort.getTachoCount();
+                        m.reg.tachoCnt = m.tachoPort.getTachoCount() - m.reg.zeroTachoCnt;
                     for(NXTRegulatedMotor m : motors)
                         m.reg.regulateMotor(delta);
                     for(NXTRegulatedMotor m : motors)
                         m.tachoPort.controlMotor(m.reg.power, m.reg.mode);
                 }
+                if (delta/10 >= deltas.length)
+                    deltas[deltas.length-1]++;
+                else
+                    deltas[(int)delta/10]++;
                 Delay.msDelay(now + UPDATE_PERIOD - System.currentTimeMillis());
             }	// end keep going loop
         }

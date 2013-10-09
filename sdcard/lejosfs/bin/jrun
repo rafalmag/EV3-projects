@@ -8,4 +8,4 @@ then
         echo classpath: $classpath
         shift 2
 fi
-${LEJOS_HOME}/ejre*/bin/java -classpath $classpath $*
+exec ${LEJOS_HOME}/ejre*/bin/java -classpath $classpath $*

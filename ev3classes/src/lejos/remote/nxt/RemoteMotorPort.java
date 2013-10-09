@@ -1,7 +1,6 @@
 package lejos.remote.nxt;
 
 import lejos.hardware.port.TachoMotorPort;
-import lejos.nxt.*;
 
 import java.io.*;
 
