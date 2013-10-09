@@ -27,8 +27,8 @@ import lejos.hardware.ev3.LocalEV3;
 
 public class GraphicStartup {
 	
-	static final String JAVA_RUN_JAR = "/home/root/lejos/ejre1.7.0_21/bin/java -jar ";
-	static final String JAVA_DEBUG_JAR = "/home/root/lejos/ejre1.7.0_21/bin/java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=y -jar ";
+	static final String JAVA_RUN_JAR = "jrun -jar ";
+	static final String JAVA_DEBUG_JAR = "jrun -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=y -jar ";
 	
 	static final String defaultProgramProperty = "lejos.default_program";
     static final String defaultProgramAutoRunProperty = "lejos.default_autoRun";
@@ -566,7 +566,7 @@ public class GraphicStartup {
                         for (String fn : dir.list()) {
                             File aFile = new File(dir,fn);
                             System.out.println("Deleting " + aFile.getPath());
-                            //aFile.delete();
+                            aFile.delete();
                         }
                     }
                     break;
