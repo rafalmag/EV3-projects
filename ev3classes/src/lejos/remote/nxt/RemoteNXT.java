@@ -10,8 +10,20 @@ public class RemoteNXT implements NXT {
 	private NXTCommand nxtCommand;
 	private NXTComm nxtComm;
 	private Battery battery;
+	private String name;
+	private byte[] address = new byte[6];
 	
 	private RemoteNXT(String name, NXTCommConnector connector) throws IOException {
+		this.name = name;
+		connect(connector);
+	}
+	
+	public RemoteNXT(String name, byte[] address) {
+		this.name = name;
+		this.address = address;
+	}
+	
+	public void connect(NXTCommConnector connector) throws IOException {
         nxtComm = new NXTComm(connector);
         System.out.println("Connecting to " + name);
 		boolean open = nxtComm.open(name, NXTConnection.LCP);
