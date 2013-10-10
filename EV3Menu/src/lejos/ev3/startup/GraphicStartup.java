@@ -20,8 +20,11 @@ import lejos.ev3.startup.Utils;
 import lejos.utility.Delay;
 import lejos.ev3.startup.Config;
 import lejos.ev3.startup.Settings;
+import lejos.hardware.Bluetooth;
 import lejos.hardware.Button;
 import lejos.hardware.LCD;
+import lejos.hardware.LocalBTDevice;
+import lejos.hardware.RemoteBTDevice;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 
@@ -72,11 +75,12 @@ public class GraphicStartup {
     
     private GraphicMenu curMenu;
     private int timeout = 0;
-    private boolean btPowerOn;
+    private boolean btPowerOn = true;
     private boolean btVisibility;
     private static String version = "Unknown";
     private static String hostname;
     private List<String> ips = getIPAddresses();
+    LocalBTDevice bt = Bluetooth.getLocalDevice();
     
     /**
      * Main method
@@ -200,7 +204,8 @@ public class GraphicStartup {
             newScreen("Bluetooth");
             LCD.drawString("Power", 0, 1);
             LCD.drawString(btPowerOn ? "on" : "off", 11, 1);
-            //visible = Bluetooth.getVisibility() == 1;
+            visible = bt.getVisibility();
+            System.out.println("Visibility is " + visible);
             if (btPowerOn)
             {
                 LCD.drawString("Visibility", 0, 2);
@@ -230,8 +235,15 @@ public class GraphicStartup {
                     bluetoothDevices();
                     break;
                 case 3:
-                    //Bluetooth.setVisibility((byte) (visible ? 0 : 1));
-                    btVisibility = !visible;
+                	visible = !visible;
+                    btVisibility = visible;
+                    System.out.println("Setting visibility to " + btVisibility);
+					try {
+						bt.setVisibility(btVisibility);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                     //updateBTIcon();
                     ind.updateNow();
                     break;
@@ -335,19 +347,25 @@ public class GraphicStartup {
      */
     private void bluetoothSearch()
     {
-        /*newScreen("Searching");
-        ArrayList<RemoteDevice> devList; 
-        indiBT.incCount();
+        newScreen("Searching");
+        ArrayList<RemoteBTDevice> devList; 
+        //indiBT.incCount();
+        devList = null;
         try
         {
         	// 0 means "search for all"
-	        devList = Bluetooth.inquire(5, 10, 0);
+	        try {
+				devList = (ArrayList<RemoteBTDevice>) bt.search();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
 	    finally
 	    {
-	    	indiBT.decCount();
+	    	//indiBT.decCount();
 	    }
-        if (devList.size() <= 0)
+        if (devList == null || devList.size() <= 0)
         {
             msg("No devices found");
             return;
@@ -357,9 +375,9 @@ public class GraphicStartup {
         String[] icons = new String[devList.size()];
         for (int i = 0; i < devList.size(); i++)
         {
-            RemoteDevice btrd = devList.get(i);
-            names[i] = btrd.getFriendlyName(false);
-            icons[i] = getDeviceIcon(btrd.getDeviceClass());
+            RemoteBTDevice btrd = devList.get(i);
+            names[i] = btrd.getName();
+            //icons[i] = getDeviceIcon(btrd.getDeviceClass());
         }
         GraphicListMenu searchMenu = new GraphicListMenu(names, icons);
         searchMenu.setParentIcon(ICSearch);
@@ -372,16 +390,16 @@ public class GraphicStartup {
             selected = getSelection(searchMenu, selected);
             if (selected >= 0)
             {
-                RemoteDevice btrd = devList.get(selected);
+                RemoteBTDevice btrd = devList.get(selected);
                 newScreen();
-                LCD.bitBlt(
-                	Utils.stringToBytes8(getDeviceIcon(btrd.getDeviceClass()))
-                	, 7, 7, 0, 0, 2, 16, 7, 7, LCD.ROP_COPY);
+                //LCD.bitBlt(
+                //	Utils.stringToBytes8(getDeviceIcon(btrd.getDeviceClass()))
+                //	, 7, 7, 0, 0, 2, 16, 7, 7, LCD.ROP_COPY);
                 LCD.drawString(names[selected], 2, 2);
-                LCD.drawString(btrd.getBluetoothAddress(), 0, 3);
+                LCD.drawString(btrd.getAddress(), 0, 3);
                 int subSelection = getSelection(subMenu, 0);
                 if (subSelection == 0){
-                    newScreen("Pairing");
+                    /*newScreen("Pairing");
                     Bluetooth.addDevice(btrd);
                     // !! Assuming 4 length
                     byte[] pin = { '0', '0', '0', '0' };
@@ -401,10 +419,10 @@ public class GraphicStartup {
                         Bluetooth.removeDevice(btrd);
                     }
                     LCD.drawString("Press any key", 0, 7);
-                    getButtonPress();
+                    getButtonPress();*/
                 }
             }
-        } while (selected >= 0);*/
+        } while (selected >= 0);
     }
 
     /**
