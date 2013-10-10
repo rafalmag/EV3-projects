@@ -19,7 +19,6 @@ import lejos.ev3.startup.GraphicListMenu;
 import lejos.ev3.startup.Utils;
 import lejos.utility.Delay;
 import lejos.ev3.startup.Config;
-import lejos.ev3.startup.Settings;
 import lejos.hardware.Bluetooth;
 import lejos.hardware.Button;
 import lejos.hardware.LCD;
@@ -27,6 +26,7 @@ import lejos.hardware.LocalBTDevice;
 import lejos.hardware.RemoteBTDevice;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
+import lejos.internal.io.Settings;
 
 public class GraphicStartup {
 	
@@ -677,42 +677,50 @@ public class GraphicStartup {
      */
     private void soundMenu()
     {
-        String[] soundMenuData = new String[]{"Volume:    ", "Key click: "};
+        String[] soundMenuData = new String[]{"Volume:    ", "Key volume: ", "Key freq: ", "Key length: "};
         String[] soundMenuData2 = new String[soundMenuData.length];
-        GraphicMenu menu = new GraphicMenu(soundMenuData2, new String[] {ICSound,ICSound},3);
+        GraphicMenu menu = new GraphicMenu(soundMenuData2, new String[] {ICSound,ICSound, ICSound, ICSound},3);
         int[][] Volumes =
         {
             {
                 Sound.getVolume() / 10, 784, 250, 0
             },
             {
-                Button.getKeyClickVolume() / 10, Button.getKeyClickTone(1), Button.getKeyClickLength(), 0
+                Button.getKeyClickVolume() / 10, Button.getKeyClickTone(1) / 200, Button.getKeyClickLength() / 10, 0
+            },
+            {
+                Button.getKeyClickVolume() / 10, Button.getKeyClickTone(1) / 200, Button.getKeyClickLength() / 10, 0
+            },
+            {
+                Button.getKeyClickVolume() / 10, Button.getKeyClickTone(1) / 200, Button.getKeyClickLength() /10, 0
             }
         };
         int selection = 0;
-        // Make a note of starting volumes so we know if it changes
+        // Make a note of starting values so we know if they change
         for (int i = 0; i < Volumes.length; i++)
-            Volumes[i][3] = Volumes[i][0];
-        // remember and Turn of tone for the enter key
+            Volumes[i][3] = Volumes[i][(i == 0 ? 0 : i-1)];
+        // remember and Turn off tone for the enter key
         int tone = Button.getKeyClickTone(Button.ID_ENTER);
         Button.setKeyClickTone(Button.ID_ENTER, 0);
         do {
             newScreen("Sound");
             for (int i = 0; i < Volumes.length; i++)
-                soundMenuData2[i] = soundMenuData[i] + formatVol(Volumes[i][0]);
+                soundMenuData2[i] = soundMenuData[i] + formatVol(Volumes[i][(i == 0 ? 0 : i -1)]);
             menu.setItems(soundMenuData2);
             selection = getSelection(menu, selection);
             if (selection >= 0)
             {
-                Volumes[selection][0]++;
-                Volumes[selection][0] %= 11;
+                Volumes[selection][(selection == 0 ? 0 : selection -1)]++;
+                Volumes[selection][(selection == 0 ? 0 : selection -1)] %= 11;
+                if (selection > 1 && Volumes[selection][(selection == 0 ? 0 : selection -1)] == 0)
+                	Volumes[selection][(selection == 0 ? 0 : selection -1)] = 1;
                 if (selection == 0)
                 {
                     Sound.setVolume(Volumes[0][0] * 10);
-                    Sound.playNote(Sound.XYLOPHONE, Volumes[selection][1], Volumes[selection][2]);
+                    Sound.playTone(1000, Volumes[selection][1], Volumes[selection][2]);
                 }
                 else
-                    Sound.playTone(Volumes[selection][1], Volumes[selection][2], -Volumes[selection][0] * 10);
+                    Sound.playTone(Volumes[selection][1] * 200, Volumes[selection][2] * 10, Volumes[selection][0] * 10);
             }
         } while (selection >= 0);
         // Make sure key click is back on and has new volume
@@ -723,6 +731,10 @@ public class GraphicStartup {
             Settings.setProperty(Sound.VOL_SETTING, String.valueOf(Volumes[0][0] * 10));
         if (Volumes[1][0] != Volumes[1][3])
             Settings.setProperty(Button.VOL_SETTING, String.valueOf(Volumes[1][0] * 10));
+        if (Volumes[2][1] != Volumes[2][3])
+            Settings.setProperty(Button.FREQ_SETTING, String.valueOf(Volumes[2][1] * 200));
+        if (Volumes[3][2] != Volumes[3][3])
+            Settings.setProperty(Button.LEN_SETTING, String.valueOf(Volumes[3][2] * 10));
     }
     
     /**
