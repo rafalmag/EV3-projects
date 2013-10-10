@@ -1,7 +1,10 @@
 import lejos.hardware.Bluetooth;
+import lejos.hardware.sensor.LightSensor;
+import lejos.hardware.sensor.TouchSensor;
 import lejos.remote.nxt.NXTCommConnector;
 import lejos.remote.nxt.RemoteNXT;
 import lejos.remote.nxt.NXT;
+import lejos.remote.nxt.RemoteNXTAnalogPort;
 
 public class NXTRemote {
 
@@ -12,7 +15,14 @@ public class NXTRemote {
 		NXT nxt = RemoteNXT.get(NXT, connector);
 		
 		System.out.println("Battery voltage is " + nxt.getBattery().getVoltage());
+		
+		LightSensor light = new LightSensor(nxt.getPort("S1").open(RemoteNXTAnalogPort.class));
+		
+		System.out.println("Light sensor : " + light.getLightValue());
 
+		TouchSensor touch = new TouchSensor(nxt.getPort("S2"));
+		
+		System.out.println("Touch sensor isPressed: " + touch.isPressed());
 	}
 
 }

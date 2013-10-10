@@ -4,7 +4,7 @@
     <property name="lib.dir"        value="../ev3classes"/>
     <property name="class.dir"      value="build"/>
     <property name="jar.dir"        value="dist"/>
-    <property name="main-class"     value="Search"/>
+    <property name="main-class"     value="NXTRemote"/>
     <property name="lejos.home"     value="/home/root/lejos"/>
     <property name="ev3.host"       value="192.168.0.9"/>
 
