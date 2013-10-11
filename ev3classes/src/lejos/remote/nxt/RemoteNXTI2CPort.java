@@ -1,108 +1,38 @@
 package lejos.remote.nxt;
 
-import java.nio.ByteBuffer;
-
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import java.io.IOException;
 
 import lejos.hardware.port.I2CPort;
-import lejos.internal.io.NativeDevice;
-import lejos.utility.Delay;
 
-/**
-    Provide access to EV3 I2C sensors.<BR>
-    NOTE: The EV3 iic kernel module provides the capability to make an i2c sensor 
-    have a similar interface to that used for uart based sensors. In particular it
-    provides a mechanism to have the kernel poll the sensor. However this mode seems
-    to be of limited use because most i2c sensors provide multiple data values etc.
-    Because of this we only implement the basic i2c interface.
- */
 public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
 {
+	
     public RemoteNXTI2CPort(NXTCommand nxtCommand) {
 		super(nxtCommand);
 	}
 
-
-	protected static NativeDevice i2c;
-    protected static Pointer pIic;
-    protected static ByteBuffer iicStatus;
-    protected static ByteBuffer iicChanged;
-    static {
-        initDeviceIO();
-    }
-    protected static final int IIC_SET_CONN = 0xc00c6902;
-    protected static final int IIC_READ_TYPE_INFO = 0xc03c6903;
-    protected static final int IIC_SETUP = 0xc04c6905;
-    protected static final int IIC_SET = 0xc02c6906;
-    
-    protected static final int IIC_SIZE = 42748;
-    protected static final int IIC_STATUS_OFF = 42608;
-    protected static final int IIC_CHANGED_OFF = 42612;
-    
-    protected static final int IO_TIMEOUT = 2000;
-
-    public static class IICDATA extends Structure
-    {
-      public int  Result;
-      public byte Port;
-      public byte Repeat;
-      public short Time;
-      public byte WrLng;
-      public byte[] WrData = new byte[IIC_DATA_LENGTH];
-      public byte RdLng;
-      public byte[] RdData = new byte[IIC_DATA_LENGTH];
-      
-      public IICDATA()
-      {
-          this.setAlignType(Structure.ALIGN_NONE);
-      }
-    };
-    protected IICDATA iicdata = new IICDATA();
-    
-    public static final int STANDARD_MODE = 0;
-    public static final int LEGO_MODE = 1;
-    public static final int ALWAYS_ACTIVE = 2;
-
-   
-    /** Do not release the i2c bus between requests */
-    public static final int NO_RELEASE = 4;
-    /** Use high speed I/O (125KHz) */
-    public static final int HIGH_SPEED = 8;
-    /** Maximum read/write request length */
-    public static final int MAX_IO = IIC_DATA_LENGTH;
-
     protected boolean getChanged()
     {
-        return iicChanged.get(port) != 0;
+        return false;
     }
     
     protected byte getStatus()
     {
-        return iicStatus.get(port);
+        return 0;
     }
 
     protected void reset()
     {
-        i2c.ioctl(IIC_SET_CONN, devCon(port, CONN_NONE, 0, 0));        
+    	// Do nothing
     }
 
     protected void setOperatingMode(int typ, int mode)
     {
-        i2c.ioctl(IIC_SET_CONN, devCon(port, CONN_NXT_IIC, typ, mode));        
+    	// Do nothing
     }
     
     protected boolean initSensor()
     {
-        // Set pin configuration and power for standard i2c sensor.
-        setPinMode(CMD_FLOAT);
-        reset();
-        Delay.msDelay(100);
-        setOperatingMode(TYPE_IIC_UNKNOWN, 255);
-        Delay.msDelay(100);
-        setOperatingMode(TYPE_IIC_UNKNOWN, 255);        
-        Delay.msDelay(100);
-        //System.out.println("Status " + getStatus() + " changed " + getChanged());
         return true;
     }
     
@@ -139,46 +69,39 @@ public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
             int writeOffset, int writeLen, byte[] readBuf, int readOffset,
             int readLen)
     {
-        long timeout = System.currentTimeMillis() + IO_TIMEOUT;
-        //System.out.println("ioctl: " + deviceAddress + " wlen " + writeLen);
-        iicdata.Port = (byte)port;
-        iicdata.Result = -1;
-        iicdata.Repeat = 1;
-        iicdata.Time = 0;
-        iicdata.WrLng = (byte)(writeLen + 1);
-        System.arraycopy(writeBuf, writeOffset, iicdata.WrData, 1, writeLen);
-        iicdata.WrData[0] = (byte)(deviceAddress >> 1);
-        iicdata.WrLng = (byte)(writeLen + 1);
-        // note -ve value due to Lego's crazy reverse order stuff
-        iicdata.RdLng = (byte)-readLen;
-        iicdata.write();
-        while(timeout > System.currentTimeMillis())
-        {
-            iicdata.write();
-            i2c.ioctl(IIC_SETUP, iicdata.getPointer());
-            iicdata.read();
-            //System.out.println("Ioctl result: " + iicdata.Result);
-            if (iicdata.Result < 0)
-                return -1;
-            if (iicdata.Result == STATUS_OK)
-            {
-                if (readLen > 0)
-                    System.arraycopy(iicdata.RdData, 0, readBuf, readOffset,  readLen);
-                return readLen;
-            }
-            Thread.yield();
-        }
-        //System.out.println("Timeout");
-        return -1;
-    }
-    
-    
-    private static void initDeviceIO()
-    {
-        i2c = new NativeDevice("/dev/lms_iic");
-        pIic = i2c.mmap(IIC_SIZE);
-        iicStatus = pIic.getByteBuffer(IIC_STATUS_OFF, PORTS);
-        iicChanged = pIic.getByteBuffer(IIC_CHANGED_OFF, PORTS*2);
-    }
-    
+    	System.out.println("Remote I2C transaction on port: " + port + " , address: " + deviceAddress);
+		byte [] txData = new byte[writeLen + 1];
+	    txData[0] =(byte) deviceAddress;
+	    System.arraycopy(writeBuf, writeOffset, txData, 1, writeLen);
+		int status;
+		try {
+			nxtCommand.LSWrite((byte) port, txData, (byte) readLen);
+		} catch (IOException ioe) {
+			return -1;
+		}
+		
+		do {
+			try {
+				byte[] ret = nxtCommand.LSGetStatus((byte) port);
+				if (ret == null || ret.length < 1) return -1;
+				status = (int) ret[0];
+			} catch (IOException e) {
+				return -1;
+			}
+			
+		} while (status == ErrorMessages.PENDING_COMMUNICATION_TRANSACTION_IN_PROGRESS || 
+				 status == ErrorMessages.SPECIFIED_CHANNEL_CONNECTION_NOT_CONFIGURED_OR_BUSY);
+
+		try {
+			byte [] ret = nxtCommand.LSRead((byte) port);
+            if (ret == null) return -1;
+            if (readLen > ret.length) readLen = ret.length;
+            if (readLen > 0)
+                System.arraycopy(ret, 0, readBuf, readOffset, readLen);
+		} catch (IOException ioe) {
+			return -1;
+		}
+
+		return readLen;
+    }  
 }

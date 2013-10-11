@@ -50,7 +50,7 @@ public class RemoteNXTPort implements Port
         case SENSOR_PORT:
             if (portclass == RemoteNXTAnalogPort.class || portclass == AnalogPort.class)
                 p = new RemoteNXTAnalogPort(nxtCommand);
-            else if (portclass == RemoteNXTI2CPort.class)
+            else if (portclass == RemoteNXTI2CPort.class|| portclass == I2CPort.class)
                 p = new RemoteNXTI2CPort(nxtCommand);
             break;
         case MOTOR_PORT:

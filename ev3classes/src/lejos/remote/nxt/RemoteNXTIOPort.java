@@ -1,6 +1,5 @@
 package lejos.remote.nxt;
 
-import lejos.hardware.DeviceManager;
 import lejos.hardware.port.BasicSensorPort;
 import lejos.hardware.port.IOPort;
 import lejos.hardware.sensor.EV3SensorConstants;
@@ -113,25 +112,6 @@ public abstract class RemoteNXTIOPort implements IOPort, BasicSensorPort, EV3Sen
         }
     }
     
-    /**
-     * Create and return a devCon structure ready for use. Note that this structure
-     * when used will impact all of the UART ports currently active. Thus the values
-     * used for other ports in earlier operations must be preserved.
-     * @param p port number
-     * @param conn connection type
-     * @param typ sensor type
-     * @param mode operating mode
-     * @return the DEVCON structure ready for use
-     */
-    protected synchronized static byte[] devCon(int p, int conn, int typ, int mode)
-    {
-        // structure is 3 byte arrays
-        //byte [] dc = new byte[3*PORTS];
-        dc[p] = (byte)conn;
-        dc[p + PORTS] = (byte) typ;
-        dc[p + 2*PORTS] = (byte) mode;
-        return dc;
-    }
     
    /**
      * Set the port pins up ready for use.
@@ -139,8 +119,6 @@ public abstract class RemoteNXTIOPort implements IOPort, BasicSensorPort, EV3Sen
      */
     public void setPinMode(int mode)
     {
-        //System.out.println("Set Pin mode port " + port + " value " + mode);
-        DeviceManager.getLocalDeviceManager().setPortMode(port, mode);
     }
 
 }
