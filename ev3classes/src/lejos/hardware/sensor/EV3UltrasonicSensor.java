@@ -1,45 +1,117 @@
 package lejos.hardware.sensor;
+import lejos.hardware.port.Port;
 import lejos.hardware.port.UARTPort;
-import lejos.robotics.RangeFinder;
+import lejos.robotics.SampleProvider;
 
 /**
- * Basic sensor driver for the Lego EV3 Ultrasonic sensor.<br>
- * TODO: Need to implement other modes. Consider implementing other methods
- * to allow this device to be used in place of the NXT device (getDistance) etc.
- * @author andy
+ * Sensor driver for the Lego EV3 Ultrasonic sensor.<br>
+ * 
+ * @author Aswin Bouwmeester
  *
  */
-public class EV3UltrasonicSensor extends UARTSensor implements RangeFinder
+public class EV3UltrasonicSensor extends UARTSensor 
 {
+	
+  /** 
+   * Represent the Ultrasonic sensor in distance mode
+   */
+	public final SampleProvider distanceMode;
 
+	/** 
+	 * Represent the Ultrasonic sensor in listen mode
+   */
+	public final SampleProvider listenMode;
+
+	private static final int DISABLED=3;
+	private static final int SWITCHDELAY=200;
+	
     /**
-     * Create the sensor class. The sensor will be set to return measurements in CM.
+     * Create the Ultrasonic sensor class. 
+     * @param port
+     */
+    public EV3UltrasonicSensor(Port port)
+    {
+        super(port,0);
+        distanceMode=new DistanceMode();
+        listenMode=new ListenMode();
+    }
+    
+    /**
+     * Create the Ultrasonic sensor class. 
      * @param port
      */
     public EV3UltrasonicSensor(UARTPort port)
     {
-        super(port);
+        super(port,0);
+        distanceMode=new DistanceMode();
+        listenMode=new ListenMode();
     }
-
+    
+    
     /**
-     * {@inheritDoc}
+     * Enable the sensor. This puts the indicater LED on.
      */
-    @Override
-    public float getRange()
-    {
-        return (float)port.getShort()/10.0f;
+    public void enable() {
+    	switchMode(0,SWITCHDELAY);
     }
-
+    
     /**
-     * {@inheritDoc}
+     * Disable the sensor. This puts the indicater LED off.
      */
-    @Override
-    public float[] getRanges()
-    {
-        // TODO Work out how to use other modes, maybe change this
-        float [] result = new float[1];
-        result[0] = getRange();
-        return result;
+    public void disable() {
+    	switchMode(DISABLED,SWITCHDELAY);
     }
+    
+    /** Indicate that the sensor is enabled.
+     * @return
+     * True, when the sensor is enabled. <br>
+     * False, when the sensor is disabled.
+     */
+    public boolean isEnabled() {
+    	return (currentMode == DISABLED) ? false: true;
+    }
+    
+ 
+    
+    /** 
+     * Represents a Ultrasonic sensor in distance mode
+     */
+    private class DistanceMode implements SampleProvider {
+    	private static final int MODE=0;
+    	private static final float toSI=0.001f;
 
+			@Override
+			public int sampleSize() {
+				return 1;
+			}
+
+			@Override
+			public void fetchSample(float[] sample, int offset) {
+				if (currentMode == DISABLED) return;
+				switchMode(MODE,SWITCHDELAY);
+				int raw=port.getShort();
+				sample[offset]= (raw==2550) ? Float.POSITIVE_INFINITY : (float)raw*toSI;
+			}
+    	
+    }
+    
+    /** 
+     * Represents a Ultrasonic sensor in listen mode
+     */
+    private class ListenMode implements SampleProvider {
+    	private static final int MODE=2;
+    	
+			@Override
+			public int sampleSize() {
+				return 1;
+			}
+
+			@Override
+			public void fetchSample(float[] sample, int offset) {
+				if (currentMode == DISABLED) return;
+				switchMode(MODE,SWITCHDELAY);
+				sample[offset]=port.getShort() & 0xff;
+			}  	
+    }
+ 
 }
