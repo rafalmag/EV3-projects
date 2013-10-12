@@ -1,5 +1,7 @@
 package lejos.hardware.sensor;
 
+import lejos.hardware.port.AnalogPort;
+import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
 import lejos.robotics.*;
 
@@ -17,18 +19,17 @@ import lejos.robotics.*;
  * determine the "LEGO" color currently being viewed.
  * @author andy
  */
-public class ColorSensor implements LampLightDetector, ColorDetector, SensorConstants
+public class ColorSensor extends AnalogSensor implements LampLightDetector, ColorDetector, SensorConstants
 {
 
     protected static int[] colorMap =
     {
         -1, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED, Color.WHITE
     };
-    protected SensorPort port;
     protected int type;
     private int zero = 1023;
     private int hundred = 0;
-    private int[] all_vals = new int[4];
+    private short[] ADRaw = new short[5];
     private int lampColor = Color.NONE;
 
     /**
@@ -60,7 +61,7 @@ public class ColorSensor implements LampLightDetector, ColorDetector, SensorCons
      * Create a new Color Sensor instance and bind it to a port.
      * @param port Port to use for the sensor.
      */
-    public ColorSensor(SensorPort port)
+    public ColorSensor(AnalogPort port)
     {
         this(port, Color.WHITE);
     }
@@ -71,10 +72,29 @@ public class ColorSensor implements LampLightDetector, ColorDetector, SensorCons
      * @param port Port to use for the sensor.
      * @param color The floodlight color.
      */
-    public ColorSensor(SensorPort port, int color)
+    public ColorSensor(AnalogPort port, int color)
     {
-        this.port = port;
-        port.enableColorSensor();
+        super(port);
+        setFloodlight(color);
+    }
+    /**
+     * Create a new Color Sensor instance and bind it to a port.
+     * @param port Port to use for the sensor.
+     */
+    public ColorSensor(Port port)
+    {
+        this(port, Color.WHITE);
+    }
+
+    /**
+     * Create a new Color Sensor instance and bind it to a port. Set the
+     * floodlight to the specified color.
+     * @param port Port to use for the sensor.
+     * @param color The floodlight color.
+     */
+    public ColorSensor(Port port, int color)
+    {
+        super(port);
         setFloodlight(color);
     }
 
@@ -84,8 +104,21 @@ public class ColorSensor implements LampLightDetector, ColorDetector, SensorCons
      */
     protected void setType(int type)
     {
-        port.setType(type);
-        this.type = type;
+        if (type != this.type)
+        {
+            port.setPinMode(type);
+            this.type = type;
+        }
+    }
+    
+    protected void readRaw()
+    {
+        port.getShorts(ADRaw, 0, ADRaw.length-1);
+    }
+
+    protected void readFull()
+    {
+        port.getShorts(ADRaw, 0, ADRaw.length);
     }
 
     /**
@@ -95,12 +128,12 @@ public class ColorSensor implements LampLightDetector, ColorDetector, SensorCons
     public int getLightValue()
     {
         int val;
+        readRaw();
         if (this.type == TYPE_COLORFULL)
         {
-            port.readValues(all_vals);
-            val = (all_vals[RED_INDEX] + all_vals[BLUE_INDEX] + all_vals[GREEN_INDEX]) / 3;
+            val = (ADRaw[RED_INDEX] + ADRaw[BLUE_INDEX] + ADRaw[GREEN_INDEX]) / 3;
         } else
-            val = port.readValue();
+            val = ADRaw[RED_INDEX + this.type - TYPE_COLORRED];
         return val;
     }
 
@@ -121,12 +154,12 @@ public class ColorSensor implements LampLightDetector, ColorDetector, SensorCons
     public int getRawLightValue()
     {
         int val;
+        readRaw();
         if (this.type == TYPE_COLORFULL)
         {
-            port.readRawValues(all_vals);
-            val = (all_vals[RED_INDEX] + all_vals[BLUE_INDEX] + all_vals[GREEN_INDEX]) / 3;
+            val = (ADRaw[RED_INDEX] + ADRaw[BLUE_INDEX] + ADRaw[GREEN_INDEX]) / 3;
         } else
-            val = port.readRawValue();
+            val = ADRaw[RED_INDEX + this.type - TYPE_COLORRED];
         return val;
     }
 
@@ -141,15 +174,9 @@ public class ColorSensor implements LampLightDetector, ColorDetector, SensorCons
      */
     public ColorSensor.Color getColor()
     {
-        if (type != TYPE_COLORFULL)
-        {
-            int temp_type = type;
-            setType(TYPE_COLORFULL);
-            port.readValues(all_vals);
-            this.setType(temp_type);
-        } else
-            port.readValues(all_vals);
-        return new Color(all_vals[RED_INDEX], all_vals[GREEN_INDEX], all_vals[BLUE_INDEX], all_vals[BLANK_INDEX], this.getColorID());
+        setType(TYPE_COLORFULL);
+        readFull();
+        return new Color(ADRaw[RED_INDEX], ADRaw[GREEN_INDEX], ADRaw[BLUE_INDEX], ADRaw[BLANK_INDEX], colorMap[ADRaw[BLANK_INDEX+1]]);
     }
 
     /**
@@ -158,15 +185,9 @@ public class ColorSensor implements LampLightDetector, ColorDetector, SensorCons
      */
     public ColorSensor.Color getRawColor()
     {
-        if (type != TYPE_COLORFULL)
-        {
-            int temp_type = type;
-            setType(TYPE_COLORFULL);
-            port.readRawValues(all_vals);
-            this.setType(temp_type);
-        } else
-            port.readRawValues(all_vals);
-        return new Color(all_vals[RED_INDEX], all_vals[GREEN_INDEX], all_vals[BLUE_INDEX], all_vals[BLANK_INDEX], Color.NONE);
+        setType(TYPE_COLORFULL);
+        readRaw();
+        return new Color(ADRaw[RED_INDEX], ADRaw[GREEN_INDEX], ADRaw[BLUE_INDEX], ADRaw[BLANK_INDEX], Color.NONE);
     }
 
     public int getFloodlight()
@@ -267,17 +288,8 @@ public class ColorSensor implements LampLightDetector, ColorDetector, SensorCons
      */
     public int getColorID()
     {
-        int col;
-        if (type != TYPE_COLORFULL)
-        {
-            int temp_type = this.type;
-            this.setType(TYPE_COLORFULL);
-            col = port.readValue();
-            this.setType(temp_type);
-        } else
-            col = port.readValue();
-        if (col <= 0)
-            return Color.NONE;
-        return colorMap[col];
+        setType(TYPE_COLORFULL);
+        readFull();
+        return colorMap[ADRaw[BLANK_INDEX+1]];
     }
 }

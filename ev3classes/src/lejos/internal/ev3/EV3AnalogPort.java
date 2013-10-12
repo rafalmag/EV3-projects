@@ -2,8 +2,10 @@ package lejos.internal.ev3;
 
 import java.nio.ByteBuffer;
 
+import lejos.hardware.DeviceManager;
 import lejos.hardware.port.AnalogPort;
 import lejos.internal.io.NativeDevice;
+import lejos.utility.Delay;
 
 import com.sun.jna.Pointer;
 
@@ -28,14 +30,43 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
     protected static final int ANALOG_INCONN_OFF = 5160;
     protected static final int ANALOG_NXTCOL_OFF = 4856;
     protected static final int ANALOG_NXTCOL_SZ = 72;
+    protected static final int ANALOG_NXTCOL_RAW_OFF = 54;
     protected static NativeDevice dev;
     protected static Pointer pAnalog;
     protected static ByteBuffer inDcm;
     protected static ByteBuffer inConn;
     protected static ByteBuffer shortVals;
     
+    // NXT Color sensor stuff
+    // data ranges and limits
+    protected static final int ADVOLTS = 3300;
+    protected static final int ADMAX = 2703;
+    protected static final int MINBLANKVAL = (214 / (ADVOLTS / ADMAX));
+    protected static final int SENSORMAX = ADMAX;
+    protected static final int SENSORRESOLUTION = 1023;
+    protected int[][] calData = new int[3][4];
+    protected int[] calLimits = new int[2];
+    protected short[] rawValues = new short[BLANK_INDEX + 1];
+    protected short[] values = new short[BLANK_INDEX + 1];
+    protected DeviceManager ldm = DeviceManager.getLocalDeviceManager();
+
+    
     static {
         initDeviceIO();
+    }
+    /** {@inheritDoc}
+     */    
+    @Override
+    public boolean open(int typ, int port, EV3Port ref)
+    {
+        if (!super.open(typ, port, ref))
+            return false;
+        if (ldm.getPortType(port) == CONN_NXT_COLOR)
+        {
+            // Read NXT color sensor calibration data
+            getColorData();
+        }
+        return true;
     }
 
         
@@ -56,8 +87,150 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
     {
         return shortVals.getShort(ANALOG_PIN6_OFF + port*2);
     }
+    
+    protected void getColorData()
+    {
+        setPinMode(TYPE_COLORNONE);
+        Delay.msDelay(1000);
+        int offset = ANALOG_NXTCOL_OFF + port*ANALOG_NXTCOL_SZ;
+        for(int i = 0; i < calData.length; i++)
+            for(int j = 0; j < calData[0].length; j++)
+            {
+                calData[i][j] = shortVals.getInt(offset);
+                offset += 4;
+                //System.out.println("Cal data[" + i + "][" + j + "] " + calData[i][j]);
+            }
+        for(int i = 0; i < calLimits.length; i++)
+        {
+            calLimits[i] = shortVals.getShort(offset);
+            offset += 2;
+            //System.out.println("Cal limit[" + i + "] " + calLimits[i]);
+        }
+        
+    }
+    
+    protected void getRawValues()
+    {
+        int first = ANALOG_NXTCOL_OFF + port*ANALOG_NXTCOL_SZ + ANALOG_NXTCOL_RAW_OFF;
+        for(int i = 0; i < rawValues.length; i++)
+            rawValues[i] = shortVals.getShort(first + i*2); 
+        
+    }
+    
+    /**
+     * This method accepts a set of raw values (in full color mode) and processes
+     * them using the calibration data to return standard RGB values between 0 and 255
+     * @param vals array to return the newly calibrated data.
+     */
+    private void calibrate(short[] vals)
+    {
+        // First select the calibration table to use...
+        int calTab;
+        int blankVal = rawValues[BLANK_INDEX];
+        if (blankVal < calLimits[1])
+            calTab = 2;
+        else if (blankVal < calLimits[0])
+            calTab = 1;
+        else
+            calTab = 0;
+        // Now adjust the raw values
+        for (int col = RED_INDEX; col <= BLUE_INDEX; col++)
+            if (rawValues[col] > blankVal)
+                vals[col] = (short) (((rawValues[col] - blankVal) * calData[calTab][col]) >>> 16);
+            else
+                vals[col] = 0;
+        // finally adjust the blank value
+        if (blankVal > MINBLANKVAL)
+            blankVal -= MINBLANKVAL;
+        else
+            blankVal = 0;
+        blankVal = (blankVal * 100) / (((SENSORMAX - MINBLANKVAL) * 100) / ADMAX);
+        if (blankVal > SENSORRESOLUTION)
+            blankVal = SENSORRESOLUTION;
+        vals[BLANK_INDEX] = (short) ((blankVal * calData[calTab][BLANK_INDEX]) >>> 16);
+    }
+    
+    /**
+     * Return a single processed value.
+     * If in single color mode this returns a single reading as a percentage. If
+     * in full color mode it returns a Lego color value that identifies the
+     * color of the object in view.
+     * @return processed color value.
+     */
+    protected short getColor()
+    {
+        calibrate(values);
+        int red = values[RED_INDEX];
+        int blue = values[BLUE_INDEX];
+        int green = values[GREEN_INDEX];
+        int blank = values[BLANK_INDEX];
+        // we have calibrated values, now use them to determine the color
 
-    // The following method provide compatibility with NXT sensors
+        // The following algorithm comes from the 1.29 Lego firmware.
+        if (red > blue && red > green)
+        {
+            // red dominant color
+            if (red < 65 || (blank < 40 && red < 110))
+                return BLACK;
+            if (((blue >> 2) + (blue >> 3) + blue < green) &&
+                    ((green << 1) > red))
+                return YELLOW;
+            if ((green << 1) - (green >> 2) < red)
+                return RED;
+            if (blue < 70 || green < 70 || (blank < 140 && red < 140))
+                return BLACK;
+            return WHITE;
+        }
+        else if (green > blue)
+        {
+            // green dominant color
+            if (green < 40 || (blank < 30 && green < 70))
+                return BLACK;
+            if ((blue << 1) < red)
+                return YELLOW;
+            if ((red + (red >> 2)) < green ||
+                    (blue + (blue>>2)) < green )
+                return GREEN;
+            if (red < 70 || blue < 70 || (blank < 140 && green < 140))
+                return BLACK;
+            return WHITE;
+        }
+        else
+        {
+            // blue dominant color
+            if (blue < 48 || (blank < 25 && blue < 85))
+                return BLACK;
+            if ((((red*48) >> 5) < blue && ((green*48) >> 5) < blue) ||
+                    ((red*58) >> 5) < blue || ((green*58) >> 5) < blue)
+                return BLUE;
+            if (red < 60 || green < 60 || (blank < 110 && blue < 120))
+                return BLACK;
+            if ((red + (red >> 3)) < blue || (green + (green >> 3)) < blue)
+                return BLUE;
+            return WHITE;
+        }
+    }
+    
+    @Override
+    public void getShorts(short [] vals, int offset, int length)
+    {
+        if (length > 0)
+        {
+            getRawValues();
+            int cnt = length;
+            if (cnt > rawValues.length)
+                cnt = rawValues.length;
+            System.arraycopy(rawValues, 0, vals, offset, cnt);
+            offset += cnt;
+            length -= cnt;
+            if (length > 0)
+            {
+                vals[offset] = getColor();
+            }            
+        }
+    }
+
+    // The following methods provide compatibility with NXT sensors
     
     @Override
     public boolean setType(int type)
@@ -193,7 +366,7 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
         pAnalog = dev.mmap(ANALOG_SIZE);
         inDcm = pAnalog.getByteBuffer(ANALOG_INDCM_OFF, PORTS);
         inConn = pAnalog.getByteBuffer(ANALOG_INCONN_OFF, PORTS);
-        shortVals = pAnalog.getByteBuffer(0, ANALOG_BAT_V_OFF+2);
+        shortVals = pAnalog.getByteBuffer(0, ANALOG_SIZE);
     }
 
 }
