@@ -1,5 +1,6 @@
 import lejos.hardware.ev3.EV3;
 import lejos.hardware.port.AnalogPort;
+import lejos.hardware.sensor.AccelMindSensor;
 import lejos.hardware.sensor.LightSensor;
 import lejos.remote.ev3.RemoteAnalogPort;
 import lejos.remote.ev3.RemoteEV3;
@@ -16,7 +17,13 @@ public class RemoteTest {
 		
 		System.out.println("Light value is " + light.getLightValue());
 		
+		AccelMindSensor accel = new AccelMindSensor(ev3.getPort("S2"));
+		
+		System.out.println("X Acceleration is " + accel.getXAccel());
+		
 		port.close();
+		
+		accel.close();
 		
 	}
 }
