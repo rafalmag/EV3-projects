@@ -5,6 +5,7 @@ import lejos.remote.ev3.RMIAnalogPort;
 import lejos.remote.ev3.RMIBattery;
 import lejos.remote.ev3.RMIEV3;
 import lejos.remote.ev3.RMII2CPort;
+import lejos.remote.ev3.RMIUARTPort;
 
 
 public class RemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
@@ -28,6 +29,11 @@ public class RemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	@Override
 	public RMII2CPort openI2CPort(String portName) throws RemoteException {
 		return new RemoteI2CPort(portName);
+	}
+
+	@Override
+	public RMIUARTPort openUARTPort(String portName) throws RemoteException {
+		return new RemoteUARTPort(portName);
 	}
 
 }
