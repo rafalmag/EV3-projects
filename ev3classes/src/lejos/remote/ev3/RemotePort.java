@@ -51,7 +51,7 @@ public class RemotePort implements Port
             if (portclass == RemoteAnalogPort.class || portclass == AnalogPort.class)
                 p = new RemoteAnalogPort(rmiEV3);
             else if (portclass == RemoteI2CPort.class|| portclass == I2CPort.class)
-                p = new RemoteI2CPort();
+                p = new RemoteI2CPort(rmiEV3);
             break;
         case MOTOR_PORT:
             if (portclass == BasicMotorPort.class)
@@ -63,7 +63,6 @@ public class RemotePort implements Port
         }
         if (p == null)
             throw new IllegalArgumentException("Invalid port interface");
-        System.out.println("Port num is " + portNum);
         if (!p.open(typ,  portNum, this))
             throw new DeviceException("unable to open port");
         return portclass.cast(p);
