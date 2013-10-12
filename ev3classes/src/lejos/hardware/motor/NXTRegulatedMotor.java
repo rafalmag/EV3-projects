@@ -91,7 +91,6 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
         reg = new Regulator();
         reg.resetTachoCount();
         //TODO: Should we take control of the motor at this point?
-        //resetTachoCount();
     }
     
     /**
@@ -471,8 +470,8 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
         //static final float MOVE_I = 0.04f;
         //static final float MOVE_D = 10f;
         static final float MOVE_P = 4f;
-        static final float MOVE_I = 0.02f;
-        static final float MOVE_D = 8f;
+        static final float MOVE_I = 0.04f;
+        static final float MOVE_D = 10f;
         static final float HOLD_P = 2f;
         static final float HOLD_I = 0.02f;
         static final float HOLD_D = 8f;
@@ -751,7 +750,6 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
                 // not moving, hold position
                 error = curCnt - tachoCnt;
                 calcPower(error, HOLD_P, HOLD_I, HOLD_D, (float)delta/Controller.UPDATE_PERIOD);
-//System.out.println("" + error + " bp " + basePower);
             }
             else
             {
@@ -802,10 +800,9 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
      */
     protected static class Controller extends Thread
     {
-        static final int UPDATE_PERIOD = 10;
+        static final int UPDATE_PERIOD = 4;
         NXTRegulatedMotor [] activeMotors = new NXTRegulatedMotor[0];
         boolean running = false;
-        int [] deltas = new int[11];
 
         /**
          * Add a motor to the set of active motors.
@@ -842,8 +839,6 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
             for(NXTRegulatedMotor m : activeMotors)
                 m.tachoPort.controlMotor(0, TachoMotorPort.FLOAT);
             activeMotors = new NXTRegulatedMotor[0];
-            for(int i = 0; i < deltas.length; i++)
-                System.out.println("" + ((i+1)*10) + ": " + deltas[i]);
         }
 
 
@@ -867,10 +862,6 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
                     for(NXTRegulatedMotor m : motors)
                         m.tachoPort.controlMotor(m.reg.power, m.reg.mode);
                 }
-                if (delta/10 >= deltas.length)
-                    deltas[deltas.length-1]++;
-                else
-                    deltas[(int)delta/10]++;
                 Delay.msDelay(now + UPDATE_PERIOD - System.currentTimeMillis());
             }	// end keep going loop
         }
