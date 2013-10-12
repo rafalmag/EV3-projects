@@ -1,8 +1,9 @@
+package lejos.remote.ev3;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 
-public interface Battery extends Remote {
+public interface RMIBattery extends Remote {
 
 	/**
 	 * The NXT uses 6 batteries of 1500 mV each.

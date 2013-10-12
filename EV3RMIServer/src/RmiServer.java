@@ -17,7 +17,7 @@ public class RmiServer {
 
     public static void main(String args[]) throws Exception {
         System.out.println("RMI server started");
-        System.setProperty("java.rmi.server.hostname", "192.168.0.5");
+        System.setProperty("java.rmi.server.hostname", "192.168.0.9");
  
         try { //special exception handler for registry creation
             LocateRegistry.createRegistry(1099); 
@@ -30,22 +30,22 @@ public class RmiServer {
         //Instantiate RmiServer
         RemotePilot pilot = new RemotePilot(delegate);
         RemoteSound sound = new RemoteSound();
-        RemoteBattery battery = new RemoteBattery();
         RemoteLCD lcd = new RemoteLCD();
         RemoteMotor motorA = new RemoteMotor(Motor.A);
         RemoteMotor motorB = new RemoteMotor(Motor.B);
         RemoteMotor motorC = new RemoteMotor(Motor.C);
         RemoteMotor motorD = new RemoteMotor(Motor.D);
+        RemoteEV3 ev3 = new RemoteEV3();
  
         // Bind the remote objects
         Naming.rebind("//localhost/RemotePilot", pilot);
         Naming.rebind("//localhost/RemoteSound", sound);
-        Naming.rebind("//localhost/RemoteBattery", battery);
         Naming.rebind("//localhost/RemoteLCD", lcd);
         Naming.rebind("//localhost/RemoteMotorA", motorA);
         Naming.rebind("//localhost/RemoteMotorB", motorB);
         Naming.rebind("//localhost/RemoteMotorC", motorC);
         Naming.rebind("//localhost/RemoteMotorD", motorD);
+        Naming.rebind("//localhost/RemoteEV3", ev3);
         
         System.out.println("PeerServer bound in registry");
     }

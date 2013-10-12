@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import lejos.internal.io.NativeDevice;
+import lejos.internal.io.SystemSettings;
 import lejos.utility.Delay;
 
 /**
@@ -461,7 +462,6 @@ public class Sound
      */
     public static void loadSettings()
     {
-        //masterVolume = SystemSettings.getIntSetting(VOL_SETTING, 80);
-        masterVolume = 100;
+        masterVolume = SystemSettings.getIntSetting(VOL_SETTING, 80);
     }
 }

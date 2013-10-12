@@ -3,6 +3,7 @@ package lejos.hardware;
 import java.nio.ByteBuffer;
 
 import lejos.internal.io.NativeDevice;
+import lejos.internal.io.SystemSettings;
 import lejos.utility.Delay;
 
 /**
@@ -44,6 +45,8 @@ public class Button implements ListenerCaller
   private static final int POLL_TIME = 50;
   
   public static final String VOL_SETTING = "lejos.keyclick_volume";
+  public static final String LEN_SETTING = "lejos.keyclick_length";
+  public static final String FREQ_SETTING = "lejos.keyclick_frequency";
   
   /**
    * The Enter button.
@@ -454,10 +457,9 @@ public class Button implements ListenerCaller
   */
   public static synchronized void loadSystemSettings()
   {
-      //clickVol = SystemSettings.getIntSetting(VOL_SETTING, 20);
-      clickVol = 20;
-      clickLen = 50;
-      clickFreq = 1000;
+      clickVol = SystemSettings.getIntSetting(VOL_SETTING, 20);
+      clickLen = SystemSettings.getIntSetting(LEN_SETTING, 50);
+      clickFreq = SystemSettings.getIntSetting(FREQ_SETTING, 1000);
       dev = new NativeDevice("/dev/lms_ui");
       buttonState = dev.mmap(6).getByteBuffer(0, 6);
   }  

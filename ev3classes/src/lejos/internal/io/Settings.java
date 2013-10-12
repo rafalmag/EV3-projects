@@ -1,4 +1,4 @@
-package lejos.ev3.startup;
+package lejos.internal.io;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
