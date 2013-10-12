@@ -6,7 +6,9 @@ import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.IOPort;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.TachoMotorPort;
+import lejos.hardware.port.UARTPort;
 import lejos.hardware.sensor.EV3SensorConstants;
+import lejos.internal.ev3.EV3UARTPort;
 
 public class RemotePort implements Port
 {
@@ -48,6 +50,8 @@ public class RemotePort implements Port
         switch(typ)
         {
         case SENSOR_PORT:
+            if (portclass == UARTPort.class)
+                p = new RemoteUARTPort(rmiEV3);
             if (portclass == RemoteAnalogPort.class || portclass == AnalogPort.class)
                 p = new RemoteAnalogPort(rmiEV3);
             else if (portclass == RemoteI2CPort.class|| portclass == I2CPort.class)
