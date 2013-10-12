@@ -13,4 +13,6 @@ public interface RMIAnalogPort extends Remote {
 	
 	public void close() throws RemoteException;
 
+    public void getShorts(short[] vals, int offset, int length) throws RemoteException;
+
 }

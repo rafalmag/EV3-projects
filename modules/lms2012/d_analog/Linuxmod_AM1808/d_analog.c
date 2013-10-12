@@ -1977,6 +1977,9 @@ static int Device1Init(void)
   printk("Actual offset %d\n", ((char *)&((*pAnalog).Actual[0]) - (char *)pAnalog));
   printk("Pin6 offset %d\n", ((char *)&((*pAnalog).Pin6[0]) - (char *)pAnalog));
   printk("Pin1 offset %d\n", ((char *)&((*pAnalog).Pin1[0]) - (char *)pAnalog));
+  printk("NxtCol[0] offset %d\n", ((char *)&((*pAnalog).NxtCol[0]) - (char *)pAnalog));
+  printk("NxtCol[1] offset %d\n", ((char *)&((*pAnalog).NxtCol[1]) - (char *)pAnalog));
+
   return (Result);
 }
 

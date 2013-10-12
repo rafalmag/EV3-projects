@@ -112,4 +112,14 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
 	public int readValue() {
 		return (getPin1() + 3)/4;
 	}
+
+    @Override
+    public void getShorts(short[] vals, int offset, int length)
+    {
+        try {
+            rmi.getShorts(vals, offset, length);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 }

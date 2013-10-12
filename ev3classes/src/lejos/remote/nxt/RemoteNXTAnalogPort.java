@@ -191,4 +191,9 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort
             return CONN_ERROR;
         return 0;
     }
+
+    @Override
+    public void getShorts(short[] vals, int offset, int length)
+    {
+    }
 }

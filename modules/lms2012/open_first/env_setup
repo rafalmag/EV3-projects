@@ -11,7 +11,7 @@ export AM1808_LINUX=linux-03.20.00.13
 export AM1808_UBOOT=uboot-03.20.00.13
 
 export AM1808_UBOOT_DIR=~/am1808/${AM1808_DISTRO}/src/u-boot/${AM1808_UBOOT}
-export AM1808_KERNEL=../../../kernel/${AM1808_LINUX}
+export AM1808_KERNEL=../../../../kernel/${AM1808_LINUX}
 
 export AM1808_MODULES=../../bin
 

@@ -34,4 +34,11 @@ public class RemoteAnalogPort extends UnicastRemoteObject implements RMIAnalogPo
 	public void setPinMode(int mode) throws RemoteException {
 		port.setPinMode(mode);
 	}
+
+    @Override
+    public void getShorts(short[] vals, int offset, int length)
+            throws RemoteException
+    {
+        port.getShorts(vals, offset, length);        
+    }
 }

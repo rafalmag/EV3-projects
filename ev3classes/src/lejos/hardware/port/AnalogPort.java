@@ -51,4 +51,12 @@ public interface AnalogPort extends IOPort, BasicSensorPort {
      * @return analog value 0-4095
      */
 	public int getPin1();
+	
+	/**
+	 * Return a series of shorts obtained from the sensor.
+	 * @param vals Place to store the values
+	 * @param offset Offset into the above array to start storing
+	 * @param length number of values to read
+	 */
+	public void getShorts(short [] vals, int offset, int length);
 }

@@ -1,4 +1,5 @@
 package lejos.hardware.sensor;
+import lejos.hardware.port.Port;
 import lejos.hardware.port.UARTPort;
 import lejos.robotics.RangeFinder;
 
@@ -20,6 +21,17 @@ public class EV3UltrasonicSensor extends UARTSensor implements RangeFinder
     {
         super(port);
     }
+
+    /**
+     * Create the sensor class. The sensor will be set to return measurements in CM.
+     * @param port
+     */
+    public EV3UltrasonicSensor(Port port)
+    {
+        super(port);
+    }
+
+    
 
     /**
      * {@inheritDoc}
