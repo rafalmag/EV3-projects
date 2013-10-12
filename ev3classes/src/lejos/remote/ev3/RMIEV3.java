@@ -8,7 +8,7 @@ import lejos.hardware.port.Port;
 
 public interface RMIEV3 extends Remote {
 
-	public RMIPort getPort(String portName) throws RemoteException;
+	public RMIAnalogPort openAnalogPort(String portName) throws RemoteException;
 
 	public RMIBattery getBattery() throws RemoteException;
 
