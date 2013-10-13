@@ -5,12 +5,12 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.AnalogPort;
 import lejos.remote.ev3.RMIAnalogPort;
 
-public class RemoteAnalogPort extends UnicastRemoteObject implements RMIAnalogPort {
+public class RMIRemoteAnalogPort extends UnicastRemoteObject implements RMIAnalogPort {
 	private AnalogPort port;
 	
 	private static final long serialVersionUID = 3049365457299818710L;
 
-	protected RemoteAnalogPort(String portName) throws RemoteException {
+	protected RMIRemoteAnalogPort(String portName) throws RemoteException {
 		super(0);
 		port = LocalEV3.get().getPort(portName).open(AnalogPort.class);
 	}

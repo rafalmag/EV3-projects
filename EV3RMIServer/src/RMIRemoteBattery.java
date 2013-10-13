@@ -4,9 +4,9 @@ import java.rmi.server.UnicastRemoteObject;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.remote.ev3.RMIBattery;
 
-public class RemoteBattery extends UnicastRemoteObject implements RMIBattery {
+public class RMIRemoteBattery extends UnicastRemoteObject implements RMIBattery {
 
-	protected RemoteBattery() throws RemoteException {
+	protected RMIRemoteBattery() throws RemoteException {
 		super(0);
 	}
 

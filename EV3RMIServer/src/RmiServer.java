@@ -8,12 +8,12 @@ import lejos.robotics.navigation.DifferentialPilot;
  
 public class RmiServer {
 	
-    private static final NXTRegulatedMotor leftMotor = Motor.A;
-	private static final NXTRegulatedMotor rightMotor = Motor.C;
-	private static final float wheelDiameter = 3.0f;
-	private static final float trackWidth = 18.0f;
-	private static final boolean reverse = true;
-	private static final DifferentialPilot delegate = new DifferentialPilot(wheelDiameter,trackWidth,leftMotor,rightMotor,reverse);
+    //private static final NXTRegulatedMotor leftMotor = Motor.A;
+	//private static final NXTRegulatedMotor rightMotor = Motor.C;
+	//private static final float wheelDiameter = 3.0f;
+	//private static final float trackWidth = 18.0f;
+	//private static final boolean reverse = true;
+	//private static final DifferentialPilot delegate = new DifferentialPilot(wheelDiameter,trackWidth,leftMotor,rightMotor,reverse);
 
     public static void main(String args[]) throws Exception {
         System.out.println("RMI server started");
@@ -28,23 +28,23 @@ public class RmiServer {
         }
         
         //Instantiate RmiServer
-        RemotePilot pilot = new RemotePilot(delegate);
+        //RemotePilot pilot = new RemotePilot(delegate);
         RemoteSound sound = new RemoteSound();
         RemoteLCD lcd = new RemoteLCD();
-        RemoteMotor motorA = new RemoteMotor(Motor.A);
-        RemoteMotor motorB = new RemoteMotor(Motor.B);
-        RemoteMotor motorC = new RemoteMotor(Motor.C);
-        RemoteMotor motorD = new RemoteMotor(Motor.D);
-        RemoteEV3 ev3 = new RemoteEV3();
+        //RemoteMotor motorA = new RemoteMotor(Motor.A);
+        //RemoteMotor motorB = new RemoteMotor(Motor.B);
+        //RemoteMotor motorC = new RemoteMotor(Motor.C);
+        //RemoteMotor motorD = new RemoteMotor(Motor.D);
+        RMIRemoteEV3 ev3 = new RMIRemoteEV3();
  
         // Bind the remote objects
-        Naming.rebind("//localhost/RemotePilot", pilot);
+        //Naming.rebind("//localhost/RemotePilot", pilot);
         Naming.rebind("//localhost/RemoteSound", sound);
         Naming.rebind("//localhost/RemoteLCD", lcd);
-        Naming.rebind("//localhost/RemoteMotorA", motorA);
-        Naming.rebind("//localhost/RemoteMotorB", motorB);
-        Naming.rebind("//localhost/RemoteMotorC", motorC);
-        Naming.rebind("//localhost/RemoteMotorD", motorD);
+        //Naming.rebind("//localhost/RemoteMotorA", motorA);
+        //Naming.rebind("//localhost/RemoteMotorB", motorB);
+        //Naming.rebind("//localhost/RemoteMotorC", motorC);
+        //Naming.rebind("//localhost/RemoteMotorD", motorD);
         Naming.rebind("//localhost/RemoteEV3", ev3);
         
         System.out.println("PeerServer bound in registry");
