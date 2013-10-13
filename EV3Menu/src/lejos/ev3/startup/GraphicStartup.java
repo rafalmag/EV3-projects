@@ -31,9 +31,10 @@ import lejos.hardware.RemoteBTDevice;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.internal.io.Settings;
+import lejos.remote.ev3.Menu;
 import lejos.remote.ev3.RMIRemoteEV3;
 
-public class GraphicStartup {
+public class GraphicStartup implements Menu {
 	
 	static final String JAVA_RUN_JAR = "jrun -jar ";
 	static final String JAVA_DEBUG_JAR = "jrun -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=y -jar ";
@@ -811,6 +812,8 @@ public class GraphicStartup {
         try {
 			RMIRemoteEV3 ev3 = new RMIRemoteEV3();
 			Naming.rebind("//localhost/RemoteEV3", ev3);
+			RMIRemoteMenu menu = new RMIRemoteMenu(this);
+			Naming.rebind("//localhost/RemoteMenu", menu);
 		} catch (RemoteException | MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -842,7 +845,7 @@ public class GraphicStartup {
         public void run()
         {
             //setAddress();            
-        	menu = new GraphicStartup();        	
+        	menu = new GraphicStartup();    	
         }
     }
 	
@@ -1359,4 +1362,55 @@ public class GraphicStartup {
         	}
         }
     }
+
+	@Override
+	public int runProgram(String programName) {
+    	ind.suspend();
+    	exec(JAVA_RUN_JAR + "/home/lejos/programs/" + programName + ".jar");
+    	ind.resume();
+		return 0;
+	}
+
+	@Override
+	public int deleteFile(String fileName) {
+		File f = new File("/home/lejos/programs/" + fileName);
+		boolean res = f.delete();
+		return (res ? 0 : -1);
+	}
+
+	@Override
+	public String[] getProgramNames() {
+		File[] files = (new File("/home/lejos/programs")).listFiles();
+		String[] fileNames = new String[files.length];
+		for(int i=0;i<files.length;i++) {
+			fileNames[i] = files[i].getName();
+		}
+		return fileNames;
+	}
+
+	@Override
+	public int runSample(String programName) {
+    	ind.suspend();
+    	exec(JAVA_RUN_JAR + "/home/root/lejos/samples/" + programName + ".jar");
+    	ind.resume();
+		return 0;
+	}
+
+	@Override
+	public int debugProgram(String programName) {
+    	ind.suspend();
+    	exec(JAVA_DEBUG_JAR + "/home/lejos/programs/" + programName + ".jar");
+    	ind.resume();
+		return 0;
+	}
+
+	@Override
+	public String[] getSampleNames() {
+		File[] files = (new File("/home/root/lejos/samples")).listFiles();
+		String[] fileNames = new String[files.length];
+		for(int i=0;i<files.length;i++) {
+			fileNames[i] = files[i].getName();
+		}
+		return fileNames;
+	}
 }
