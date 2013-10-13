@@ -7,10 +7,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -27,6 +31,7 @@ import lejos.hardware.RemoteBTDevice;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.internal.io.Settings;
+import lejos.remote.ev3.RMIRemoteEV3;
 
 public class GraphicStartup {
 	
@@ -118,6 +123,8 @@ public class GraphicStartup {
         
         // Tell thread to play tune
         tuneThread.setState(1);
+        
+        // Start the RMI registry
         
         InitThread initThread = new InitThread();
         initThread.start();
@@ -784,6 +791,30 @@ public class GraphicStartup {
     {
         //bt.start();
         //usb.start();
+    	
+    	// Start the RMI server
+        String lastIp = null;
+        for (String ip: ips) {
+        	lastIp = ip;
+        }
+        System.out.println("Setting java.rmi.server.hostname to " + lastIp);
+        System.setProperty("java.rmi.server.hostname", "192.168.0.9");
+        
+        try { //special exception handler for registry creation
+            LocateRegistry.createRegistry(1099); 
+            System.out.println("java RMI registry created.");
+        } catch (RemoteException e) {
+            //do nothing, error means registry already exists
+            System.out.println("java RMI registry already exists.");
+        }
+        
+        try {
+			RMIRemoteEV3 ev3 = new RMIRemoteEV3();
+			Naming.rebind("//localhost/RemoteEV3", ev3);
+		} catch (RemoteException | MalformedURLException e) {
+			e.printStackTrace();
+		}
+        
     	ind.start();
     	rcons.start();
     }
