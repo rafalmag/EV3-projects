@@ -1,10 +1,12 @@
 import lejos.hardware.ev3.EV3;
+import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.AnalogPort;
 import lejos.hardware.sensor.AccelMindSensor;
 import lejos.hardware.sensor.EV3IRSensor;
 import lejos.hardware.sensor.LightSensor;
 import lejos.remote.ev3.RemoteAnalogPort;
 import lejos.remote.ev3.RemoteEV3;
+import lejos.utility.Delay;
 
 
 public class RemoteTest {
@@ -26,11 +28,23 @@ public class RemoteTest {
 		
 		System.out.println("Distance  is " + ir.getRange());
 		
+		NXTMotor m = new NXTMotor(ev3.getPort("B"));
+
+		m.setPower(50);
+		
+		m.forward();
+		Delay.msDelay(5000);
+		
+		System.out.println("Motor stop");
+		m.stop();
+		
 		port.close();
 		
 		accel.close();
 		
 		ir.close();
+		
+		m.close();
 		
 	}
 }
