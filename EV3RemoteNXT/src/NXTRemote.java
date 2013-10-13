@@ -1,4 +1,5 @@
 import lejos.hardware.Bluetooth;
+import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.sensor.AccelHTSensor;
 import lejos.hardware.sensor.LightSensor;
 import lejos.hardware.sensor.TouchSensor;
@@ -6,6 +7,7 @@ import lejos.remote.nxt.NXTCommConnector;
 import lejos.remote.nxt.RemoteNXT;
 import lejos.remote.nxt.NXT;
 import lejos.remote.nxt.RemoteNXTAnalogPort;
+import lejos.utility.Delay;
 
 public class NXTRemote {
 
@@ -28,6 +30,17 @@ public class NXTRemote {
 		AccelHTSensor accel = new AccelHTSensor(nxt.getPort("S3"));
 		
 		System.out.println("X acceleration: " + accel.getXAccel());
+		
+		NXTMotor m = new NXTMotor(nxt.getPort("A"));
+		
+		m.forward();
+		
+		m.setPower(50);;
+		
+		Delay.msDelay(5000);
+		
+		m.stop();
+		
 	}
 
 }
