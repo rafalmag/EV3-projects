@@ -59,9 +59,9 @@ public class RemotePort implements Port
             break;
         case MOTOR_PORT:
             if (portclass == BasicMotorPort.class)
-                p = new RemoteMotorPort();
+                p = new RemoteMotorPort(rmiEV3);
             else if (portclass == TachoMotorPort.class)
-                p = new RemoteMotorPort();
+                p = new RemoteMotorPort(rmiEV3);
             // TODO: Should we also allow Encoder?
             break;
         }
