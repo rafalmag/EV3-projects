@@ -9,8 +9,8 @@ import javax.swing.JPanel;
 public class LCDDisplay extends JPanel
 {
 	private static final long serialVersionUID = 1L;
-	private static final int LCD_WIDTH = 100;
-    private static final int LCD_HEIGHT = 64;
+	private static final int LCD_WIDTH = 178;
+    private static final int LCD_HEIGHT = 128;
     
     private BufferedImage lcd = new BufferedImage(LCD_WIDTH, LCD_HEIGHT, BufferedImage.TYPE_INT_ARGB);
     private Graphics2D lcdGC = lcd.createGraphics();
@@ -47,22 +47,18 @@ public class LCDDisplay extends JPanel
 
     public void update(byte [] buffer)
     {
-        int offset = 0;
-        int row = 0;
         lcdGC.setColor(new Color(155, 205, 155, 255));
         lcdGC.fillRect(0, 0, lcd.getWidth(), lcd.getHeight());
         lcdGC.setColor(new Color(0, 0, 0, 255));
-        for(row = 0; row < 64; row += 8)
-            for(int x = 0; x < LCD_WIDTH; x++)
-            {
-                byte vals = buffer[offset++];
-                for(int y = 0; y < 8; y++)
-                {
-                    if ((vals & 1) != 0)
-                        lcdGC.fillRect(x, y+row, 1, 1);
-                    vals >>= 1;
-                }
-            }
+        for(int y = 0;y<LCD_HEIGHT;y++) {
+        	for(int x = 0; x<LCD_WIDTH;x++) {
+        		int i = (y * (LCD_WIDTH/8 + 1) * 8) + x;
+                int bit = (i & 0x7);
+                int index = i / 8;
+                int val =  ((buffer[index] >> bit) & 1);
+        		if (val == 1) lcdGC.fillRect(x,y, 1, 1);
+        	}
+        }
         this.repaint();
     }
 

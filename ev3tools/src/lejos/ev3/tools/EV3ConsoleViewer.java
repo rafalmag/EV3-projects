@@ -110,7 +110,7 @@ public class EV3ConsoleViewer extends JFrame implements ActionListener, ChangeLi
         lcd = new LCDDisplay();
         lcd.clear();
         //screen.add(new JLabel("Screen"));
-        lcd.setMinimumSize(new Dimension(LCD_WIDTH*2, LCD_HEIGHT*2));
+        lcd.setMinimumSize(new Dimension(LCD_WIDTH, LCD_HEIGHT));
         lcd.setEnabled(true);
         lcd.setPreferredSize(lcd.getMinimumSize());
         FlowLayout topPanelLayout = new FlowLayout();

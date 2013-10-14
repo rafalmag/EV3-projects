@@ -12,6 +12,7 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -1300,6 +1301,10 @@ public class GraphicStartup implements Menu {
     
     class RConsole extends Thread
     {
+        
+        static final int MODE_SWITCH = 0xff;
+        static final int MODE_LCD = 0x0;
+        
         static final int RCONSOLE_PORT = 8001;    
         ServerSocket ss = null;
         Socket conn = null;
@@ -1335,7 +1340,8 @@ public class GraphicStartup implements Menu {
 	            try {
 	            	System.out.println("Waiting for a connection");
             		conn = ss.accept();
-            		OutputStream os = conn.getOutputStream();
+            		conn.setSoTimeout(2000);
+            		SynchronizedOutputStream os = new SynchronizedOutputStream(conn.getOutputStream());
             		BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             		System.setOut(new PrintStream(os));
             		System.setErr(new PrintStream(os));
@@ -1344,9 +1350,15 @@ public class GraphicStartup implements Menu {
 	                // Loop waiting for commands
 	                while (true)
 	                {
-	                	// Process commands
-	                    String line = input.readLine();                
-	                    if (line == null) break;
+	                    try {
+	                    	String line = input.readLine(); 
+	                    	if (line == null) break;
+	                    } catch (SocketTimeoutException e) {
+                            //os.write(MODE_SWITCH);
+                            //os.write(MODE_LCD);
+                            os.writeLCD(LCD.getHWDisplay());
+                            //os.flush();
+	                    }                
 	                }
 	                os.close();
 	                input.close();

@@ -953,6 +953,54 @@ public class LCD extends Thread
         //lcd.put(hwBuffer);
         lcd.write(0, hwBuffer, 0, hwBuffer.length);
     }
+    
+    public static byte[] getHWDisplay() {
+    	return singleton.getHWBuffer();
+    }
+    
+    public byte[] getHWBuffer() {
+    	byte[] buffer = new byte[(SCREEN_HEIGHT)*(SCREEN_WIDTH+7)/8];
+    	byte [] hwBuffer = new byte[LCD_BUFFER_LENGTH];
+    	
+    	lcd.read(0, hwBuffer, 0, LCD_BUFFER_LENGTH);
+    	
+        for(int row = 0; row < SCREEN_HEIGHT; row++)
+        {
+            for(int i = 0; i < 7; i++)
+            {
+            	int pixels = 0;
+            	for(int j = 0;j<8;j++) 
+            	{
+	        		int b = convertBack(hwBuffer[row*LCD_MEM_WIDTH + 8*i + j]);
+	        		pixels |= (b << j*3);
+            	}
+            	for(int j=0;j<3;j++) 
+            	{
+            		buffer[row*((SCREEN_WIDTH+7)/8)+3*i+j] = (byte) (pixels >> j*8);
+            	}                     
+            }
+            int pixels = 0;
+            for(int j=0;j<4;j++) {
+            	byte b = convertBack(hwBuffer[row*LCD_MEM_WIDTH +  56 + j]);
+            	pixels |= (b << j*3);
+            }
+            buffer[row*((SCREEN_WIDTH+7)/8)+22] = (byte) (pixels >> 8);
+            buffer[row*((SCREEN_WIDTH+7)/8)+23] = (byte) (pixels);
+        }
+    	return buffer;
+    }
+    
+    byte convertBack(byte b) {
+        if (b == (byte)0x00) return 0;
+        else if (b == (byte)0xE0) return 1;
+        else if (b == (byte)0x1C) return 2;
+        else if (b == (byte)0xFC) return 3;
+        else if (b == (byte)0x03) return 4;
+        else if (b == (byte)0xE3) return 5;
+        else if (b == (byte)0x1F) return 6;
+        else if (b == (byte)0xFF) return 7;
+        return -1;
+    }
 
     /**
      * Background thread which provides automatic screen updates
