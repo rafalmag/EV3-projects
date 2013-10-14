@@ -136,6 +136,8 @@ public class GraphicStartup implements Menu {
         
         tuneThread.setState(3);
         
+        Broadcast.broadcast(hostname);
+        
         initThread.menu.mainMenu();
         
         System.out.println("Menu finished");
