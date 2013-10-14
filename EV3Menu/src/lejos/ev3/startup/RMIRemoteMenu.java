@@ -45,5 +45,9 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 	public String[] getSampleNames() throws RemoteException {
 		return menu.getSampleNames();
 	}
+	
+	public long getFileSize(String filename) {
+		return menu.getFileSize(filename);
+	}
 
 }

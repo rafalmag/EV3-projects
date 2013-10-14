@@ -13,6 +13,8 @@ public interface RMIMenu extends Remote {
 	
 	public int deleteFile(String fileName) throws RemoteException;
 	
+	public long getFileSize(String fileName) throws RemoteException;
+	
 	public String[] getProgramNames() throws RemoteException;
 	
 	public String[] getSampleNames()  throws RemoteException;

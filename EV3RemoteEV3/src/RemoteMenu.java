@@ -8,6 +8,7 @@ public class RemoteMenu {
 	public static final String remoteHost = "//192.168.0.9/";
 	
 	public static void main(String[] args) throws Exception {
+		
         RMIMenu menu = (RMIMenu)Naming.lookup(remoteHost + "RemoteMenu");
         
         String[] programs = menu.getSampleNames();
@@ -16,6 +17,6 @@ public class RemoteMenu {
         	System.out.println(program);
         }
         
-        menu.runSample("ColorTest");
+        System.out.println("File size is " +menu.getFileSize("/home/root/lejos/samples/ColorTest.jar"));
 	}
 }

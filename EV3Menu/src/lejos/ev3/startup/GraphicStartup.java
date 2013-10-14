@@ -1413,4 +1413,9 @@ public class GraphicStartup implements Menu {
 		}
 		return fileNames;
 	}
+
+	@Override
+	public long getFileSize(String filename) {
+		return new File(filename).length();
+	}
 }

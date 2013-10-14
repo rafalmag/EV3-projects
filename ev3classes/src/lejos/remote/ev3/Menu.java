@@ -10,6 +10,8 @@ public interface Menu {
 	
 	public int deleteFile(String fileName);
 	
+	public long getFileSize(String filename);
+	
 	public String[] getProgramNames();
 	
 	public String[] getSampleNames();
