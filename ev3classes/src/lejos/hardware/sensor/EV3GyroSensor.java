@@ -2,73 +2,103 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.Port;
 import lejos.hardware.port.UARTPort;
-import lejos.robotics.Gyroscope;
-import lejos.utility.Delay;
+import lejos.robotics.SampleProvider;
 
 /**
- * Simple driver for the Lego EV3 Gyro sensor.<br>
- * NOTE: This class does not attempt to perform any sort of dynamic drift correction.
- * Any such correction needs to either be external, or at least optional as it is
- * not really possible for this class to know what assumptions can be made about
- * any sort of steady state.
+ * Sensor driver for the Lego EV3 Gyro sensor.<br>
+ * Please note that the Gyro sensor that the sensor can supply both rate and angle. 
+ * Everytime your program switches from rate to angle the sensor resets automaticly and therefore 
+ * should by motionless during this operation.
  * 
- * @author andy
- *
+ * @author Aswin Bouwmeester
  */
-public class EV3GyroSensor extends UARTSensor implements Gyroscope
+public class EV3GyroSensor extends UARTSensor 
 {
-    public final static int ANGLE_MODE = 0;
-    public final static int RATE_MODE = 1;
-    
-    protected final static int OFFSET_SAMPLES = 100;
-    
-    protected float offset = 0.0f;
-    
-    public EV3GyroSensor(UARTPort p)
-    {
-        super(p, RATE_MODE);
-    }
-    
-    public EV3GyroSensor(Port p)
-    {
-        super(p, RATE_MODE);
-    }
-    
-    /** Calculate and return the angular velocity in degrees per second.
-     * @return Angular velocity in degrees/second
-     */
-    public float getAngularVelocity()
-    {
-        return (float)port.getShort() - offset;
-    }
+	private static final long	SWITCHDELAY	= 200;
+	private static final int	RESETMODE	= 4;
+	private SampleProvider	rateMode;
+	private SampleProvider	angleMode;
 
-    /** Calculate and set the offset/bias value for use in <code>getAngularVelocity()</code>.
-     */
-    public void recalibrateOffset()
-    {
-        offset = 0.0f;
-        double gSum;
-        float gMin;
-        float gMax;
-        do {
-            gSum = 0.0;
-            gMin = Float.MAX_VALUE;
-            gMax = -Float.MAX_VALUE;
-            for (int i=0; i<OFFSET_SAMPLES; i++) 
-            {
-                float g = getAngularVelocity();
-                if (g > gMax)
-                    gMax = g;
-                if (g < gMin)
-                    gMin = g;
+	public EV3GyroSensor(Port port) {
+		super(port);
+	}
 
-                gSum += g;
-                Delay.msDelay(5);
-            }
-            //System.out.println("Gyro Calibrate min " + gMin + " max " + gMax);
-        } while ((gMax - gMin) > 5);   // Reject and sample again if range too large
+	public EV3GyroSensor(UARTPort port) {
+		super(port);
+	}
+	
+	
+	/**
+	 * Returns an SampleProvider object representing the gyro sensor in angle mode. <br>
+	 * In rate mode the sensor measures the orientation of the sensor in repect to its start position. 
+	 * A positive angle indicates a orientation to the left. A negative rate indicates a rotation to the right.
+	 * Angles are expressed in degrees.<br>
+	 */
+	public SampleProvider getAngleMode() {
+		if (angleMode==null) {
+			angleMode = new AngleMode();
+		}
+		return angleMode;
+	}
+	
+	/**
+	 * Returns an SampleProvider object representing the  gyro sensor in rate mode. <br>
+	 * In rate mode the sensor measures the speed of rotation expressed in degrees/second. 
+	 * A positive rate indicates a counterclockwise rotation. A negative rate indicates a clockwise rotation.
+	 */
+	public SampleProvider getRateMode() {
+		if (rateMode==null) {
+			rateMode = new RateMode();
+		}
+		return rateMode;
+	}
 
-        //Average the sum of the samples.
-        offset = (float)(gSum / OFFSET_SAMPLES); // TODO: Used to have +1, which was mainly for stopping Segway wandering.          
-    }
+	
+	
+	/** Hardware calibration of the Gyro sensor. <br>
+	 * The sensor should be motionless during calibration.
+	 */
+	public void reset() {
+		// TODO: Test if angle is reset to zero due to calibration
+		// TODO: find out how to get out of calibration mode
+		switchMode(RESETMODE, SWITCHDELAY);
+	}
+
+
+	private class AngleMode implements SampleProvider {
+		private static final int	MODE	= 0;
+		private static final float toSI=-1;
+
+
+		@Override
+		public int sampleSize() {
+			return 1;
+		}
+
+		@Override
+		public void fetchSample(float[] sample, int offset) {
+			switchMode(MODE, SWITCHDELAY);
+			sample[offset] = port.getShort() * toSI;
+		}
+
+	}
+
+	private class RateMode implements SampleProvider {
+		private static final int	MODE	= 1;
+		private static final float toSI=-1;
+
+
+		@Override
+		public int sampleSize() {
+			return 1;
+		}
+
+		@Override
+		public void fetchSample(float[] sample, int offset) {
+			switchMode(MODE, SWITCHDELAY);
+			sample[offset] = port.getShort() * toSI;
+		}
+
+	}
+
 }
