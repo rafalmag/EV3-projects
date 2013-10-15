@@ -16,32 +16,44 @@ public class EV3GyroSensor extends UARTSensor
 {
 	private static final long	SWITCHDELAY	= 200;
 	private static final int	RESETMODE	= 4;
-
-	/**
-	 * Represent the gyro sensor in rate mode. <br>
-	 * In rate mode the sensor measures the speed of rotation expressed in degrees/second. 
-	 * A positive rate indicates a counterclockwise rotation. A negative rate indicates a clockwise rotation.
-	 */
-	public final SampleProvider	rateMode;
-	/**
-	 * Represent the gyro sensor in angle mode. <br>
-	 * In rate mode the sensor measures the orientation of the sensor in repect to its start position. 
-	 * A positive angle indicates a orientation to the left. A negative rate indicates a rotation to the right.
-	 * Angles are expressed in degrees.<br>
-	 */
-	public final SampleProvider	angleMode;
+	private SampleProvider	rateMode;
+	private SampleProvider	angleMode;
 
 	public EV3GyroSensor(Port port) {
 		super(port);
-		rateMode = new RateMode();
-		angleMode = new AngleMode();
 	}
 
 	public EV3GyroSensor(UARTPort port) {
 		super(port);
-		rateMode = new RateMode();
-		angleMode = new AngleMode();
 	}
+	
+	
+	/**
+	 * Returns an SampleProvider object representing the gyro sensor in angle mode. <br>
+	 * In rate mode the sensor measures the orientation of the sensor in repect to its start position. 
+	 * A positive angle indicates a orientation to the left. A negative rate indicates a rotation to the right.
+	 * Angles are expressed in degrees.<br>
+	 */
+	public SampleProvider getAngleMode() {
+		if (angleMode==null) {
+			angleMode = new AngleMode();
+		}
+		return angleMode;
+	}
+	
+	/**
+	 * Returns an SampleProvider object representing the  gyro sensor in rate mode. <br>
+	 * In rate mode the sensor measures the speed of rotation expressed in degrees/second. 
+	 * A positive rate indicates a counterclockwise rotation. A negative rate indicates a clockwise rotation.
+	 */
+	public SampleProvider getRateMode() {
+		if (rateMode==null) {
+			rateMode = new RateMode();
+		}
+		return rateMode;
+	}
+
+	
 	
 	/** Hardware calibration of the Gyro sensor. <br>
 	 * The sensor should be motionless during calibration.
@@ -55,7 +67,6 @@ public class EV3GyroSensor extends UARTSensor
 
 	private class AngleMode implements SampleProvider {
 		private static final int	MODE	= 0;
-		// TODO: Decide on unit for angles.
 		private static final float toSI=-1;
 
 
@@ -74,7 +85,6 @@ public class EV3GyroSensor extends UARTSensor
 
 	private class RateMode implements SampleProvider {
 		private static final int	MODE	= 1;
-		// TODO: Decide on unit for angles.
 		private static final float toSI=-1;
 
 

@@ -2,6 +2,10 @@ package lejos.robotics.filter;
 
 import lejos.robotics.SampleProvider;
 
+/** Baase class for Sample filters
+ * @author Kirk, Aswin
+ *
+ */
 public abstract class AbstractFilter implements SampleProvider {
 	protected final SampleProvider source;
 	protected final int sampleSize;
