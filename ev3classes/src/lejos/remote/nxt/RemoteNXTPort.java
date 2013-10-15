@@ -67,4 +67,18 @@ public class RemoteNXTPort implements Port
             throw new DeviceException("unable to open port");
         return portclass.cast(p);
     }
+
+    @Override
+    public int getPortType()
+    {
+        // TODO Should this method work for a remote port?
+        return EV3SensorConstants.CONN_NONE;
+    }
+
+    @Override
+    public int getSensorType()
+    {
+        // TODO Should this method work for a remote port?
+        return EV3SensorConstants.TYPE_NONE;
+    }
 }

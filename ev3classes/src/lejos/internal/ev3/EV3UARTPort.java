@@ -6,7 +6,6 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
 import lejos.hardware.DeviceException;
-import lejos.hardware.DeviceManager;
 import lejos.hardware.port.UARTPort;
 import lejos.internal.io.NativeDevice;
 import lejos.utility.Delay;
@@ -56,7 +55,7 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
         initDeviceIO();
     }
     
-    protected DeviceManager ldm = DeviceManager.getLocalDeviceManager();
+    protected EV3DeviceManager ldm = EV3DeviceManager.getLocalDeviceManager();
 
     /**
      * The following class maps directly to a C structure containing device information.

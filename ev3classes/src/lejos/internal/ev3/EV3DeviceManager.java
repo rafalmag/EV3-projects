@@ -1,10 +1,9 @@
-package lejos.hardware;
+package lejos.internal.ev3;
 
 import lejos.hardware.sensor.EV3SensorConstants;
-import lejos.internal.ev3.EV3AnalogPort;
 import lejos.internal.io.NativeDevice;
 
-public class DeviceManager implements EV3SensorConstants
+public class EV3DeviceManager implements EV3SensorConstants
 {
     protected static NativeDevice dev;
     
@@ -12,13 +11,13 @@ public class DeviceManager implements EV3SensorConstants
         initDeviceIO();
     }
     
-    protected static DeviceManager localDeviceManager = new DeviceManager();
+    protected static EV3DeviceManager localDeviceManager = new EV3DeviceManager();
 
     /**
      * Return the device manager for the local EV3
      * @return The local device manager singleton.
      */
-    public static DeviceManager getLocalDeviceManager()
+    public static EV3DeviceManager getLocalDeviceManager()
     {
         return localDeviceManager;
     }

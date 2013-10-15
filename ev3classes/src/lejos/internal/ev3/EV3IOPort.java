@@ -1,6 +1,5 @@
 package lejos.internal.ev3;
 
-import lejos.hardware.DeviceManager;
 import lejos.hardware.port.BasicSensorPort;
 import lejos.hardware.port.IOPort;
 import lejos.hardware.sensor.EV3SensorConstants;
@@ -136,7 +135,7 @@ public abstract class EV3IOPort implements IOPort, BasicSensorPort, EV3SensorCon
     public void setPinMode(int mode)
     {
         //System.out.println("Set Pin mode port " + port + " value " + mode);
-        DeviceManager.getLocalDeviceManager().setPortMode(port, mode);
+        EV3DeviceManager.getLocalDeviceManager().setPortMode(port, mode);
     }
 
 }

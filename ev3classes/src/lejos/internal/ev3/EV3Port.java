@@ -16,6 +16,7 @@ public class EV3Port implements Port
     protected String name;
     protected int typ;
     protected int portNum;
+    protected static final EV3DeviceManager devMan = EV3DeviceManager.getLocalDeviceManager();
 
     public EV3Port(String name, int typ, int portNum)
     {
@@ -68,5 +69,21 @@ public class EV3Port implements Port
         if (!p.open(typ,  portNum, this))
             throw new DeviceException("unable to open port");
         return portclass.cast(p);
+    }
+
+    /** {@inheritDoc}
+     */    
+    @Override
+    public int getPortType()
+    {
+        return devMan.getPortType(portNum);
+    }
+
+    /** {@inheritDoc}
+     */    
+    @Override
+    public int getSensorType()
+    {
+        return devMan.getSensorType(portNum);
     }
 }

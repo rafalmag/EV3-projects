@@ -2,7 +2,6 @@ package lejos.internal.ev3;
 
 import java.nio.ByteBuffer;
 
-import lejos.hardware.DeviceManager;
 import lejos.hardware.port.AnalogPort;
 import lejos.internal.io.NativeDevice;
 import lejos.utility.Delay;
@@ -48,7 +47,7 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
     protected int[] calLimits = new int[2];
     protected short[] rawValues = new short[BLANK_INDEX + 1];
     protected short[] values = new short[BLANK_INDEX + 1];
-    protected DeviceManager ldm = DeviceManager.getLocalDeviceManager();
+    protected EV3DeviceManager ldm = EV3DeviceManager.getLocalDeviceManager();
 
     
     static {

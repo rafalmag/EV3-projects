@@ -3,7 +3,6 @@ package lejos.hardware.ev3;
 import java.util.ArrayList;
 
 import lejos.hardware.Battery;
-import lejos.hardware.DeviceManager;
 import lejos.hardware.port.Port;
 import lejos.internal.ev3.EV3Port;
 import lejos.internal.ev3.EV3Battery;
@@ -16,7 +15,6 @@ import lejos.internal.ev3.EV3Battery;
  */
 public class LocalEV3 implements EV3
 {
-    protected DeviceManager ldm = DeviceManager.getLocalDeviceManager();
     public static final LocalEV3 ev3 = new LocalEV3();
     public final Battery battery = new EV3Battery();
     protected ArrayList<EV3Port> ports = new ArrayList<EV3Port>();

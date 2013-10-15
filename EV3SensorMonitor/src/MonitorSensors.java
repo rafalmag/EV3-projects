@@ -6,12 +6,13 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import lejos.hardware.port.AnalogPort;
-import lejos.hardware.DeviceManager;
 import lejos.hardware.port.I2CPort;
+import lejos.hardware.sensor.EV3SensorConstants;
 import lejos.hardware.sensor.I2CSensor;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.port.UARTPort;
+import lejos.internal.ev3.EV3DeviceManager;
 
 public class MonitorSensors {
     HashMap<String,String> sensorClasses = new HashMap<String,String>();
@@ -19,6 +20,7 @@ public class MonitorSensors {
     // Monitor the sensor ports
     void monitorSensorPorts()
     {
+        // TODO: sort this table out when final class names etc are fixed.
     	sensorClasses.put("mndsnsrsNRLink","lejos.nxt.addon.RCXLink");
     	sensorClasses.put("mndsnsrsACCL3X03","lejos.nxt.addon.AccelMindSensor");
     	sensorClasses.put("HiTechncColor   ","lejos.nxt.addon.ColorHTSensor");
@@ -32,21 +34,21 @@ public class MonitorSensors {
     	sensorClasses.put("LEGOSonar","lejos.nxt.UltrasonicSensor");
     	sensorClasses.put("IR-PROX","lejos.nxt.EV3IRSensor");
     	sensorClasses.put("COL-REFLECT","lejos.nxt.EV3ColorSensor");
-    	
-        int [] current = new int[DeviceManager.PORTS];
 
+    	// TODO: Should not really be using this class!
+    	EV3DeviceManager dm = EV3DeviceManager.getLocalDeviceManager();
         Port[] port = {SensorPort.S1, SensorPort.S2, SensorPort.S3, SensorPort.S4};
-        DeviceManager dm = new DeviceManager();
-        
+        int [] current = new int[port.length];
+
         while(true) {
             // Look for changes
-            for(int i = 0; i < DeviceManager.PORTS; i++) {
-                int typ = dm.getPortType(i);
+            for(int i = 0; i < port.length; i++) {
+                int typ = port[i].getPortType();
                 if (current[i] != typ) {
                     out.println("Port " + i + " changed to " + dm.getPortTypeName(typ));
                     current[i] = typ;
 
-                    if (typ == DeviceManager.CONN_INPUT_UART) {
+                    if (typ == EV3SensorConstants.CONN_INPUT_UART) {
                         out.println("Open port " + i);
                         UARTPort u = port[i].open(UARTPort.class);
                         String modeName = u.getModeName(0);
@@ -56,7 +58,7 @@ public class MonitorSensors {
                         out.println("Sensor class for " + modeName + " is " + className);
                         callGetMethods(className, UARTPort.class, u);
                         u.close();
-                    } else if (typ == DeviceManager.CONN_NXT_IIC){
+                    } else if (typ == EV3SensorConstants.CONN_NXT_IIC){
                         I2CPort ii = port[i].open(I2CPort.class);
                         I2CSensor s = new I2CSensor(ii);
                         String product = s.getProductID();
@@ -71,7 +73,7 @@ public class MonitorSensors {
                         }
                         callGetMethods(className, I2CPort.class, ii);
                         ii.close();
-                    } else if (typ != DeviceManager.CONN_NONE  && typ != DeviceManager.CONN_ERROR) {       	
+                    } else if (typ != EV3SensorConstants.CONN_NONE  && typ != EV3SensorConstants.CONN_ERROR) {       	
                     	String key = dm.getPortTypeName(typ);
                 		AnalogPort a = port[i].open(AnalogPort.class);
                 		String className = sensorClasses.get(key);
