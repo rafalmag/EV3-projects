@@ -9,7 +9,6 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.Sprite;
 
 import lejos.hardware.Button;
-import lejos.hardware.DeviceManager;
 import lejos.hardware.LCD;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.Motor;
@@ -402,84 +401,6 @@ public class GraphicsSample extends Thread
         
     }
     
-    void sensorPorts()
-    {
-        g.setFont(Font.getLargeFont());
-        g.drawString("Sensors", SW/2, SH/2, Graphics.BOTTOM|Graphics.HCENTER);
-        Button.waitForAnyPress(TITLE_DELAY);
-        g.setFont(Font.getDefaultFont());
-        int chHeight = g.getFont().getHeight();
-        int chWidth = g.getFont().stringWidth("M");
-        int [] current = new int[DeviceManager.PORTS];
-        UARTPort[] uarts = new UARTPort[DeviceManager.PORTS];
-        I2CPort[] i2c = new I2CPort[DeviceManager.PORTS];
-        DeviceManager dm = new DeviceManager();
-        int devCnt = 0;
-        while(devCnt < DeviceManager.PORTS)
-        {
-            g.clear();
-            devCnt = 0;
-            for(int i = 0; i < DeviceManager.PORTS; i++)
-            {
-                //System.out.println("Type " + i + " is " + current[i]);
-                g.drawString("Port "+i, 0, i*chHeight*2, 0);
-                g.drawString(dm.getPortTypeName(current[i]), 8*chWidth,i*chHeight*2, 0);
-                if (uarts[i] != null)
-                {
-                    g.drawString(uarts[i].getModeName(0), 2*chWidth, (2*i + 1)*chHeight, 0);
-                    devCnt++;
-                }
-                else if (i2c[i] != null)
-                {
-                    I2CSensor s = new I2CSensor(i2c[i]);
-                    g.drawString(s.getProductID(), 2*chWidth, (2*i + 1)*chHeight, 0);
-                }
-                else
-                    g.drawString("Unknown", 2*chWidth, (2*i + 1)*chHeight, 0);
-                    
-            }
-            LCD.refresh();
-            // Check for changes
-            for(int i = 0; i < DeviceManager.PORTS; i++)
-            {
-                int typ = dm.getPortType(i);
-                //System.out.println("Type " + typ);
-                if (current[i] != typ)
-                {
-                    System.out.println("Changed to " + typ);
-                    current[i] = typ;
-                    if (typ == DeviceManager.CONN_INPUT_UART)
-                    {
-                        System.out.println("Open port " + i);
-                        UARTPort u = new EV3UARTPort();
-                        if (u.open(i))
-                            uarts[i] = u;
-                        break;
-                    }
-                    else if (typ == DeviceManager.CONN_NXT_IIC)
-                    {
-                        I2CPort ii = new EV3I2CPort();
-                        ii.open(i);
-                        i2c[i] = ii;
-                    }
-                    else
-                    {
-                        if (uarts[i] != null)
-                            uarts[i].close();
-                        if (i2c[i] != null)
-                            i2c[i].close();
-                        uarts[i] = null;
-                        i2c[i] = null;
-                    }
-                }
-            }
-        }
-        Button.waitForAnyPress(DELAY*2);
-        displaySensorValues(uarts[0]);
-        displaySensorValues(uarts[3]);
-        g.clear();
-        LCD.refresh();
-    }
 
     public void run()
     {
@@ -974,27 +895,24 @@ public class GraphicsSample extends Thread
 
     public static void main(String[] options) throws Exception
     {
-        EV3UARTPort.resetAll();
         GraphicsSample sample = new GraphicsSample();
-        sample.sensorPorts();
-        /*
         sample.splash();
         sample.buttons();
         sample.motors();
         sample.sound();
         sample.leds();
         sample.titles();
-        //sample.characterSet();
-        //sample.textAnchors();
+        sample.characterSet();
+        sample.textAnchors();
         sample.fonts();
         sample.rotatedText();
         //sample.fileImage();
         sample.lines();
         sample.rectangles();
         sample.circles();
-        //sample.scroll();
+        sample.scroll();
         sample.images();
         sample.animation();
-        sample.credits();*/
+        sample.credits();
     }
 }
