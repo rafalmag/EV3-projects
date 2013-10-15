@@ -44,7 +44,7 @@ public class EV3UltrasonicSensor extends UARTSensor
     }
     
     
-    SampleProvider getListenMode() {
+    public SampleProvider getListenMode() {
     	if (listenMode==null) {
         listenMode=new ListenMode();
     	}
@@ -53,7 +53,7 @@ public class EV3UltrasonicSensor extends UARTSensor
     }
     
     
-    SampleProvider getDistanceMode() {
+    public SampleProvider getDistanceMode() {
     	if (distanceMode==null) {
         distanceMode=new DistanceMode();
     	}

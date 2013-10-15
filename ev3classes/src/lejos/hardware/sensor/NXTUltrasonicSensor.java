@@ -1,6 +1,7 @@
 package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
+import lejos.hardware.port.Port;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
@@ -78,11 +79,21 @@ public class NXTUltrasonicSensor extends I2CSensor {
 
 	public NXTUltrasonicSensor(I2CPort port) {
 		super(port);
+		init();
+	}
+	
+	public NXTUltrasonicSensor(Port port) {
+		super(port);
+		init();
+	}
+	
+	private void init() {
 		nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
 		setMode(MODE_CONTINUOUS);		
 		dataAvailableTime = System.currentTimeMillis()+DELAY_DATA_CONTINUOUS; 
+		
 	}
-	
+
 	/** Gives a SampleProvider representing the sensor in continuous mode. 
 	 * In this mode the sensor scans the surrounding continuously and reports the distance to the nearest object in sight.
 	 * The sensor reports the distance to the nearest object in meters. The theoretical range of the sensor is 0,04 to 2.54 meter.
@@ -135,6 +146,7 @@ public class NXTUltrasonicSensor extends I2CSensor {
 		if (mode !=currentMode) {
 			byteBuff[0]=mode;
 			 sendData(REG_MODE, byteBuff, 1);
+			 currentMode=mode;
 			 return true;
 		}
 		return false;
