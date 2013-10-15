@@ -92,7 +92,7 @@ public class EV3UltrasonicSensor extends UARTSensor
      */
     private class DistanceMode implements SampleProvider {
     	private static final int MODE=0;
-    	private static final float toSI=0.001f;
+    	private static final float TOSI=0.001f;
 
 			@Override
 			public int sampleSize() {
@@ -104,7 +104,7 @@ public class EV3UltrasonicSensor extends UARTSensor
 				if (currentMode == DISABLED) return;
 				switchMode(MODE,SWITCHDELAY);
 				int raw=port.getShort();
-				sample[offset]= (raw==2550) ? Float.POSITIVE_INFINITY : (float)raw*toSI;
+				sample[offset]= (raw==2550) ? Float.POSITIVE_INFINITY : (float)raw*TOSI;
 			}
     	
     }
