@@ -7,18 +7,23 @@ public class EV3DeviceManager implements EV3SensorConstants
 {
     protected static NativeDevice dev;
     
-    static {
-        initDeviceIO();
-    }
-    
     protected static EV3DeviceManager localDeviceManager = new EV3DeviceManager();
 
     /**
      * Return the device manager for the local EV3
      * @return The local device manager singleton.
      */
-    public static EV3DeviceManager getLocalDeviceManager()
+    public static synchronized EV3DeviceManager getLocalDeviceManager()
     {
+        if (dev == null)
+        {
+            try {
+                initDeviceIO();
+            } catch (Throwable e)
+            {
+                throw new UnsupportedOperationException("Unable to access EV3 hardware. Is this an EV3?", e);
+            }
+        }
         return localDeviceManager;
     }
 
