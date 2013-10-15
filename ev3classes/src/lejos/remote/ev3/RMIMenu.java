@@ -18,5 +18,7 @@ public interface RMIMenu extends Remote {
 	public String[] getProgramNames() throws RemoteException;
 	
 	public String[] getSampleNames()  throws RemoteException;
+	
+	public int uploadFile(String fileName, byte[] contents) throws RemoteException;
 
 }

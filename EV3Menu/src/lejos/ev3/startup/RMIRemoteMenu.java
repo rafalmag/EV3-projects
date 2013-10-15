@@ -50,4 +50,10 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 		return menu.getFileSize(filename);
 	}
 
+	@Override
+	public int uploadFile(String fileName, byte[] contents)
+			throws RemoteException {
+		return menu.uploadFile(fileName, contents);
+	}
+
 }

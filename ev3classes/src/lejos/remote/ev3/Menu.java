@@ -16,4 +16,5 @@ public interface Menu {
 	
 	public String[] getSampleNames();
 
+	public int uploadFile(String fileName, byte[] contents);
 }

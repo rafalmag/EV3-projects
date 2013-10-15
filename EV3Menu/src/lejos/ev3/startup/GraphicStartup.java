@@ -2,6 +2,8 @@ package lejos.ev3.startup;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -13,6 +15,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -1431,5 +1435,19 @@ public class GraphicStartup implements Menu {
 	@Override
 	public long getFileSize(String filename) {
 		return new File(filename).length();
+	}
+
+	@Override
+	public int uploadFile(String fileName, byte[] contents) {
+		try {
+			FileOutputStream out = new FileOutputStream(fileName);
+			out.write(contents);
+			out.close();
+			return 0;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return -1;
+		}
+	
 	}
 }
