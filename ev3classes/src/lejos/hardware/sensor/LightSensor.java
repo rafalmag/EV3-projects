@@ -3,6 +3,7 @@ package lejos.hardware.sensor;
 import lejos.hardware.port.AnalogPort;
 import lejos.robotics.Color;
 import lejos.robotics.LampLightDetector;
+import lejos.robotics.LightDetector;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
@@ -14,7 +15,7 @@ import lejos.robotics.LampLightDetector;
  * The light sensor can be calibrated to low and high values. 
  * 
  */
-public class LightSensor implements LampLightDetector, SensorConstants
+public class LightSensor implements LightDetector, LampLightDetector, SensorConstants
 {
 	AnalogPort port;
 	private int _zero = 1023;

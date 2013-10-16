@@ -12,7 +12,7 @@ package lejos.robotics;
  * @author BB
  *
  */
-public interface LampLightDetector extends LightDetector {
+public interface LampLightDetector{
 // TODO: Possible names: LEDLightDetector (too specific), FloodlightDetector, FloodLightDetector, FloodlightLightDetector. 
 	
 	/**

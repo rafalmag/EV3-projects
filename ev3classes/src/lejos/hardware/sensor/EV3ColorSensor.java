@@ -5,6 +5,7 @@ import lejos.hardware.port.UARTPort;
 import lejos.robotics.Color;
 import lejos.robotics.ColorDetector;
 import lejos.robotics.LampLightDetector;
+import lejos.robotics.LightDetector;
 
 /**
  * Basic sensor driver for the Lego EV3 color sensor <BR>
@@ -12,8 +13,7 @@ import lejos.robotics.LampLightDetector;
  * @author andy
  *
  */
-public class EV3ColorSensor extends UARTSensor implements LampLightDetector,
-        ColorDetector
+public class EV3ColorSensor extends UARTSensor implements LampLightDetector, LightDetector, ColorDetector
 {
     protected static int[] colorMap =
     {

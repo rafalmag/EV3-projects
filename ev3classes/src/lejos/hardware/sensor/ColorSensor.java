@@ -19,7 +19,7 @@ import lejos.robotics.*;
  * determine the "LEGO" color currently being viewed.
  * @author andy
  */
-public class ColorSensor extends AnalogSensor implements LampLightDetector, ColorDetector, SensorConstants
+public class ColorSensor extends AnalogSensor implements LightDetector, LampLightDetector, ColorDetector, SensorConstants
 {
 
     protected static int[] colorMap =
