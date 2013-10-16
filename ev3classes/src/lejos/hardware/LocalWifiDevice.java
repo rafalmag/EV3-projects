@@ -31,7 +31,7 @@ public class LocalWifiDevice {
 		if (ret >= 0) {
 			// Wait for the results
 			
-			Delay.msDelay(500);
+			Delay.msDelay(1000);
 			
 			// Create buffer for the results
 			
