@@ -37,19 +37,29 @@ public class IntegrationFilter extends AbstractFilter{
 
 
 
-	/** Fetches a sample from the source and then integrates it.
+	/**
+	 * Fetches a sample from the source and then integrates it.
+	 * 
 	 * @see lejos.robotics.filter.AbstractFilter#fetchSample(float[], int)
 	 */
-	public void fetchSample(float sample[],int off) {
-		super.fetchSample(sample, off);
-		long now=System.nanoTime();
-		if (lastTime==0) lastTime=now;
-		double dt=(now-lastTime)*NANO;
-		lastTime=now;
-		for (int i=0;i<sampleSize;i++) {
-			currentValue[i]+=sample[i]*dt;
-			sample[i+off]=currentValue[i];
+	public int fetchSample(float sample[], int off) {
+		int rc = super.fetchSample(sample, off);
+		if (rc == 0) {
+			long now = System.nanoTime();
+			if (lastTime == 0)
+				lastTime = now;
+			double dt = (now - lastTime) * NANO;
+			lastTime = now;
+			for (int i = 0; i < sampleSize; i++) {
+				currentValue[i] += sample[i] * dt;
+				sample[i + off] = currentValue[i];
+			}
 		}
+		else {
+			for (int i = 0; i < sampleSize; i++) {
+				sample[i + off] = Float.NaN;
+			}
+		}
+		return rc;
 	}
-	
 }

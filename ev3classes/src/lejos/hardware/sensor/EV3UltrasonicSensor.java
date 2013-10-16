@@ -100,11 +100,12 @@ public class EV3UltrasonicSensor extends UARTSensor
 			}
 
 			@Override
-			public void fetchSample(float[] sample, int offset) {
-				if (currentMode == DISABLED) return;
+			public int fetchSample(float[] sample, int offset) {
+				if (currentMode == DISABLED) return 1;
 				switchMode(MODE,SWITCHDELAY);
 				int raw=port.getShort();
 				sample[offset]= (raw==2550) ? Float.POSITIVE_INFINITY : (float)raw*toSI;
+				return 0;
 			}
     	
     }
@@ -121,10 +122,11 @@ public class EV3UltrasonicSensor extends UARTSensor
 			}
 
 			@Override
-			public void fetchSample(float[] sample, int offset) {
-				if (currentMode == DISABLED) return;
+			public int fetchSample(float[] sample, int offset) {
+				if (currentMode == DISABLED) return 1;
 				switchMode(MODE,SWITCHDELAY);
 				sample[offset]=port.getShort() & 0xff;
+				return 0;
 			}  	
     }
  

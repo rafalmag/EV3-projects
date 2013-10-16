@@ -76,9 +76,10 @@ public class EV3GyroSensor extends UARTSensor
 		}
 
 		@Override
-		public void fetchSample(float[] sample, int offset) {
+		public int fetchSample(float[] sample, int offset) {
 			switchMode(MODE, SWITCHDELAY);
 			sample[offset] = port.getShort() * toSI;
+			return 0;
 		}
 
 	}
@@ -94,9 +95,10 @@ public class EV3GyroSensor extends UARTSensor
 		}
 
 		@Override
-		public void fetchSample(float[] sample, int offset) {
+		public int fetchSample(float[] sample, int offset) {
 			switchMode(MODE, SWITCHDELAY);
 			sample[offset] = port.getShort() * toSI;
+			return 0;
 		}
 
 	}

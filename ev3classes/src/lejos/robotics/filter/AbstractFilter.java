@@ -21,8 +21,8 @@ public abstract class AbstractFilter implements SampleProvider {
 	}
 
 	@Override
-	public void fetchSample(float[] sample, int offset) {
-		source.fetchSample(sample, offset);
+	public int fetchSample(float[] sample, int offset) {
+		return source.fetchSample(sample, offset);
 	}
 
 }

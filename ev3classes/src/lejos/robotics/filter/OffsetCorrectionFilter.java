@@ -83,8 +83,9 @@ public class OffsetCorrectionFilter extends AbstractFilter {
 	}
 
 
-	public void fetchSample(float[] dst, int off) {
-		source.fetchSample(dst, off);
+	public int fetchSample(float[] dst, int off) {
+		int rc=super.fetchSample(dst, off);
+		if (rc==0) {
 		for (int i=0;i<sampleSize;i++) {
 			error=dst[i+off]-reference[i];
 			offset[i]=offset[i]*(1.0f-speed)+error*speed;
@@ -96,6 +97,12 @@ public class OffsetCorrectionFilter extends AbstractFilter {
 			if (speed<endSpeed) {
 				speed=endSpeed;}
 		}
-		
+		}
+		else {
+			for (int i=0;i<sampleSize;i++) {
+				dst[i+off]=Float.NaN;
+			}
+		}
+		return rc;
 	}
 }

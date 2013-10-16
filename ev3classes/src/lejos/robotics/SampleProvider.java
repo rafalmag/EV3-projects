@@ -20,6 +20,9 @@ public interface SampleProvider {
 	 * The array to store the sample in. 
 	 * @param offset
 	 * The elements of the sample are stored in the array starting at the offset position.
+	 * @return
+	 * 0, on succes <br>
+	 * non-zero, when the sample could not be fetched or processed
 	 */
-	public void fetchSample(float[] sample, int offset);
+	public int fetchSample(float[] sample, int offset);
 }
