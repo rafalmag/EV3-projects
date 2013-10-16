@@ -38,6 +38,17 @@ public class NativeWifi {
 	public static final int AF_INET = 2;
 	public static final int SOCK_DGRAM = 2;
 	
+	public static final int SIOCSIWESSID  = 0x8B1A;
+	public static final int SIOCGIWESSID  = 0x8B1B;
+	public static final int SIOCSIWNICKN  = 0x8B1C;
+	public static final int SIOCGIWNICKN  = 0x8B1D;
+	
+	public static final int SIOCSIWAP     = 0x8B14;          /* set access point MAC addresses */
+	public static final int SIOCGIWAP     = 0x8B15;          /* get access point MAC addresses */
+	public static final int SIOCGIWAPLIST = 0x8B17;          /* Deprecated in favor of scanning */
+	public static final int SIOCSIWSCAN   = 0x8B18;          /* trigger scanning (list cells) */
+	public static final int SIOCGIWSCAN   = 0x8B19; 
+
 	public static class SockAddr extends Structure {
 		public short family;
         public byte[] bd_addr = new byte[14];
@@ -56,7 +67,8 @@ public class NativeWifi {
 	
 	public static class WReqPoint extends Structure implements Structure.ByReference  {  
         public byte[] ifname = new byte[16];
-        public Point point = new Point();       
+        public Point point = new Point();  
+        public byte[] padding = new byte[8];
 	}
 	
     static class Linux_C_lib_DirectMapping {
@@ -106,7 +118,7 @@ public class NativeWifi {
     File jfd;
     FileChannel fc;
     
-    public NativeWifi() throws Exception {
+    public NativeWifi() {
     	socket = clib.socket(AF_INET, SOCK_DGRAM, 0);
     	//System.out.println("Socket is " + socket);
     	fd = clib.open("/proc/net/wireless",O_RDONLY);
