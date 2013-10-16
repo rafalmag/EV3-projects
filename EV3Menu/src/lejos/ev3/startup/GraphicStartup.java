@@ -3,10 +3,8 @@ package lejos.ev3.startup;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -15,8 +13,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -32,8 +28,10 @@ import lejos.hardware.Bluetooth;
 import lejos.hardware.Button;
 import lejos.hardware.LCD;
 import lejos.hardware.LocalBTDevice;
+import lejos.hardware.LocalWifiDevice;
 import lejos.hardware.RemoteBTDevice;
 import lejos.hardware.Sound;
+import lejos.hardware.Wifi;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.internal.io.Settings;
 import lejos.remote.ev3.Menu;
@@ -157,8 +155,8 @@ public class GraphicStartup implements Menu {
     {
         GraphicMenu menu = new GraphicMenu(new String[]
                 {
-                    "Run Default", "Files", "Samples", "Bluetooth", "Sound", "System", "Version"
-                },new String[] {ICDefault,ICFiles,ICFiles,ICBlue,ICSound,ICNXT,ICLeJOS},3);
+                    "Run Default", "Files", "Samples", "Bluetooth", "Wifi", "Sound", "System", "Version"
+                },new String[] {ICDefault,ICFiles,ICFiles,ICBlue,ICBlue,ICSound,ICNXT,ICLeJOS},3);
         int selection = 0;
         do
         {
@@ -183,12 +181,15 @@ public class GraphicStartup implements Menu {
                     bluetoothMenu();
                     break;
                 case 4:
-                    soundMenu();
+                    wifiMenu();
                     break;
                 case 5:
-                    systemMenu();
+                    soundMenu();
                     break;
                 case 6:
+                    systemMenu();
+                    break;
+                case 7:
                     displayVersion();
                     break;
             }
@@ -1449,5 +1450,41 @@ public class GraphicStartup implements Menu {
 			return -1;
 		}
 	
+	}
+	
+	private void wifiMenu() {
+    	GraphicListMenu menu = new GraphicListMenu(null,null);
+    	System.out.println("Finding access points ...");
+    	LocalWifiDevice wifi = Wifi.getLocalDevice("wlan0");
+    	String[] names;
+    	try {
+    		names = wifi.getAccessPointNames();
+    	} catch (Exception e) {
+    		System.err.println("Exception getting access points" +e);
+    		names = new String[0];
+    	}
+        int selection = 0;
+        
+        do {
+            
+            int len = names.length;
+            if (len == 0)
+            {
+                msg("No Access Points found");
+                return;
+            }
+            newScreen("Access Points");
+
+            menu.setItems(names,null);
+            selection = getSelection(menu, selection);
+            if (selection >0) {
+            	System.out.println("Access point is " + names[selection]);
+            	Keyboard k = new Keyboard();
+            	String pwd = k.getString();
+            	System.out.println("Password is " + pwd);
+            	WPASupplicant.writeConfiguration("wpa_supplicant.txt",  "wpa_supplicant.conf",  names[selection], pwd);
+            	selection = -1;
+            }
+        } while (selection >= 0);		
 	}
 }
