@@ -1,5 +1,8 @@
 package lejos.hardware.sensor;
 
+import lejos.hardware.device.IRLink;
+import lejos.hardware.device.IRTransmitter;
+import lejos.hardware.device.RCXLink;
 import lejos.hardware.port.I2CPort;
 import lejos.robotics.Accelerometer;
 

@@ -1,7 +1,8 @@
-package lejos.hardware.sensor;
+package lejos.hardware.device;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
+import lejos.hardware.sensor.I2CSensor;
 
 /**
  * The DLights class drives up to four dLights on a single sensor port.

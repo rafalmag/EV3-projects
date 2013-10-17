@@ -1,6 +1,6 @@
+import lejos.hardware.device.IRTransmitter;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.SensorPort;
-import lejos.hardware.sensor.IRTransmitter;
 import lejos.hardware.sensor.SensorSelector;
 import lejos.utility.TextMenu;
 

@@ -1,8 +1,9 @@
-package lejos.hardware.sensor;
+package lejos.hardware.device;
 
 import lejos.hardware.motor.RCXMotor;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
+import lejos.hardware.sensor.I2CSensor;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

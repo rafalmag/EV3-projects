@@ -1,4 +1,4 @@
-package lejos.hardware.sensor;
+package lejos.hardware.device;
 
 /**
  * Interface for dLights from Dexter Industries

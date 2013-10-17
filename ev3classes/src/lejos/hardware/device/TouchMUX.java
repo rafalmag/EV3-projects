@@ -1,7 +1,9 @@
-package lejos.hardware.sensor;
+package lejos.hardware.device;
 import lejos.robotics.Touch;
 import lejos.hardware.port.AnalogPort;
 import lejos.hardware.port.Port;
+import lejos.hardware.sensor.AnalogSensor;
+import lejos.hardware.sensor.SensorConstants;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

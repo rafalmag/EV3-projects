@@ -1,4 +1,4 @@
-package lejos.hardware.sensor;
+package lejos.hardware.device;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.SensorPort;

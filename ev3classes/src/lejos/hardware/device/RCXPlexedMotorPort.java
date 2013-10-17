@@ -1,4 +1,4 @@
-package lejos.hardware.sensor;
+package lejos.hardware.device;
 
 import lejos.hardware.port.BasicMotorPort;
 
@@ -8,27 +8,30 @@ import lejos.hardware.port.BasicMotorPort;
  */
 
 /**
- * MotorPort for PF Motors using HiTechnic IRLink
+ * Supports a motor connected to the Mindsensors RCX Motor Multiplexer
  * 
  * @author Lawrie Griffiths
  *
  */
-public class PFMotorPort implements BasicMotorPort {
-	private int channel, slot;
-	private IRLink link;
-	private static final int[] modeTranslation = {1,2,3,0};
+public class RCXPlexedMotorPort implements BasicMotorPort {
+	private RCXMotorMultiplexer plex;
+	private int id;
 	
-	public PFMotorPort(IRLink link, int channel, int slot) {
-		this.channel = channel;
-		this.slot = slot;
-		this.link = link;
+	public RCXPlexedMotorPort(RCXMotorMultiplexer plex, int id) {
+		this.plex = plex;
+		this.id = id;
 	}
 	
 	public void controlMotor(int power, int mode) {
-		if (mode < 1 || mode > 4) return;
-		link.sendPFComboDirect(channel, (slot == 0 ? modeTranslation[mode-1] : 0), (slot == 1 ? modeTranslation[mode-1] : 0));
+		int mmMode = mode;
+		if (mmMode == BasicMotorPort.FLOAT) mmMode = 0; // float
+		int mmPower = (int) (power * 2.55f);
+		if (mmMode == BasicMotorPort.STOP) {
+			mmPower = 255; // Maximum breaking
+		}
+		plex.sendCommand(id, mmMode, mmPower);
 	}
-
+	
 	public void setPWMMode(int mode) {
 		// Not implemented
 	}
@@ -36,6 +39,7 @@ public class PFMotorPort implements BasicMotorPort {
     @Override
     public void close()
     {
+        // not implemented
     }
 
     @Override
@@ -47,5 +51,6 @@ public class PFMotorPort implements BasicMotorPort {
     @Override
     public void setPinMode(int mode)
     {
+
     }
 }

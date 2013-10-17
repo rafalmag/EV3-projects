@@ -1,8 +1,9 @@
-package lejos.hardware.sensor;
+package lejos.hardware.device;
 
 import lejos.hardware.motor.RCXMotor;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
+import lejos.hardware.sensor.I2CSensor;
 import lejos.remote.rcx.Opcode;
 import lejos.remote.rcx.RCXRemoteMotorPort;
 import lejos.utility.Delay;

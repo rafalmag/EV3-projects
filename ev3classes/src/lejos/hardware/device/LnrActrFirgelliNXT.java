@@ -1,4 +1,4 @@
-package lejos.hardware.sensor;
+package lejos.hardware.device;
 
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.Port;
