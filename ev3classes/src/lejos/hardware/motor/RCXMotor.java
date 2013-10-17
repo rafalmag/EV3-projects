@@ -1,4 +1,4 @@
-package lejos.hardware.sensor;
+package lejos.hardware.motor;
 
 import lejos.hardware.motor.BasicMotor;
 import lejos.hardware.port.BasicMotorPort;

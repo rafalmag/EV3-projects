@@ -1,6 +1,7 @@
-package lejos.hardware.sensor;
+package lejos.remote.rcx;
       
 import lejos.hardware.port.BasicMotorPort;
+import lejos.hardware.sensor.RCXLink;
 import lejos.utility.Delay;
 
 /*

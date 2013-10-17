@@ -13,6 +13,7 @@ import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.port.UARTPort;
 import lejos.internal.ev3.EV3DeviceManager;
+import lejos.robotics.SampleProvider;
 
 public class MonitorSensors {
     HashMap<String,String> sensorClasses = new HashMap<String,String>();
@@ -21,19 +22,19 @@ public class MonitorSensors {
     void monitorSensorPorts()
     {
         // TODO: sort this table out when final class names etc are fixed.
-    	sensorClasses.put("mndsnsrsNRLink","lejos.nxt.addon.RCXLink");
-    	sensorClasses.put("mndsnsrsACCL3X03","lejos.nxt.addon.AccelMindSensor");
-    	sensorClasses.put("HiTechncColor   ","lejos.nxt.addon.ColorHTSensor");
-    	sensorClasses.put("HiTechncIRLink  ","lejos.nxt.addon.IRLink");
-    	sensorClasses.put("HiTechncCompass ","lejos.nxt.addon.CompassHTSensor");
-    	sensorClasses.put("NXT Color","lejos.nxt.ColorSensor");
+    	sensorClasses.put("mndsnsrsNRLink","lejos.hardware.sensor.RCXLink");
+    	sensorClasses.put("mndsnsrsACCL3X03","lejos.hardware.sensor.MindsensorsAccelerometer");
+    	sensorClasses.put("HiTechncColor   ","lejos.hardware.sensor.ColorHTSensor");
+    	sensorClasses.put("HiTechncIRLink  ","lejos.hardware.sensor.IRLink");
+    	sensorClasses.put("HiTechncCompass ","lejos.hardware.sensor.HiTechnicCompass");
+    	sensorClasses.put("NXT Color","lejos.hardware.sensor.ColorSensor");
     	// Use LightSensor class for NXT dumb sensors
-    	sensorClasses.put("NXT Dumb","lejos.nxt.LightSensor");
+    	sensorClasses.put("NXT Dumb","lejos.hardware.sensor.LightSensor");
     	// Use TouchSensor for EV3 dumb sensors
-    	sensorClasses.put("Dumb","lejos.nxt.TouchSensor");
-    	sensorClasses.put("LEGOSonar","lejos.nxt.UltrasonicSensor");
-    	sensorClasses.put("IR-PROX","lejos.nxt.EV3IRSensor");
-    	sensorClasses.put("COL-REFLECT","lejos.nxt.EV3ColorSensor");
+    	sensorClasses.put("Dumb","lejos.hardware.sensor.TouchSensor");
+    	sensorClasses.put("LEGOSonar","lejos.hardware.sensor.UltrasonicSensor");
+    	sensorClasses.put("IR-PROX","lejos.hardware.sensor.EV3IRSensor");
+    	sensorClasses.put("COL-REFLECT","lejos.hardware.sensor.EV3ColorSensor");
 
     	// TODO: Should not really be using this class!
     	EV3DeviceManager dm = EV3DeviceManager.getLocalDeviceManager();
@@ -69,7 +70,7 @@ public class MonitorSensors {
                         out.println("Sensor class for " + vendor + product + " is " + className);
                         if (className == null) {
                         	out.println("Cannot find sensor class, using I2CSensor");
-                        	className = "lejos.nxt.I2CSensor";
+                        	className = "lejos.hardware.sensor.I2CSensor";
                         }
                         callGetMethods(className, I2CPort.class, ii);
                         ii.close();
@@ -109,10 +110,11 @@ public class MonitorSensors {
     
     // Call the parameterless get and is methods of the instance of the class
     void callGetMethods(Class<?> c, Object o) {
+    	int sampleSize = 0;
 		try {	    
 		    Method[] allMethods = c.getDeclaredMethods();
 		    for (Method m : allMethods) {
-		        if (!m.getName().startsWith("get") && !m.getName().startsWith("is")) continue;
+		        if (!m.getName().startsWith("get") && !m.getName().startsWith("is") && !m.getName().startsWith("sample")) continue;
 		        Class<?>[] pType  = m.getParameterTypes();
 		        if (pType.length > 0) continue;
 
@@ -123,7 +125,22 @@ public class MonitorSensors {
 		        		for(int i=0;i<Array.getLength(res);i++) {
 		        			out.println("Element " + i + " is " + Array.get(res, i));
 		        		}
-		        	} else out.println("Result is " + res);
+		        	} else {
+		        		out.println("Result is " + res);
+		        		if (m.getName().startsWith("sample")) {
+		        			sampleSize = (int) (Integer) res;
+		        		} else if (m.getName().endsWith("Mode")) {
+		        	        // Fetch a sample
+		        	        if (res instanceof SampleProvider) {
+		        	        	sampleSize =((SampleProvider) res).sampleSize();
+		        	        	float[] sample = new float[sampleSize];
+		        	        	((SampleProvider) res).fetchSample(sample, 0);
+		        	        	for(int i=0;i<sampleSize;i++) System.out.println("sample[" + i + "] is " + sample[i]);
+		        	        }
+		        			
+		        		}
+		        				
+		        	}
 		        }
 	        }
 		} catch (Exception e) {
