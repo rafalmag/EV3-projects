@@ -32,7 +32,7 @@ public class MonitorSensors {
     	sensorClasses.put("NXT Dumb","lejos.hardware.sensor.LightSensor");
     	// Use TouchSensor for EV3 dumb sensors
     	sensorClasses.put("Dumb","lejos.hardware.sensor.TouchSensor");
-    	sensorClasses.put("LEGOSonar","lejos.hardware.sensor.UltrasonicSensor");
+    	sensorClasses.put("LEGOSonar","lejos.hardware.sensor.NXTUltrasonicSensor");
     	sensorClasses.put("IR-PROX","lejos.hardware.sensor.EV3IRSensor");
     	sensorClasses.put("COL-REFLECT","lejos.hardware.sensor.EV3ColorSensor");
 

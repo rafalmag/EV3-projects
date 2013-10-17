@@ -43,4 +43,10 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 		return new RMIRemoteMotorPort(portName);
 	}
 
+	@Override
+	public RMISampleProvider createSampleProvider(String portName,
+			String sensorName, String modeName) throws RemoteException {
+		return new RMIRemoteSampleProvider(portName, sensorName, modeName);
+	}
+
 }

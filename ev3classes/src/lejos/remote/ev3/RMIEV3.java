@@ -17,5 +17,7 @@ public interface RMIEV3 extends Remote {
 	public RMIUARTPort openUARTPort(String portName) throws RemoteException;
 
 	public RMIMotorPort openMotorPort(String portName) throws RemoteException;
+	
+	public RMISampleProvider createSampleProvider(String portName, String sensorName, String modeName) throws RemoteException;
 
 }
