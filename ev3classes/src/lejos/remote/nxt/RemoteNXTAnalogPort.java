@@ -3,6 +3,7 @@ package lejos.remote.nxt;
 import java.io.IOException;
 
 import lejos.hardware.port.AnalogPort;
+import lejos.hardware.port.LegacySensorPort;
 
 /**
  * This class provides access to the EV3 Analog based sensor ports and other
@@ -11,7 +12,7 @@ import lejos.hardware.port.AnalogPort;
  * @author andy
  *
  */
-public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort
+public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, LegacySensorPort
 {
 	public RemoteNXTAnalogPort(NXTCommand nxtCommand) {
 		super(nxtCommand);
@@ -196,4 +197,16 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort
     public void getShorts(short[] vals, int offset, int length)
     {
     }
+
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void passivate() {
+		// TODO Auto-generated method stub
+		
+	}
 }
