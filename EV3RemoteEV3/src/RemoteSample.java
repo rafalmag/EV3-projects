@@ -8,14 +8,16 @@ public class RemoteSample {
 	public static void main(String[] args) throws Exception {
 		RemoteEV3 ev3 = new RemoteEV3("192.168.0.9");
 		
-		RMISampleProvider sp = ev3.getSampleProvider("S1", "NXTTUltrasonicSensor", null);
+		RMISampleProvider sp = ev3.getSampleProvider("S1", "lejos.hardware.sensor.MindsensorsAccelerometer", null);
 		
 		float[] sample = sp.fetchSample();
 		
 		System.out.println("Sample");
 		for(float data: sample) {
-			System.out.println("  " + sample);
+			System.out.println("  " + data);
 		}
+		
+		sp.close();
 
 	}
 

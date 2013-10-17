@@ -6,6 +6,7 @@ import lejos.remote.ev3.RMIBattery;
 import lejos.remote.ev3.RMIEV3;
 import lejos.remote.ev3.RMII2CPort;
 import lejos.remote.ev3.RMIMotorPort;
+import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RMIUARTPort;
 
 
@@ -40,6 +41,13 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	@Override
 	public RMIMotorPort openMotorPort(String portName) throws RemoteException {
 		return new RMIRemoteMotorPort(portName);
+	}
+
+	@Override
+	public RMISampleProvider createSampleProvider(String portName,
+			String sensorName, String modeName) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

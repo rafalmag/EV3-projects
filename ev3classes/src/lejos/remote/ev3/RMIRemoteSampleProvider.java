@@ -1,5 +1,7 @@
 package lejos.remote.ev3;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -12,6 +14,7 @@ public class RMIRemoteSampleProvider extends UnicastRemoteObject implements RMIS
 
 	private static final long serialVersionUID = -8432755905878519147L;
 	private SampleProvider provider;
+	private Closeable closer;
 	private String modeName;
 
 	protected RMIRemoteSampleProvider(String portName, String sensorName, String modeName) throws RemoteException {
@@ -23,7 +26,9 @@ public class RMIRemoteSampleProvider extends UnicastRemoteObject implements RMIS
 			Constructor<?> con = c.getConstructor(params);
 			Object[] args = new Object[1];
 			args[0] = LocalEV3.get().getPort(portName);
-			provider = (SampleProvider) con.newInstance(args);
+			Object obj = con.newInstance(args);
+			provider = (SampleProvider) obj;
+			closer = (Closeable) obj;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -35,6 +40,15 @@ public class RMIRemoteSampleProvider extends UnicastRemoteObject implements RMIS
 		float[] sample = new float[sampleSize];
 		if (provider.fetchSample(sample, 0) != 0) sample = null;
 		return sample;
+	}
+
+	@Override
+	public void close() throws RemoteException {
+		try {
+			closer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
 	}
 
 }
