@@ -55,9 +55,18 @@ public class RemoteEV3 implements EV3 {
 		return host;
 	}
 	
-	public RMISampleProvider getSampleProvider(String portName, String sensorName, String modeName) {
+	public RMISampleProvider createSampleProvider(String portName, String sensorName, String modeName) {
 		try {
 			return rmiEV3.createSampleProvider(portName, sensorName, modeName);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public RMIRegulatedMotor createRegulatedProvider(String portName) {
+		try {
+			return rmiEV3.createRegulatedMotor(portName);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return null;

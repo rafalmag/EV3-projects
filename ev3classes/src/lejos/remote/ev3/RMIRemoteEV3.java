@@ -49,4 +49,11 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 		return new RMIRemoteSampleProvider(portName, sensorName, modeName);
 	}
 
+	@Override
+	public RMIRegulatedMotor createRegulatedMotor(String portName)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return new RMIRemoteRegulatedMotor(portName);
+	}
+
 }
