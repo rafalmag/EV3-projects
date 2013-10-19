@@ -52,8 +52,12 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	@Override
 	public RMIRegulatedMotor createRegulatedMotor(String portName)
 			throws RemoteException {
-		// TODO Auto-generated method stub
 		return new RMIRemoteRegulatedMotor(portName);
+	}
+
+	@Override
+	public RMISound getSound() throws RemoteException {
+		return new RMIRemoteSound();
 	}
 
 }

@@ -72,5 +72,14 @@ public class RemoteEV3 implements EV3 {
 			return null;
 		}
 	}
+	
+	public RMISound getSound() {
+		try {
+			return rmiEV3.getSound();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }
