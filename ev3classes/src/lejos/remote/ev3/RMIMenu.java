@@ -20,5 +20,11 @@ public interface RMIMenu extends Remote {
 	public String[] getSampleNames()  throws RemoteException;
 	
 	public int uploadFile(String fileName, byte[] contents) throws RemoteException;
+	
+	public boolean fetchFile(String fileName) throws RemoteException;
+	
+	public String getSetting(String setting) throws RemoteException;
+	
+	public boolean setSetting(String setting, String value) throws RemoteException;
 
 }

@@ -102,7 +102,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 
 	private static final int[] sensorModeValues = { RAWMODE, BOOLEANMODE, PCTFULLSCALEMODE };
 	
-	private final String[] motorNames = { "A", "B", "C" };
+	private final String[] motorNames = { "A", "B", "C", "D" };
 	
 	private final String[] volumeLevels = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 
@@ -128,12 +128,12 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JTextArea theConsoleLog = new JTextArea(16, 68);
 	private JTextArea theDataLog = new JTextArea(20, 68);
 	private LabeledGauge batteryGauge = new LabeledGauge("Battery", 10000);
-	private JSlider[] sliders = new JSlider[3];
-	private JLabel[] tachos = new JLabel[3];
-	private JCheckBox[] selectors = new JCheckBox[3];
-	private JCheckBox[] reversors = new JCheckBox[3];
-	private JTextField[] limits = new JTextField[3];
-	private JButton[] resetButtons = new JButton[3];
+	private JSlider[] sliders = new JSlider[4];
+	private JLabel[] tachos = new JLabel[4];
+	private JCheckBox[] selectors = new JCheckBox[4];
+	private JCheckBox[] reversors = new JCheckBox[4];
+	private JTextField[] limits = new JTextField[4];
+	private JButton[] resetButtons = new JButton[4];
 	private JButton connectButton = new JButton("Connect");
 	private JButton dataDownloadButton = new JButton("Download");
 	private TextField dataColumns = new TextField("8", 2);
@@ -912,7 +912,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		JPanel motorsPanel = new JPanel();
 		motorsPanel.setLayout(new BoxLayout(motorsPanel, BoxLayout.Y_AXIS));
 		motorsPanel.add(createMotorsHeader());
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			motorsPanel.add(createMotorPanel(i));
 		}
 		JPanel buttonsPanel = new JPanel();
@@ -1091,7 +1091,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 
 	/**
-	 * Switch between NXTS in table of available NXTs
+	 * Switch between EV3s in table of available EV3s
 	 */
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getValueIsAdjusting()) {
@@ -1364,6 +1364,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Play a tone
 	 */
 	private void playTone() {
+		try {
+			ev3.getSound().playTone((Integer) freq.getValue(), (Integer) duration.getValue());
+		} catch (IOException ioe) {
+			showMessage("IO Exception playing tone");
+		} catch (NumberFormatException nfe) {
+			showMessage("Frequency and Duration must be integers");
+		}
 	}
 	
 	/**
@@ -1385,7 +1392,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		String fileName = fm.getFile(row).fileName;
 		try {
 			System.out.println("Playing file " + fileName);
-			ev3.getSound().playSample("/home/root/samples/" + fileName);
+			ev3.getSound().playSample("/home/root/lejos/samples/" + fileName);
 		} catch (Exception ioe) {
 			showMessage("IO Exception playing sound file");
 		}

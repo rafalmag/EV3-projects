@@ -2,6 +2,8 @@ package lejos.ev3.startup;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -1486,5 +1488,33 @@ public class GraphicStartup implements Menu {
             	selection = -1;
             }
         } while (selection >= 0);		
+	}
+
+	@Override
+	public boolean fetchFile(String fileName) {
+		File f = new File(fileName);
+		FileInputStream in;
+		try {
+			in = new FileInputStream(f);
+			byte[] data = new byte[(int)f.length()];
+		    in.read(data);
+		    in.close();
+		    return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	@Override
+	public String getSetting(String setting) {
+		return Settings.getProperty(setting, null);
+	}
+
+	@Override
+	public boolean setSetting(String setting, String value) {
+		Settings.setProperty(setting, value);
+		return true;
 	}
 }

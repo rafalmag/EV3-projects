@@ -17,4 +17,10 @@ public interface Menu {
 	public String[] getSampleNames();
 
 	public int uploadFile(String fileName, byte[] contents);
+	
+	public boolean fetchFile(String fileName);
+	
+	public String getSetting(String setting);
+	
+	public boolean setSetting(String setting, String value);
 }
