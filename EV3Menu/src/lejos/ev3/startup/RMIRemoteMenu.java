@@ -57,7 +57,7 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 	}
 
 	@Override
-	public boolean fetchFile(String fileName) throws RemoteException {
+	public byte[] fetchFile(String fileName) throws RemoteException {
 		return menu.fetchFile(fileName);
 	}
 

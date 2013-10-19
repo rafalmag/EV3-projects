@@ -13,7 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -47,6 +47,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.remote.ev3.RMIMenu;
 import lejos.remote.ev3.RemoteEV3;
 import lejos.remote.nxt.NXTProtocol;
@@ -64,6 +66,11 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
     
 	private static final int RMI = 0;
 	private static final int RCONSOLE = 1;
+	
+	private static final String defaultProgramProperty = "lejos.default_program";
+	private static final String defaultProgramAutoRunProperty = "lejos.default_autoRun";
+	private static final String sleepTimeProperty = "lejos.sleep_time";
+	private static final String pinProperty = "lejos.bluetooth_pin";
 	
 	private static final Dimension frameSize = new Dimension(800, 620);
 	private static final Dimension filesAreaSize = new Dimension(780, 300);
@@ -288,7 +295,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	private void showFiles() {
 		// Layout and populate files table
-		createFilesTable();
+		createFilesTable("/home/root/lejos/samples/");
 
 		// Remove current content of files panel and recreate it
 		filesPanel.removeAll();
@@ -457,6 +464,16 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		volumePanel.add(clickDropdownPanel);
 		volumePanel.setPreferredSize(volumePanelSize);
 		
+		if (menu != null) {
+			try {
+				int volume = Integer.parseInt(menu.getSetting(Sound.VOL_SETTING));
+				volumeList.setSelectedIndex(volume/10);
+				int keyClickVolume = Integer.parseInt(menu.getSetting(Button.VOL_SETTING));
+				volumeList2.setSelectedIndex(keyClickVolume/10);
+			} catch(IOException e) {
+				showMessage("Failed to get volume settings");
+			}
+		}
 		
 		JButton setButton = new JButton("Set");
 		volumePanel.add(setButton);
@@ -484,6 +501,15 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		JButton setButton = new JButton("Set");
 		sleepPanel.add(setButton);
 		
+		if (menu != null) {
+			try {
+				int sleep = Integer.parseInt(menu.getSetting(sleepTimeProperty));
+				if (sleep >= 0 && sleep <= 10) sleepList.setSelectedIndex(sleep);
+			} catch(Exception e) {
+				showMessage("Failed to get sleep timer setting");
+			}
+		}
+		
 		setButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -505,7 +531,37 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		defaultProgramPanel.add(labelDefaultPanel);
 		final JCheckBox autoRun = new JCheckBox();
 		
-	
+		if (menu != null) {
+			try {
+				String defProg = menu.getSetting(defaultProgramProperty);
+				defaultProgram.setText(defProg);
+				if (defProg.length() > 0) {
+					JPanel autoRunPanel = new JPanel();
+					JLabel autoRunLabel = new JLabel("Auto Run:");
+					autoRunPanel.add(autoRunLabel);
+					autoRunPanel.add(autoRun);
+					defaultProgramPanel.add(autoRunPanel);
+					boolean autoRunSetting = Boolean.parseBoolean(menu.getSetting(defaultProgramAutoRunProperty));
+					autoRun.setSelected(autoRunSetting);
+					
+					JButton setButton = new JButton("Set");
+					defaultProgramPanel.add(setButton);
+					
+					setButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							try {
+								if (menu == null) return;
+								menu.setSetting(defaultProgramAutoRunProperty, Boolean.toString(autoRun.isSelected()));
+							} catch (Exception ioe) {
+								showMessage("Failed to set default program settings");
+							}
+						}
+					});
+				}
+			} catch(IOException e) {
+				showMessage("Failed to get default program settings");
+			}
+		}
 	}
 
 	/**
@@ -777,14 +833,14 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	/**
 	 *  Set up the files table
 	 */
-	private void createFilesTable() {
+	private void createFilesTable(String directory) {
 		fm = new ExtendedFileModel();
 		String[] programs;
 		try {
 			programs = menu.getSampleNames();
 			long[] sizes = new long[programs.length];
 			for(int i=0;i<sizes.length;i++) {
-				sizes[i] = menu.getFileSize("/home/root/lejos/samples/" + programs[i]);
+				sizes[i] = menu.getFileSize(directory + programs[i]);
 			}
 			fm.fetchFiles(programs, sizes);
 		} catch (RemoteException e1) {
@@ -1051,22 +1107,20 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		}
 		return multipliers;
 	}
-
 	
 	/**
 	 * Download a file from the NXT
 	 */
 	private void getFile(File file, String fileName, int size) {
 		FileOutputStream out = null;
-		int received = 0;
-
 		try {
 			out = new FileOutputStream(file);
-		} catch (FileNotFoundException e) {
-			//TODO don't swallow exception
+			byte[] data = menu.fetchFile(fileName);
+			out.write(data);
+			out.close();			
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		byte[] data = new byte[51];
-
 	}
 
 	/**
@@ -1175,54 +1229,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 
 	/**
-	 * Convert a byte array to a string of hex characters
-	 */
-	private String toHex(byte[] b) {
-		StringBuilder output = new StringBuilder();
-		for (int i = 0; i < b.length; i++) {
-			if (i > 0)
-				output.append(' ');
-			byte j = b[i];
-			output.append(Character.forDigit((j >> 4) & 0xF, 16));
-			output.append(Character.forDigit(j & 0xF, 16));
-		}
-		return output.toString();
-	}
-
-	/**
-	 * Convert a string of hex characters to a byte array
-	 */
-	private byte[] fromHex(String s) {
-		byte[] reply = new byte[s.length() / 2];
-		for (int i = 0; i < reply.length; i++) {
-			char c1 = s.charAt(i * 2);
-			char c2 = s.charAt(i * 2 + 1);
-			reply[i] = (byte) (getHexDigit(c1) << 4 | getHexDigit(c2));
-		}
-		return reply;
-	}
-
-	/**
-	 * Convert a character to a hex digit
-	 */
-	private int getHexDigit(char c) {
-		if (c >= '0' && c <= '9') return c - '0';
-		if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-		if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-		return 0;
-	}
-
-	/**
-	 * Add one byte array to another
-	 */
-	private byte[] appendBytes(byte[] array1, byte[] array2) {
-		byte[] array = new byte[array1.length + array2.length];
-		System.arraycopy(array1, 0, array, 0, array1.length);
-		System.arraycopy(array2, 0, array, array1.length, array2.length);
-		return array;
-	}
-
-	/**
 	 * Connect to the NXT
 	 */
 	private void connect() {
@@ -1296,6 +1302,18 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Upload the specified file
 	 */
 	private void uploadFile(File file) {
+		frame.setCursor(hourglassCursor);
+		try {
+			FileInputStream in = new FileInputStream(file);
+			byte[] data = new byte[(int)file.length()];
+		    in.read(data);
+			menu.uploadFile(file.getName(), data);
+		    in.close();
+			//String msg = fm.fetchFiles(nxtCommand);
+		} catch (IOException ioe) {
+			showMessage("IOException uploading file");
+		}
+		frame.setCursor(normalCursor);
 	}
 	
 	/**
@@ -1402,6 +1420,17 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Send I2C request
 	 */
 	private void i2cSend() {
+		byte[] addr = new byte[1];
+		addr[0] = ((Number)address.getValue()).byteValue(); // default I2C address
+		
+		try {
+			/*nxtCommand.LSWrite(
+					(byte) sensorList.getSelectedIndex(),
+					appendBytes(addr, fromHex(txData.getText())),
+					((Number) rxDataLength.getValue()).byteValue());*/
+		} catch (Exception ioe) {
+			showMessage("IO Exception sending txData");
+		}
 	}
 	
 	/** 
@@ -1420,6 +1449,11 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Format the file system
 	 */
 	private void format() {
+		try {
+			//fm.fetchFiles(nxtCommand);
+		} catch (Exception ioe) {
+			showMessage("IO Exception formatting file system");
+		}
 	}
 	
 	private void noFileSelected() {
@@ -1427,6 +1461,18 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 	
 	private void setDefaultProgram() {
+		int row = table.getSelectedRow();
+		if (row < 0) {
+			noFileSelected();
+			return;
+		}
+		
+		String fileName = fm.getFile(row).fileName;
+		try {
+			menu.setSetting(defaultProgramProperty,"/home/lejos/programs/" + fileName);
+		} catch (IOException ioe) {
+			showMessage("IO setting default program");
+		}
 	}
 	
 	/**

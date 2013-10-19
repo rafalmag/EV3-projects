@@ -18,7 +18,7 @@ public interface Menu {
 
 	public int uploadFile(String fileName, byte[] contents);
 	
-	public boolean fetchFile(String fileName);
+	public byte[] fetchFile(String fileName);
 	
 	public String getSetting(String setting);
 	

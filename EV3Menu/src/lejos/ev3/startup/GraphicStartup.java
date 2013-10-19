@@ -1491,7 +1491,7 @@ public class GraphicStartup implements Menu {
 	}
 
 	@Override
-	public boolean fetchFile(String fileName) {
+	public byte[] fetchFile(String fileName) {
 		File f = new File(fileName);
 		FileInputStream in;
 		try {
@@ -1499,10 +1499,10 @@ public class GraphicStartup implements Menu {
 			byte[] data = new byte[(int)f.length()];
 		    in.read(data);
 		    in.close();
-		    return true;
+		    return data;
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 
 	}
