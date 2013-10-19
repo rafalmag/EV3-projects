@@ -23,4 +23,14 @@ public interface Menu {
 	public String getSetting(String setting);
 	
 	public boolean setSetting(String setting, String value);
+	
+	public boolean deleteAllPrograms();
+	
+	public String getVersion();
+	
+	public String getMenuVersion();
+	
+	public String getName();
+	
+	public boolean setName(String name);
 }

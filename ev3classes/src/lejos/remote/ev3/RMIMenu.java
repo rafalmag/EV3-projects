@@ -26,5 +26,15 @@ public interface RMIMenu extends Remote {
 	public String getSetting(String setting) throws RemoteException;
 	
 	public boolean setSetting(String setting, String value) throws RemoteException;
+	
+	public boolean deleteAllPrograms() throws RemoteException;
+	
+	public String getVersion() throws RemoteException;
+	
+	public String getMenuVersion() throws RemoteException;
+	
+	public String getName() throws RemoteException;
+	
+	public boolean setName(String name) throws RemoteException;
 
 }

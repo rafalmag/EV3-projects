@@ -75,9 +75,9 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private static final Dimension frameSize = new Dimension(800, 620);
 	private static final Dimension filesAreaSize = new Dimension(780, 300);
 	private static final Dimension filesPanelSize = new Dimension(500, 400);
-	private static final Dimension nxtButtonsPanelSize = new Dimension(220, 130);
+	private static final Dimension ev3ButtonsPanelSize = new Dimension(220, 130);
 	private static final Dimension filesButtonsPanelSize = new Dimension(770,100);
-	private static final Dimension nxtTableSize = new Dimension(500, 100);	
+	private static final Dimension ev3TableSize = new Dimension(500, 100);	
 	private static final Dimension labelSize = new Dimension(60, 20);
 	private static final Dimension sliderSize = new Dimension(150, 50);
 	private static final Dimension tachoSize = new Dimension(100, 20);
@@ -117,12 +117,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 	private Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 	private JFrame frame = new JFrame(title);
-	private JTable nxtTable = new JTable();
-	private JScrollPane nxtTablePane;
+	private JTable ev3Table = new JTable();
+	private JScrollPane ev3TablePane;
 	private JTextField nameText = new JTextField(8);
-	private JTable table;
-	private JScrollPane tablePane;
-	private JPanel filesPanel = new JPanel();
+	private JTable programsTable, samplesTable;
+	private JScrollPane programsTablePane, samplesTablePane;
+	private JPanel programsFilesPanel = new JPanel();
+	private JPanel samplesFilesPanel = new JPanel();
 	private JPanel settingsPanel = new JPanel();
 	private JPanel volumePanel = new JPanel();
 	private JPanel sleepPanel = new JPanel();
@@ -157,6 +158,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JButton nameButton = new JButton("Set Name");
 	private JButton formatButton = new JButton("Format");
 	private JButton setDefaultButton = new JButton("Set Default");
+	private JButton runSamplesButton = new JButton("Run sample");
 	private JRadioButton rmiButton = new JRadioButton("RMI", true);
 	private JRadioButton rconsoleButton = new JRadioButton("RConsole");
 	private JFormattedTextField freq = new JFormattedTextField(new Integer(500));
@@ -178,7 +180,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	
 	// Other instance data
-	private ExtendedFileModel fm;
+	private ExtendedFileModel fmPrograms, fmSamples;
 	private EV3Control control;
 	private int mv;
 	private int appProtocol = RMI;
@@ -225,14 +227,14 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 
 		control = this;
 
-		// Search Button: search for NXTs
+		// Search Button: search for EV3s
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				search();
 			}
 		});
 
-		// Connect Button: connect to selected NXT
+		// Connect Button: connect to selected EV£
 		connectButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				connect();
@@ -268,7 +270,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		});
 
 		// Create the panels
-		createNXTSelectionPanel();
+		createEV3SelectionPanel();
 		createConsolePanel();
 		createDataPanel();
 		createMonitorPanel();
@@ -277,7 +279,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		createSettingsPanel();
 
 		// set the size of the files panel
-		filesPanel.setPreferredSize(filesPanelSize);
+		programsFilesPanel.setPreferredSize(filesPanelSize);
+		samplesFilesPanel.setPreferredSize(filesPanelSize);
 		
 		// Set up the frame
 		frame.setPreferredSize(frameSize);
@@ -291,15 +294,18 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 
 	/**
-	 * Get files from the NXT and display them in the files panel
+	 * Get files from the EV3 and display them in the files panel
 	 */
 	private void showFiles() {
 		// Layout and populate files table
-		createFilesTable("/home/root/lejos/samples/");
+		createProgramsTable("/home/root/lejos/samples/");
+		createSamplesTable("/home/root/lejos/samples/");
 
 		// Remove current content of files panel and recreate it
-		filesPanel.removeAll();
+		programsFilesPanel.removeAll();
+		samplesFilesPanel.removeAll();
 		createFilesPanel();
+		createSamplesPanel();
 		
 		// Recreate miscellaneous and settings panel
 		otherPanel.removeAll();
@@ -312,7 +318,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		
 		// Process buttons
 
-		// Delete Button: delete a file from the NXT
+		// Delete Button: delete a file from the EV3
 		deleteButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				deleteFiles();
@@ -326,28 +332,28 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			}
 		});
 
-		// Upload Button: upload a file to the NXT
+		// Upload Button: upload a file to the EV3
 		uploadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				upload();
 			}
 		});
 
-		// Download Button: download a file from from the NXT
+		// Download Button: download a file from from the EV3
 		downloadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				download();
 			}
 		});
 
-		// Run Button: run a program on the NXT
+		// Run Button: run a program on the EV3
 		runButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				runFile();
 			}
 		});
 
-		// Set Name Button: set a new name for the NXT
+		// Set Name Button: set a new name for the EV3
 		nameButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				rename(newName.getText());
@@ -373,33 +379,33 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 
 	/**
-	 * Lay out NXT Selection panel
+	 * Lay out EV£ Selection panel
 	 */
-	private void createNXTSelectionPanel() {
-		JPanel nxtPanel = new JPanel();
-		nxtTablePane = new JScrollPane(nxtTable);
-		nxtTablePane.setPreferredSize(nxtTableSize);
-		nxtPanel.add(new JScrollPane(nxtTablePane), BorderLayout.WEST);
-		frame.getContentPane().add(nxtPanel, BorderLayout.NORTH);
-		nxtTable.setPreferredScrollableViewportSize(nxtButtonsPanelSize);
+	private void createEV3SelectionPanel() {
+		JPanel ev3Panel = new JPanel();
+		ev3TablePane = new JScrollPane(ev3Table);
+		ev3TablePane.setPreferredSize(ev3TableSize);
+		ev3Panel.add(new JScrollPane(ev3TablePane), BorderLayout.WEST);
+		frame.getContentPane().add(ev3Panel, BorderLayout.NORTH);
+		ev3Table.setPreferredScrollableViewportSize(ev3ButtonsPanelSize);
 		JLabel nameLabel = new JLabel("Name: ");
 		JPanel namePanel = new JPanel();
 		namePanel.add(nameLabel);
 		namePanel.add(nameText);
-		JPanel nxtButtonPanel = new JPanel();
-		nxtButtonPanel.add(namePanel);
+		JPanel ev3ButtonPanel = new JPanel();
+		ev3ButtonPanel.add(namePanel);
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(searchButton);
 		buttonPanel.add(connectButton);
-		nxtButtonPanel.add(buttonPanel);
+		ev3ButtonPanel.add(buttonPanel);
 		ButtonGroup protocolButtonGroup = new ButtonGroup();
-		nxtButtonPanel.add(rmiButton);
-		nxtButtonPanel.add(rconsoleButton);
+		ev3ButtonPanel.add(rmiButton);
+		ev3ButtonPanel.add(rconsoleButton);
 		ButtonGroup appProtocolButtonGroup = new ButtonGroup();
 		appProtocolButtonGroup.add(rmiButton);
 		appProtocolButtonGroup.add(rconsoleButton);
-		nxtButtonPanel.setPreferredSize(nxtButtonsPanelSize);
-		nxtPanel.add(nxtButtonPanel, BorderLayout.EAST);
+		ev3ButtonPanel.setPreferredSize(ev3ButtonsPanelSize);
+		ev3Panel.add(ev3ButtonPanel, BorderLayout.EAST);
 	}
 
 	/**
@@ -620,7 +626,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	private void createRMITabs() {
 		tabbedPane.removeAll();
-		tabbedPane.addTab("Files", filesPanel);
+		tabbedPane.addTab("Programs", programsFilesPanel);
+		tabbedPane.addTab("Samples", samplesFilesPanel);
 		tabbedPane.addTab("Settings", settingsPanel);
 		tabbedPane.addTab("Monitor", monitorPanel);
 		tabbedPane.addTab("Control", controlPanel);
@@ -639,7 +646,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 *  Set up the files panel
 	 */
 	private void createFilesPanel() {
-		filesPanel.add(tablePane, BorderLayout.CENTER);
+		programsFilesPanel.add(programsTablePane, BorderLayout.CENTER);
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(deleteButton);
 		buttonPanel.add(uploadButton);
@@ -649,7 +656,18 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		buttonPanel.add(formatButton);
 		buttonPanel.add(setDefaultButton);
 		buttonPanel.setPreferredSize(filesButtonsPanelSize);
-		filesPanel.add(buttonPanel, BorderLayout.SOUTH);
+		programsFilesPanel.add(buttonPanel, BorderLayout.SOUTH);
+	}
+	
+	/**
+	 *  Set up the files panel
+	 */
+	private void createSamplesPanel() {
+		samplesFilesPanel.add(samplesTablePane, BorderLayout.CENTER);
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(runSamplesButton);
+		buttonPanel.setPreferredSize(filesButtonsPanelSize);
+		samplesFilesPanel.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
 	/**
@@ -663,7 +681,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 	
 	/**
-	 * Create rename NXT panel
+	 * Create rename EV3 panel
 	 */
 	private void createNamePanel() {
 		JPanel namePanel = new JPanel();
@@ -692,14 +710,19 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		JPanel infoPanel = new JPanel();
 
 		infoPanel.setLayout(new GridLayout(4, 2));
-		JLabel freeFlashLabel = new JLabel("Free flash:  ");
 		String firmwareVersionString = "Unknown";
 		String menuVersionString = "Unknown";
 		String freeFlashString = "Unknown";
 		
-		JLabel freeFlash = new JLabel(freeFlashString);
-		infoPanel.add(freeFlashLabel);
-		infoPanel.add(freeFlash);
+		if (menu != null) {
+			try {
+				firmwareVersionString = menu.getVersion();
+				menuVersionString = menu.getMenuVersion();
+			} catch (IOException ioe) {
+				showMessage("IO Exception getting device information");
+			}
+		}
+		
 		JLabel firmwareVersionLabel = new JLabel("Firmware version:");
 		JLabel firmwareVersion = new JLabel(firmwareVersionString);
 		infoPanel.add(firmwareVersionLabel);
@@ -833,8 +856,50 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	/**
 	 *  Set up the files table
 	 */
-	private void createFilesTable(String directory) {
-		fm = new ExtendedFileModel();
+	private void createProgramsTable(String directory) {
+		fmPrograms = new ExtendedFileModel();
+		String[] programs;
+		try {
+			programs = menu.getProgramNames();
+			long[] sizes = new long[programs.length];
+			for(int i=0;i<sizes.length;i++) {
+				sizes[i] = menu.getFileSize(directory + programs[i]);
+			}
+			fmPrograms.fetchFiles(programs, sizes);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		programsTable = new JTable(fmPrograms);
+		programsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		programsTable.getColumnModel().getColumn(0).setPreferredWidth(fileNameColumnWidth);
+		programsTablePane = new JScrollPane(programsTable);
+		programsTablePane.setPreferredSize(filesAreaSize);
+		
+		// Change first parameter to System.out to enable debugging
+        new FileDrop( null, programsTablePane, /*dragBorder,*/ new FileDrop.Listener()
+        {   public void filesDropped( java.io.File[] files )
+            {   for( int i = 0; i < files.length; i++ )
+                {   
+            		String fileName = files[i].getName();
+            		int row = fmPrograms.getRow(fileName);
+            		try {
+            			if (row >= 0) fmPrograms.delete(fileName, row);
+            		} catch (IOException e) {
+            			showMessage("IOException deleting file");
+            		}
+                	uploadFile(files[i]);
+                }
+            }
+        }); 
+	}
+	
+	/**
+	 *  Set up the files table
+	 */
+	private void createSamplesTable(String directory) {
+		fmSamples = new ExtendedFileModel();
 		String[] programs;
 		try {
 			programs = menu.getSampleNames();
@@ -842,27 +907,27 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			for(int i=0;i<sizes.length;i++) {
 				sizes[i] = menu.getFileSize(directory + programs[i]);
 			}
-			fm.fetchFiles(programs, sizes);
+			fmSamples.fetchFiles(programs, sizes);
 		} catch (RemoteException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-		table = new JTable(fm);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table.getColumnModel().getColumn(0).setPreferredWidth(fileNameColumnWidth);
-		tablePane = new JScrollPane(table);
-		tablePane.setPreferredSize(filesAreaSize);
+		samplesTable = new JTable(fmSamples);
+		samplesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		samplesTable.getColumnModel().getColumn(0).setPreferredWidth(fileNameColumnWidth);
+		samplesTablePane = new JScrollPane(samplesTable);
+	    samplesTablePane.setPreferredSize(filesAreaSize);
 		
 		// Change first parameter to System.out to enable debugging
-        new FileDrop( null, tablePane, /*dragBorder,*/ new FileDrop.Listener()
+        new FileDrop( null, samplesTablePane, /*dragBorder,*/ new FileDrop.Listener()
         {   public void filesDropped( java.io.File[] files )
             {   for( int i = 0; i < files.length; i++ )
                 {   
             		String fileName = files[i].getName();
-            		int row = fm.getRow(fileName);
+            		int row = fmSamples.getRow(fileName);
             		try {
-            			if (row >= 0) fm.delete(fileName, row);
+            			if (row >= 0) fmSamples.delete(fileName, row);
             		} catch (IOException e) {
             			showMessage("IOException deleting file");
             		}
@@ -1109,7 +1174,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 	
 	/**
-	 * Download a file from the NXT
+	 * Download a file from the EV3
 	 */
 	private void getFile(File file, String fileName, int size) {
 		FileOutputStream out = null;
@@ -1140,8 +1205,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Clear the files tab.
 	 */
 	private void clearFiles() {
-		filesPanel.removeAll();
-		filesPanel.repaint();
+		programsFilesPanel.removeAll();
+		programsFilesPanel.repaint();
+		samplesFilesPanel.removeAll();
+		samplesFilesPanel.repaint();
 	}
 
 	/**
@@ -1149,14 +1216,14 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getValueIsAdjusting()) {
-			int row = nxtTable.getSelectedRow();
+			int row = ev3Table.getSelectedRow();
 			if (row < 0) return;		
 			
 		}
 	}
 
 	/**
-	 * Search for available NXTs and populate table with results.
+	 * Search for available EV3s and populate table with results.
 	 */
 	private void search() {
 		closeAll();
@@ -1188,7 +1255,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 
 	/**
-	 * Stop the motors on the NXT and update the tachometer values
+	 * Stop the motors on the EV3 and update the tachometer values
 	 */
 	private void stopMotors() {
 	}
@@ -1223,13 +1290,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 
 	/**
-	 * Retrieve the sensor and battery values from the NXT
+	 * Retrieve the sensor and battery values from the EV3
 	 */
 	private void getSensorValues() {
 	}
 
 	/**
-	 * Connect to the NXT
+	 * Connect to the EV3
 	 */
 	private void connect() {
 		String name = nameText.getText();
@@ -1251,7 +1318,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Connect to RConsole
 	 */
 	private void consoleConnect() {		
-		int row = nxtTable.getSelectedRow();
+		int row = ev3Table.getSelectedRow();
 	}
 	/**
 	 * Append data item to the data log
@@ -1268,9 +1335,9 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private void deleteFiles() {
 		frame.setCursor(hourglassCursor);
 		try {
-			for (int i = 0; i < fm.getRowCount(); i++) {
-				Boolean b = (Boolean) fm.getValueAt(i,ExtendedFileModel.COL_DELETE);
-				String fileName = (String) fm.getValueAt(i,ExtendedFileModel.COL_NAME);
+			for (int i = 0; i < fmPrograms.getRowCount(); i++) {
+				Boolean b = (Boolean) fmPrograms.getValueAt(i,ExtendedFileModel.COL_DELETE);
+				String fileName = (String) fmPrograms.getValueAt(i,ExtendedFileModel.COL_NAME);
 				boolean deleteIt = b.booleanValue();
 				if (deleteIt) {
 					System.out.println("Deleting " + fileName);
@@ -1320,14 +1387,14 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Download the selected file
 	 */
 	private void download() {
-		int row = table.getSelectedRow();
+		int row = programsTable.getSelectedRow();
 		if (row < 0) {
 			noFileSelected();
 			return;
 		}
 		
-		String fileName = fm.getFile(row).fileName;
-		int size = fm.getFile(row).fileSize;
+		String fileName = fmPrograms.getFile(row).fileName;
+		int size = fmPrograms.getFile(row).fileSize;
 		JFileChooser fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setSelectedFile(new File(fileName));
@@ -1345,12 +1412,12 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Run the selected file.
 	 */
 	private void runFile() {
-		int row = table.getSelectedRow();
+		int row = programsTable.getSelectedRow();
 		if (row < 0) {
 			noFileSelected();
 			return;
 		}
-		String name = fm.getFile(row).fileName;
+		String name = fmPrograms.getFile(row).fileName;
 		
 		System.out.println("Running " + name);
 		try {
@@ -1361,7 +1428,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 	
 	/**
-	 * Change the friendly name of the NXT
+	 * Change the friendly name of the EV3
 	 */
 	private void rename(String name) {
 	}
@@ -1401,13 +1468,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Play a sound file
 	 */
 	private void playSoundFile() {
-		int row = table.getSelectedRow();
+		int row = programsTable.getSelectedRow();
 		if (row < 0) {
 			noFileSelected();
 			return;
 		}
 		
-		String fileName = fm.getFile(row).fileName;
+		String fileName = fmPrograms.getFile(row).fileName;
 		try {
 			System.out.println("Playing file " + fileName);
 			ev3.getSound().playSample("/home/root/lejos/samples/" + fileName);
@@ -1461,13 +1528,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 	
 	private void setDefaultProgram() {
-		int row = table.getSelectedRow();
+		int row = programsTable.getSelectedRow();
 		if (row < 0) {
 			noFileSelected();
 			return;
 		}
 		
-		String fileName = fm.getFile(row).fileName;
+		String fileName = fmPrograms.getFile(row).fileName;
 		try {
 			menu.setSetting(defaultProgramProperty,"/home/lejos/programs/" + fileName);
 		} catch (IOException ioe) {

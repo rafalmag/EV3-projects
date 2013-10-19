@@ -1517,4 +1517,36 @@ public class GraphicStartup implements Menu {
 		Settings.setProperty(setting, value);
 		return true;
 	}
+
+	@Override
+	public boolean deleteAllPrograms() {
+    	File dir = new File("/home/lejos/programs");
+        for (String fn : dir.list()) {
+            File aFile = new File(dir,fn);
+            System.out.println("Deleting " + aFile.getPath());
+            aFile.delete();
+        }
+		return true;
+	}
+
+	@Override
+	public String getVersion() {
+		return version;
+	}
+
+	@Override
+	public String getMenuVersion() {
+		return Utils.versionToString(Config.VERSION);
+	}
+
+	@Override
+	public String getName() {
+		return hostname;
+	}
+
+	@Override
+	public boolean setName(String name) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

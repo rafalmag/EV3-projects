@@ -72,4 +72,29 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 		return menu.setSetting(setting, value);
 	}
 
+	@Override
+	public boolean deleteAllPrograms() throws RemoteException {
+		return menu.deleteAllPrograms();
+	}
+
+	@Override
+	public String getVersion() throws RemoteException {
+		return menu.getVersion();
+	}
+
+	@Override
+	public String getMenuVersion() throws RemoteException {
+		return menu.getMenuVersion();
+	}
+
+	@Override
+	public String getName() throws RemoteException {
+		return menu.getName();
+	}
+
+	@Override
+	public boolean setName(String name) throws RemoteException {
+		return menu.setName(name);
+	}
+
 }
