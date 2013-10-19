@@ -15,7 +15,7 @@ public class SensorPanel extends JPanel {
 	private static final int DEFAULT_MAX_SCALED_VALUE = 100;
 	private static final Dimension PANEL_SIZE = new Dimension(120,350);
 	
-	private LabeledGauge rawGauge, scaledGauge;
+	private LabeledGauge gauge;
 	private JLabel nameLabel, typeLabel = new JLabel("No Sensor");
 	
 	/**
@@ -25,12 +25,10 @@ public class SensorPanel extends JPanel {
 	 */
 	public SensorPanel(String name) {
 		nameLabel = new JLabel(name);
-		rawGauge = new LabeledGauge("Raw", DEFAULT_MAX_RAW_VALUE);
-		scaledGauge = new LabeledGauge("Scaled", DEFAULT_MAX_SCALED_VALUE);
+		gauge = new LabeledGauge("Scaled", DEFAULT_MAX_SCALED_VALUE);
 		
 		add(nameLabel);
-		add(rawGauge);
-		add(scaledGauge);		
+		add(gauge);		
 		add(typeLabel);
 
 		Dimension size = PANEL_SIZE;
@@ -41,29 +39,12 @@ public class SensorPanel extends JPanel {
 	}
 	
 	/**
-	 * Set the raw value of the sensor
-	 * @param val the raw value
-	 */
-	public void setRawVal(int val) {
-		rawGauge.setVal(val);
-	}
-	
-	/**
-	 * Set the maximum raw value
-	 * 
-	 * @param val the maximum raw value
-	 */
-	public void setRawMaxVal(int val) {
-		rawGauge.setMaxVal(val);
-	}
-	
-	/**
 	 * Set the scaled value of the sensor
 	 * 
 	 * @param val the scaled value
 	 */
 	public void setScaledVal(int val) {
-		scaledGauge.setVal(val);
+		gauge.setVal(val);
 	}
 	
 	/**
@@ -72,7 +53,7 @@ public class SensorPanel extends JPanel {
 	 * @param val the maximum scaled value
 	 */
 	public void setScaledMaxVal(int val) {
-		scaledGauge.setMaxVal(val);
+		gauge.setMaxVal(val);
 	}
 	
 	/**

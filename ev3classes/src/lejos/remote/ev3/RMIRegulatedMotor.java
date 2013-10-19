@@ -7,7 +7,6 @@ import lejos.robotics.RegulatedMotorListener;
 
 public interface RMIRegulatedMotor extends Remote {
 
-
 	  /**
 	   * Adds a listener object that will be notified when rotation has started or stopped 
 	   * @param listener
@@ -140,6 +139,10 @@ public interface RMIRegulatedMotor extends Remote {
 	   void setAcceleration(int acceleration) throws RemoteException;
 	   
 	   void close() throws RemoteException;
+	   
+	   void forward() throws RemoteException;
+	   
+	   void backward() throws RemoteException;
 
 }
 

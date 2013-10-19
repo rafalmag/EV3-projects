@@ -104,5 +104,15 @@ public class RMIRemoteRegulatedMotor extends UnicastRemoteObject implements RMIR
 	public void close() throws RemoteException {
 		motor.close();	
 	}
+
+	@Override
+	public void forward() throws RemoteException {
+		motor.forward();	
+	}
+
+	@Override
+	public void backward() throws RemoteException {
+		motor.backward();	
+	}
 }
 
