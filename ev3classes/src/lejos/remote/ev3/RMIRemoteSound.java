@@ -67,13 +67,13 @@ public class RMIRemoteSound extends UnicastRemoteObject implements RMISound {
 	}
 
 	@Override
-	public int playSample(File file, int vol) throws RemoteException {
-		return Sound.playSample(file, vol);
+	public int playSample(String fileName, int vol) throws RemoteException {
+		return Sound.playSample(new File(fileName), vol);
 	}
 
 	@Override
-	public int playSample(File file) throws RemoteException {
-		return Sound.playSample(file);
+	public int playSample(String fileName) throws RemoteException {
+		return Sound.playSample(new File(fileName));
 	}
 
 	@Override

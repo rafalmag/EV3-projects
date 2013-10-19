@@ -25,9 +25,9 @@ public interface RMISound extends Remote {
 	
 	public void playTone(int freq, int duration) throws RemoteException;
 	
-	public int playSample(File file, int vol) throws RemoteException;
+	public int playSample(String fileName, int vol) throws RemoteException;
 	
-	public int playSample(File file) throws RemoteException;
+	public int playSample(String fileName) throws RemoteException;
 	
 	public int playSample(byte [] data, int offset, int len, int freq, int vol) throws RemoteException;
 	

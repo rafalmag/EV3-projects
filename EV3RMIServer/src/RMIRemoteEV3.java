@@ -8,6 +8,7 @@ import lejos.remote.ev3.RMII2CPort;
 import lejos.remote.ev3.RMIMotorPort;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
+import lejos.remote.ev3.RMISound;
 import lejos.remote.ev3.RMIUARTPort;
 
 
@@ -54,6 +55,12 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	@Override
 	public RMIRegulatedMotor createRegulatedMotor(String portName)
 			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RMISound getSound() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}

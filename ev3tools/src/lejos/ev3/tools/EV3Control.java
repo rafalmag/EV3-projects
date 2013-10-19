@@ -48,6 +48,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import lejos.remote.ev3.RMIMenu;
+import lejos.remote.ev3.RemoteEV3;
 import lejos.remote.nxt.NXTProtocol;
 
 /**
@@ -182,8 +183,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private File directoryLastUsed;
 	private Socket sock;
 	private static final int PORT = 8001;
+	
 	private RMIMenu menu;
-
+    private RemoteEV3 ev3;
+    
 	// Formatter
 	private static final NumberFormat FORMAT_FLOAT = NumberFormat.getNumberInstance();
 
@@ -1228,6 +1231,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			System.out.println("Connecting to " + name);
 			try {
 				menu = (RMIMenu) Naming.lookup("//" + name + "/RemoteMenu");
+				ev3 = new RemoteEV3(name);
 				showFiles();
 			} catch (RemoteException | MalformedURLException
 					| NotBoundException e) {
@@ -1380,8 +1384,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		
 		String fileName = fm.getFile(row).fileName;
 		try {
-			//nxtCommand.playSoundFile(fileName, false);
 			System.out.println("Playing file " + fileName);
+			ev3.getSound().playSample("/home/root/samples/" + fileName);
 		} catch (Exception ioe) {
 			showMessage("IO Exception playing sound file");
 		}
