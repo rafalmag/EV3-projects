@@ -1,12 +1,14 @@
 package lejos.ev3.tools;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 import javax.swing.table.AbstractTableModel;
 
+import lejos.remote.ev3.RMIMenu;
 import lejos.remote.nxt.FileInfo;
 
 /**
@@ -25,11 +27,20 @@ public class ExtendedFileModel extends AbstractTableModel {
 
 	private ArrayList<Boolean> delete = new ArrayList<Boolean>();
 	private ArrayList<FileInfo> files = new ArrayList<FileInfo>();
+	
+	private RMIMenu menu;
+	private String[] fileNames;
+	private boolean programs;
+	private String directory;
+	
 
 	/**
 	 * Fetch files from the EV3 and create the model
 	 */
-	public ExtendedFileModel() {
+	public ExtendedFileModel(RMIMenu menu, String directory, boolean programs) {
+		this.menu = menu;
+		this.directory = directory;
+		this.programs = programs;
 	}
 
 	/**
@@ -136,7 +147,20 @@ public class ExtendedFileModel extends AbstractTableModel {
 	 * 
 	 * @return null for success or the error message
 	 */
-	public String fetchFiles(String[] fileNames, long[] sizes) {
+	public String fetchFiles() {
+		long[] sizes;
+		
+		try {
+			fileNames = (programs ? menu.getProgramNames() : menu.getSampleNames());
+			sizes = new long[fileNames.length];
+			for(int i=0;i<sizes.length;i++) {
+				sizes[i] = menu.getFileSize(directory + fileNames[i]);
+			}
+
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+			return null;
+		}
 		files.clear();
 		delete.clear();
 		FileInfo f;

@@ -33,6 +33,9 @@ import lejos.remote.ev3.RMIMenu;
  * @author Lawrie Griffiths <lawrie.griffiths@ntlworld.com>
  */
 public class EV3Browser {
+	
+	private static final String PROGRAMS_DIR = "/home/lejos/programs/";
+	private static final String SAMPLES_DIR = "/home/root/lejos/samples/";
 
 	public static final String remoteHost = "//192.168.0.9/";
 	public static final int MAX_FILES = 30;
@@ -73,13 +76,8 @@ public class EV3Browser {
 
 		frame.setTitle(title + " : ");
 
-		final ExtendedFileModel fm = new ExtendedFileModel();
-		String[] programs = menu.getSampleNames();
-		long[] sizes = new long[programs.length];
-		for(int i=0;i<sizes.length;i++) {
-			sizes[i] = menu.getFileSize("/home/root/lejos/samples/" + programs[i]);
-		}
-		fm.fetchFiles(programs, sizes);
+		final ExtendedFileModel fm = new ExtendedFileModel(menu, SAMPLES_DIR, false);
+		fm.fetchFiles();
 
 		final JTable table = new JTable(fm);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -185,7 +183,7 @@ public class EV3Browser {
 				menu.deleteFile(fileName);
 			}
 		}
-		fm.fetchFiles(null,null);
+		fm.fetchFiles();
 		frame.setCursor(normalCursor);
 	}
 

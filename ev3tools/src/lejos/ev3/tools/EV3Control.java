@@ -53,7 +53,6 @@ import lejos.remote.ev3.RMIMenu;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RemoteEV3;
 import lejos.remote.nxt.NXTProtocol;
-import lejos.robotics.RegulatedMotor;
 
 /**
  * 
@@ -63,8 +62,12 @@ import lejos.robotics.RegulatedMotor;
  */
 public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleViewerUI {
 	// Constants
-    private static final int LCD_WIDTH = 100;
-    private static final int LCD_HEIGHT = 64;
+	
+	private static final String PROGRAMS_DIR = "/home/lejos/programs/";
+	private static final String SAMPLES_DIR = "/home/root/lejos/samples/";
+	
+    private static final int LCD_WIDTH = 178;
+    private static final int LCD_HEIGHT = 128;
     
 	private static final int RMI = 0;
 	private static final int RCONSOLE = 1;
@@ -75,8 +78,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private static final String pinProperty = "lejos.bluetooth_pin";
 	
 	private static final Dimension frameSize = new Dimension(800, 620);
-	private static final Dimension filesAreaSize = new Dimension(780, 300);
-	private static final Dimension filesPanelSize = new Dimension(500, 400);
+	private static final Dimension filesAreaSize = new Dimension(780, 350);
+	private static final Dimension filesPanelSize = new Dimension(500, 500);
 	private static final Dimension ev3ButtonsPanelSize = new Dimension(220, 130);
 	private static final Dimension filesButtonsPanelSize = new Dimension(770,100);
 	private static final Dimension ev3TableSize = new Dimension(500, 100);	
@@ -92,7 +95,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private static final Dimension sleepPanelSize = new Dimension(180,150);
 	private static final Dimension defaultProgramPanelSize = new Dimension(250,150);
 	
-	private static final int fileNameColumnWidth = 400;
+	private static final int fileNameColumnWidth = 627;
 	
 	private static final String title = "EV3 Control Center";
 
@@ -375,12 +378,11 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			}
 		});
 
-		// Pack the frame
-		//frame.pack();
+		frame.revalidate();
 	}
 
 	/**
-	 * Lay out EV£ Selection panel
+	 * Lay out EV3 Selection panel
 	 */
 	private void createEV3SelectionPanel() {
 		JPanel ev3Panel = new JPanel();
@@ -399,7 +401,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		buttonPanel.add(searchButton);
 		buttonPanel.add(connectButton);
 		ev3ButtonPanel.add(buttonPanel);
-		ButtonGroup protocolButtonGroup = new ButtonGroup();
 		ev3ButtonPanel.add(rmiButton);
 		ev3ButtonPanel.add(rconsoleButton);
 		ButtonGroup appProtocolButtonGroup = new ButtonGroup();
@@ -458,9 +459,9 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		JLabel volumesLabel = new JLabel("Volume settings");
 		JLabel volumeLabel = new JLabel("Master Volume:");
 		JPanel volumeDropdownPanel = new JPanel();
-		final JComboBox volumeList = new JComboBox(volumeLevels);
+		final JComboBox<String> volumeList = new JComboBox<String>(volumeLevels);
 		JLabel keyClickVolumeLabel = new JLabel("Key Click Volume:");
-		final JComboBox volumeList2 = new JComboBox(volumeLevels);
+		final JComboBox<String> volumeList2 = new JComboBox<String>(volumeLevels);
 		volumePanel.add(volumesLabel);
 		volumeDropdownPanel.add(volumeLabel);
 		volumeDropdownPanel.add(volumeList);
@@ -708,7 +709,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		infoPanel.setLayout(new GridLayout(4, 2));
 		String firmwareVersionString = "Unknown";
 		String menuVersionString = "Unknown";
-		String freeFlashString = "Unknown";
 		
 		if (menu != null) {
 			try {
@@ -853,7 +853,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 *  Set up the files table
 	 */
 	private void createProgramsTable(String directory) {
-		fmPrograms = new ExtendedFileModel();
+		fmPrograms = new ExtendedFileModel(menu, PROGRAMS_DIR, true);
 		String[] programs;
 		try {
 			programs = menu.getProgramNames();
@@ -861,7 +861,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			for(int i=0;i<sizes.length;i++) {
 				sizes[i] = menu.getFileSize(directory + programs[i]);
 			}
-			fmPrograms.fetchFiles(programs, sizes);
+			fmPrograms.fetchFiles();
 		} catch (RemoteException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -895,7 +895,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 *  Set up the files table
 	 */
 	private void createSamplesTable(String directory) {
-		fmSamples = new ExtendedFileModel();
+		fmSamples = new ExtendedFileModel(menu, SAMPLES_DIR, false);
 		String[] programs;
 		try {
 			programs = menu.getSampleNames();
@@ -903,7 +903,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			for(int i=0;i<sizes.length;i++) {
 				sizes[i] = menu.getFileSize(directory + programs[i]);
 			}
-			fmSamples.fetchFiles(programs, sizes);
+			fmSamples.fetchFiles();
 		} catch (RemoteException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -1361,10 +1361,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 				boolean deleteIt = b.booleanValue();
 				if (deleteIt) {
 					System.out.println("Deleting " + fileName);
-					//menu.debugProgram(delete(fileName);
+					menu.deleteFile(fileName);
 				}
 			}
-			//fm.fetchFiles(nxtCommand);
+			fmPrograms.fetchFiles();
 		} catch (Exception ioe) {
 			showMessage("IOException deleting files");
 		}
@@ -1397,7 +1397,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		    System.out.println("Uploading " + file.getName());
 			menu.uploadFile("/home/lejos/programs/" + file.getName(), data);
 		    in.close();
-			//String msg = fm.fetchFiles(nxtCommand);
+			fmPrograms.fetchFiles();
 		} catch (IOException ioe) {
 			showMessage("IOException uploading file");
 		}
@@ -1582,7 +1582,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	private void format() {
 		try {
-			//fm.fetchFiles(nxtCommand);
+			menu.deleteAllPrograms();
+			fmPrograms.fetchFiles();
 		} catch (Exception ioe) {
 			showMessage("IO Exception formatting file system");
 		}
