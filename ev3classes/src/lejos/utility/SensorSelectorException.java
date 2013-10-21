@@ -1,4 +1,4 @@
-package lejos.hardware.sensor;
+package lejos.utility;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
