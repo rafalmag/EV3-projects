@@ -11,7 +11,7 @@ package lejos.robotics;
  * @author Lawrie Griffiths
  *
  */
-public interface DirectionFinder {
+public interface DirectionFinder extends Calibrate  {
 	/**
 	 * Compass readings increase clockwise from 0 to 360, but Cartesian
 	 * coordinate systems increase counter-clockwise. This method returns
@@ -21,17 +21,6 @@ public interface DirectionFinder {
 	 * @return Cartesian direction. Between 0 and 360, excluding 360. Values increase counter-clockwise.
 	 */
 	public float getDegreesCartesian();
-	
-	/**
-	 * Starts calibration.
-	 * Must call stopCalibration() when done.
-	 */
-	public void startCalibration();
-	
-	/**
-	 * Ends calibration sequence.
-	 */
-	public void stopCalibration();
 	
 	/**
 	 * Changes the current direction the compass is facing into the zero 

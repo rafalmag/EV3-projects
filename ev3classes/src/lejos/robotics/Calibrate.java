@@ -1,7 +1,7 @@
 package lejos.robotics;
 
-public interface CalibratedSampleProvider extends SampleProvider {
-
+public interface Calibrate {
+	
 	/**
 	 * Starts calibration.
 	 * Must call stopCalibration() when done.
@@ -12,11 +12,4 @@ public interface CalibratedSampleProvider extends SampleProvider {
 	 * Ends calibration sequence.
 	 */
 	public void stopCalibration();
-	
-	/**
-	 * Changes the current direction the compass is facing into the zero 
-	 * angle. 
-	 */
-	public void resetCartesianZero();
-	
 }
