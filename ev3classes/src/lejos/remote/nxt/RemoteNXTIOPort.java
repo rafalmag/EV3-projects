@@ -119,7 +119,7 @@ public abstract class RemoteNXTIOPort implements IOPort, BasicSensorPort, EV3Sen
      */
     public void setPinMode(int mode)
     {
-    	throw new UnsupportedOperationException("Not supported fo a remote NXT");
+    	// Nothing required on the NXT
     }
 
 }

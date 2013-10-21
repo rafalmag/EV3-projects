@@ -6,7 +6,7 @@
     <property name="jar.dir"        value="dist"/>
     <property name="main-class"     value="org.lejos.sample.graphicssample.GraphicsSample"/>
     <property name="lejos.home"     value="/home/root/lejos"/>
-    <property name="ev3.host"       value="192.168.0.6"/>
+    <property name="ev3.host"       value="192.168.0.9"/>
 
     <path id="libraries.path">    
         <fileset dir="${lib.dir}">

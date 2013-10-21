@@ -73,6 +73,6 @@ public class RemoteIOPort implements IOPort, BasicSensorPort, EV3SensorConstants
 
 	@Override
 	public void setPinMode(int mode) {
-		throw new UnsupportedOperationException("This operation is supported by analog ports");
+		// Overridden by specific port implementations
 	}
 }

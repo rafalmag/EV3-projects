@@ -24,4 +24,6 @@ public interface RMII2CPort extends Remote {
     
 	
 	public void close() throws RemoteException;
+	
+	public void setPinMode(int mode) throws RemoteException;
 }

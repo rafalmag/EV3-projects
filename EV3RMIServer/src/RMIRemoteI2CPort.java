@@ -32,6 +32,12 @@ public class RMIRemoteI2CPort extends UnicastRemoteObject implements RMII2CPort 
 		if (res >= 0) return readBuf;
 		else return null;
 	}
+
+	@Override
+	public void setPinMode(int mode) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

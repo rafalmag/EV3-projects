@@ -140,7 +140,6 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
 	@Override
 	public void getShorts(short[] vals, int offset, int length) {
 		throw new UnsupportedOperationException("Not supported for a remote NXT");
-		
 	}
 
 	@Override
