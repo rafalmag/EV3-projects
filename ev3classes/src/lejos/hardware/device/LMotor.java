@@ -71,7 +71,6 @@ public class LMotor extends I2CSensor{
 	 * 
 	 */
 	private int readMotion(){
-		int I2C_Response;
 		byte[] bufReadResponse;
 		bufReadResponse = new byte[8];
 		byte h_byte;
@@ -80,16 +79,16 @@ public class LMotor extends I2CSensor{
 		int motion = -1;
 		
 		//Write OP Code
-		I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0x68);
+		sendData((int)this.SPI_PORT, (byte)0x68);
 		
 		//Read High Byte
-		I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0x00);	
-		I2C_Response = this.getData((int)this.SPI_PORT, bufReadResponse, 1);
+		sendData((int)this.SPI_PORT, (byte)0x00);	
+		getData((int)this.SPI_PORT, bufReadResponse, 1);
 		h_byte = bufReadResponse[0];
 
 		//Read Low Byte
-		I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0x00);	
-		I2C_Response = this.getData((int)this.SPI_PORT, bufReadResponse, 1);
+		sendData((int)this.SPI_PORT, (byte)0x00);	
+		getData((int)this.SPI_PORT, bufReadResponse, 1);
 		l_byte = bufReadResponse[0];
 	
 		if(l_byte == 0xFF){
@@ -119,7 +118,6 @@ public class LMotor extends I2CSensor{
 	 * @param delay the delay
 	 */
 	public void setDelay(int delay){
-		int I2C_Response;
 		byte h_byte;
 		byte l_byte;
 		
@@ -127,12 +125,11 @@ public class LMotor extends I2CSensor{
 		h_byte = (byte)0xF0;
 		l_byte = (byte)(((motor)<<4) + delay);
 	     
-		I2C_Response = this.sendData((int)this.SPI_PORT, h_byte);
-		I2C_Response = this.sendData((int)this.SPI_PORT, l_byte);
+		sendData((int)this.SPI_PORT, h_byte);
+		sendData((int)this.SPI_PORT, l_byte);
 	}
 	
 	public void unload(){
-		int I2C_Response;
 		byte[] bufReadResponse;
 		byte h_byte;
 		byte l_byte;		
@@ -144,10 +141,10 @@ public class LMotor extends I2CSensor{
 		l_byte = (byte)channel;
 	     
 	    //High Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, h_byte);
+		sendData((int)this.SPI_PORT, h_byte);
 
 	    //Low Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, l_byte);		
+		sendData((int)this.SPI_PORT, l_byte);		
 	}
 	
 	/**
@@ -155,7 +152,6 @@ public class LMotor extends I2CSensor{
 	 * 
 	 */
 	public void load(){
-		int I2C_Response;
 		byte h_byte;
 		byte l_byte;		
 		
@@ -166,10 +162,10 @@ public class LMotor extends I2CSensor{
 		l_byte = (byte)channel;
 	     
 	    //High Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, h_byte);
+		sendData((int)this.SPI_PORT, h_byte);
 
 	    //Low Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, l_byte);		
+		sendData((int)this.SPI_PORT, l_byte);		
 	}
 
 	/**
@@ -186,7 +182,6 @@ public class LMotor extends I2CSensor{
 	 * @param pulse
 	 */
 	protected void setPulse(int pulse){
-		int I2C_Response;
 		byte h_byte;
 		byte l_byte;
 		
@@ -195,10 +190,10 @@ public class LMotor extends I2CSensor{
 	    l_byte = (byte)pulse;
 		
 	    //High Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, h_byte);
+		sendData((int)this.SPI_PORT, h_byte);
 
 	    //Low Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, l_byte);
+		sendData((int)this.SPI_PORT, l_byte);
 	}
 
 	/**
@@ -209,7 +204,6 @@ public class LMotor extends I2CSensor{
 	 * @return the pulse
 	 */
 	protected int getPulse(){
-		int I2C_Response;
 		byte[] bufReadResponse;
 		bufReadResponse = new byte[8];
 		byte h_byte;
@@ -218,18 +212,18 @@ public class LMotor extends I2CSensor{
 		int servo = LSC_position;
 	    //Write OP Code
 	    h_byte  = (byte)(servo << 3);
-		I2C_Response = this.sendData((int)this.SPI_PORT, h_byte);
+		sendData((int)this.SPI_PORT, h_byte);
 		
 	    //Read High Byte
 	    //I2CBytes(IN_3, bufReadValue, buflen, bufReadResponse);
-		I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0x00);
-		I2C_Response = this.getData((int)this.SPI_PORT, bufReadResponse, 1);
+		sendData((int)this.SPI_PORT, (byte)0x00);
+		getData((int)this.SPI_PORT, bufReadResponse, 1);
 		
 	    h_byte = bufReadResponse[0];
 	    
 	    //Read Low Byte
-		I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0x00);
-		I2C_Response = this.getData((int)this.SPI_PORT, bufReadResponse, 1);
+		sendData((int)this.SPI_PORT, (byte)0x00);
+		getData((int)this.SPI_PORT, bufReadResponse, 1);
 	    l_byte = bufReadResponse[0];
 	    
 	    return  ((h_byte & 0x07 ) << 8) +  (l_byte & 0x00000000FF);

@@ -40,9 +40,7 @@ public class MindSensorPressureSensor extends I2CSensor {
 	 * @return the pressure in pascal (1 N/m²)
 	 */
 	public int readPressure() {
-		int r = this.getData(0x53, buf, 0, 4);
-		if (r < 0)
-			return r;
+		getData(0x53, buf, 0, 4);
 		
 		// according to mindsensor's usermanual, the sensor
 		// can measure up to 58PSI, which is about 400000 pascal

@@ -58,9 +58,7 @@ public class AccelMindSensor extends I2CSensor implements Accelerometer {
 	 * @return X tilt value in degrees, or {@link #ERROR} if call failed
 	 */
 	public int getXTilt() {
-		int ret = getData(BASE_TILT + OFF_X_TILT, buf, 1);
-		if (ret != 0)
-			return ERROR;
+		getData(BASE_TILT + OFF_X_TILT, buf, 1);
 
 		return (buf[0] & 0xFF) - 128;
 	}
@@ -72,9 +70,7 @@ public class AccelMindSensor extends I2CSensor implements Accelerometer {
 	 * @return Y tilt value in degrees, or {@link #ERROR} if call failed
 	 */
 	public int getYTilt() {
-		int ret = getData(BASE_TILT + OFF_Y_TILT, buf, 1);
-		if (ret != 0)
-			return ERROR;
+		getData(BASE_TILT + OFF_Y_TILT, buf, 1);
 
 		return (buf[0] & 0xFF) - 128;
 	}
@@ -86,9 +82,7 @@ public class AccelMindSensor extends I2CSensor implements Accelerometer {
 	 * @return Z tilt value in degrees, or {@link #ERROR} if call failed
 	 */
 	public int getZTilt() {
-		int ret = getData(BASE_TILT + OFF_Z_TILT, buf, 1);
-		if (ret != 0)
-			return ERROR;
+		getData(BASE_TILT + OFF_Z_TILT, buf, 1);
 
 		return (buf[0] & 0xFF) - 128;
 	}
@@ -100,9 +94,7 @@ public class AccelMindSensor extends I2CSensor implements Accelerometer {
 	 * @return Acceleration e.g. 9810 mg (falling on earth) or {@link #ERROR}.
 	 */
 	public int getXAccel() {
-		int ret = getData(BASE_ACCEL + OFF_X_ACCEL, buf, 2);
-		if (ret != 0)
-			return ERROR;
+		getData(BASE_ACCEL + OFF_X_ACCEL, buf, 2);
 		
 		return EndianTools.decodeShortLE(buf, 0);
 	}
@@ -114,9 +106,7 @@ public class AccelMindSensor extends I2CSensor implements Accelerometer {
 	 * @return Acceleration e.g. 9810 mg (falling on earth) or {@link #ERROR}.
 	 */
 	public int getYAccel() {
-		int ret = getData(BASE_ACCEL + OFF_Y_ACCEL, buf, 2);
-		if (ret != 0)
-			return ERROR;
+		getData(BASE_ACCEL + OFF_Y_ACCEL, buf, 2);
 		
 		return EndianTools.decodeShortLE(buf, 0);
 	}
@@ -128,9 +118,7 @@ public class AccelMindSensor extends I2CSensor implements Accelerometer {
 	 * @return Acceleration e.g. 9810 mg (falling on earth) or {@link #ERROR}.
 	 */
 	public int getZAccel() {
-		int ret = getData(BASE_ACCEL + OFF_Z_ACCEL, buf, 2);
-		if (ret != 0)
-			return ERROR;
+		getData(BASE_ACCEL + OFF_Z_ACCEL, buf, 2);
 		
 		return EndianTools.decodeShortLE(buf, 0);
 	}
@@ -143,9 +131,7 @@ public class AccelMindSensor extends I2CSensor implements Accelerometer {
 	 * @return true on success, false on error
 	 */
 	public boolean getAllTilt(int[] dst, int off) {
-		int ret = getData(BASE_TILT, buf, 0, 3);
-		if (ret != 0)
-			return false;
+		getData(BASE_TILT, buf, 0, 3);
 		
 		dst[off+0] = (buf[0] & 0xFF) - 128;
 		dst[off+1] = (buf[1] & 0xFF) - 128;
@@ -161,9 +147,7 @@ public class AccelMindSensor extends I2CSensor implements Accelerometer {
 	 * @return true on success, false on error
 	 */
 	public boolean getAllAccel(int[] dst, int off) {
-		int ret = getData(BASE_ACCEL, buf, 0, 6);
-		if (ret != 0)
-			return false;
+		getData(BASE_ACCEL, buf, 0, 6);
 		
 		dst[off+0] = EndianTools.decodeShortLE(buf, OFF_X_ACCEL);
 		dst[off+1] = EndianTools.decodeShortLE(buf, OFF_Y_ACCEL);

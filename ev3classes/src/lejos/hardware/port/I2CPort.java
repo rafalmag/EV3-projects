@@ -32,9 +32,8 @@ public interface I2CPort extends IOPort, BasicSensorPort {
      * @param readBuf The buffer to use for the transaction results
      * @param readOffset Location to write the results to
      * @param readLen The length of the read
-     * @return < 0 error otherwise the number of bytes read
      */
-    public int i2cTransaction(int deviceAddress, byte[]writeBuf,
+    public void i2cTransaction(int deviceAddress, byte[]writeBuf,
             int writeOffset, int writeLen, byte[] readBuf, int readOffset,
             int readLen);
 }

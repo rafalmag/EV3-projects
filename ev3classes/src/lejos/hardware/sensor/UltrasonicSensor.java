@@ -60,20 +60,19 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * commands otherwise the commands fail.
 	 */
 	@Override
-	public synchronized int getData(int register, byte[] buf, int off, int len)
+	public synchronized void getData(int register, byte[] buf, int off, int len)
 	{
 		waitUntil(nextCmdTime);
-		int ret = super.getData(register, buf, off, len);
+		super.getData(register, buf, off, len);
 		nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
-		return ret;
 	}
 	
 	protected void init()
 	{
         nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
         // Perform a reset, to clean up settings from previous program
-        if (this.reset() >= 0)
-            setMode(MODE_CONTINUOUS);
+        reset();
+        setMode(MODE_CONTINUOUS);
         // Not sure what we should do if the reset fails!	    
 	}
 
@@ -82,12 +81,11 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * timing for the ultrasonic sensor.
 	 */
 	@Override
-	public synchronized int sendData(int register, byte[] buf, int off, int len)
+	public synchronized void sendData(int register, byte[] buf, int off, int len)
 	{
 		waitUntil(nextCmdTime);
-		int ret = super.sendData(register, buf, off, len);
+		super.sendData(register, buf, off, len);
 		nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
-		return ret;
 	}
 
 	public UltrasonicSensor(I2CPort port)
@@ -125,9 +123,7 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 		}
 
 		waitUntil(dataAvailableTime);
-		int ret = getData(REG_DISTANCE, byteBuff, 1);
-		if (ret < 0)
-			return 255;
+		getData(REG_DISTANCE, byteBuff, 1);
 
 		// Make a note of when new data should be available.
 		dataAvailableTime = System.currentTimeMillis() + delay;
@@ -167,8 +163,7 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * @param dist the destination array
 	 * @param off the index of the first distance
 	 * @param len the number of distances to read
-	 * @return negative value on error, the number of distances returned
-	 *         otherwise
+	 * @return the number of distances returned
 	 */
 	public int getDistances(int dist[], int off, int len)
 	{
@@ -201,9 +196,7 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 			len = maxlen;
 
 		waitUntil(dataAvailableTime);
-		int ret = getData(REG_DISTANCE, byteBuff, len);
-		if (ret < 0)
-			return ret;
+		getData(REG_DISTANCE, byteBuff, len);
 
 		dataAvailableTime = System.currentTimeMillis() + delay;
 		int i;
@@ -226,7 +219,7 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * @see #reset()
 	 * @see #off()
 	 */
-	public int setMode(int mode)
+	public void setMode(int mode)
 	{
 		int delay = 0;
 		byte modeNew = (byte)mode;
@@ -249,14 +242,10 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 		}
 
 		byteBuff[0] = (byte)mode;
-		int ret = sendData(REG_MODE, byteBuff, 1);
-		if (ret == 0)
-		{
-			// Make a note of when the data will be available
-			dataAvailableTime = System.currentTimeMillis() + delay;
-			this.mode = modeNew;
-		}
-		return ret;
+		sendData(REG_MODE, byteBuff, 1);
+		// Make a note of when the data will be available
+	    dataAvailableTime = System.currentTimeMillis() + delay;
+	    this.mode = modeNew;
 	}
 
 	/**
@@ -268,11 +257,10 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * care of this. {@link #getDistance()} may also be used with ping, returning
 	 * information for the first echo.
 	 * 
-	 * @return negative value on error, 0 otherwise
 	 */
-	public int ping()
+	public void ping()
 	{
-		return setMode(MODE_PING);
+		setMode(MODE_PING);
 	}
 
 	/**
@@ -282,24 +270,19 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * {@link #getDistance()}. Calling {@link #getDistances(int[])}
 	 * and {@link #getDistances(int[], int, int)} is also supported,
 	 * but at most 1 distance is returned.
-	 * 
-	 * @return negative value on error, 0 otherwise
-	 * @see #ping()
 	 */
-	public int continuous()
+	public void continuous()
 	{
-		return setMode(MODE_CONTINUOUS);
+		setMode(MODE_CONTINUOUS);
 	}
 
 	/**
 	 * Turn off the sensor. This call disables the sensor. No pings will be
 	 * issued after this call, until either ping, continuous or reset is called.
-	 * 
-	 * @return negative value on error, 0 otherwise
 	 */
-	public int off()
+	public void off()
 	{
-		return setMode(MODE_OFF);
+		setMode(MODE_OFF);
 	}
 
 	/**
@@ -312,9 +295,9 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * 
 	 * @return negative value on error, 0 otherwise
 	 */
-	public int capture()
+	public void capture()
 	{
-		return setMode(MODE_CAPTURE);
+		setMode(MODE_CAPTURE);
 	}
 
 	/**
@@ -323,12 +306,12 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * 
 	 * @return negative value on error, 0 otherwise
 	 */
-	public int reset()
+	public void reset()
 	{
-		return setMode(MODE_RESET);
+		setMode(MODE_RESET);
 	}
 
-	private int getMultiBytes(int reg, byte data[], int len)
+	private void getMultiBytes(int reg, byte data[], int len)
 	{
 		/*
 		 * For some locations that are adjacent in address it is not possible to
@@ -338,15 +321,12 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 		 */
 		for (int i = 0; i < len; i++)
 		{
-			int ret = getData(reg + i, byteBuff, 1);
-			if (ret < 0)
-				return ret;
+		    getData(reg + i, byteBuff, 1);;
 			data[i] = byteBuff[0];
 		}
-		return 0;
 	}
 
-	private int setMultiBytes(int reg, byte data[], int len)
+	private void setMultiBytes(int reg, byte data[], int len)
 	{
 		/*
 		 * For some locations that are adjacent in address it is not possible to
@@ -357,11 +337,8 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 		for (int i = 0; i < len; i++)
 		{
 			byteBuff[0] = data[i];
-			int ret = sendData(reg + i, byteBuff, 1);
-			if (ret < 0)
-				return ret;
+			sendData(reg + i, byteBuff, 1);
 		}
-		return 0;
 	}
 
 	/**
@@ -371,12 +348,12 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * 
 	 * @return negative value on error, 0 otherwise
 	 */
-	public int getFactoryData(byte data[])
+	public void getFactoryData(byte data[])
 	{
 		if (data.length < 3)
 			throw new IllegalArgumentException("array too small");
 
-		return getMultiBytes(REG_FACTORY_DATA, data, 3);
+		getMultiBytes(REG_FACTORY_DATA, data, 3);
 	}
 
 	/**
@@ -394,9 +371,8 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * Return 3 bytes of calibration data. The bytes are as follows data[0] :
 	 * zero (cal1) data[1] : scale factor (cal2) data[2] : scale divisor.
 	 * 
-	 * @return negative value on error, 0 otherwise
 	 */
-	public int getCalibrationData(byte data[])
+	public void getCalibrationData(byte data[])
 	{
 		/*
 		 * Note the lego documentation says this is at loacation 0x50, however
@@ -407,22 +383,20 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 		if (data.length < 3)
 			throw new IllegalArgumentException("array too small");
 
-		return getMultiBytes(REG_CALIBRATION, data, 3);
+		getMultiBytes(REG_CALIBRATION, data, 3);
 	}
 
 	/**
 	 * Set 3 bytes of calibration data. The bytes are as follows data[0] : zero
 	 * (cal1) data[1] : scale factor (cal2) data[2] : scale divisor. This does
 	 * not currently seem to work.
-	 * 
-	 * @return 0 if ok <> 0 otherwise
 	 */
-	public int setCalibrationData(byte data[])
+	public void setCalibrationData(byte data[])
 	{
 		if (data.length < 3)
 			throw new IllegalArgumentException("array too small");
 
-		return setMultiBytes(REG_CALIBRATION, data, 3);
+		setMultiBytes(REG_CALIBRATION, data, 3);
 	}
 
 	/**
@@ -431,27 +405,25 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 * effect. Others have reported that this does vary the ping interval (when
 	 * used in other implementations). Please report any new results.
 	 * 
-	 * @return negative value on error, the interval otherwise
+	 * @return the interval
 	 */
 	public int getContinuousInterval()
 	{
-		int ret = getData(REG_CONTINUOUS_INTERVAL, byteBuff, 1);
-		return ret < 0 ? ret : (byteBuff[0] & 0xFF);
+		getData(REG_CONTINUOUS_INTERVAL, byteBuff, 1);
+		return (byteBuff[0] & 0xFF);
 	}
 
 	/**
-	 * Set the ping inetrval used when in continuous mode. See
+	 * Set the ping interval used when in continuous mode. See
 	 * getContinuousInterval for more details.
-	 * 
-	 * @return negative value on error, 0 otherwise.
 	 */
-	public int setContinuousInterval(int interval)
+	public void setContinuousInterval(int interval)
 	{
 		if (interval < 0 || interval > 0xFF)
 			throw new IllegalArgumentException("value between 0 and 0xFF expected");
 
 		byteBuff[0] = (byte)interval;
-		return sendData(REG_CONTINUOUS_INTERVAL, byteBuff, 1);
+		sendData(REG_CONTINUOUS_INTERVAL, byteBuff, 1);
 	}
 
 	/**
@@ -481,8 +453,8 @@ public class UltrasonicSensor extends I2CSensor implements RangeFinder
 	 */
 	public int getActualMode()
 	{
-		int ret = getData(REG_MODE, byteBuff, 1);
-		return ret < 0 ? ret : (byteBuff[0] & 0xFF);
+		getData(REG_MODE, byteBuff, 1);
+		return (byteBuff[0] & 0xFF);
 	}
 
 	public float[] getRanges() {

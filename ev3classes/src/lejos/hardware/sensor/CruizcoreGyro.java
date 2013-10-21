@@ -71,19 +71,14 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 	/**
 	 * Read all data from the sensor and save values in the private properties of the class. 
 	 * Use {@link #getLastAccel} and similar methods to retrieve values.
-	 *
-	 * @return true, if successful
 	 */
-	public boolean readAllData() {
-		int ret = getData(ANGLE,inBuf,10);
-		if (ret==0) {
-			angle = EndianTools.decodeShortLE(inBuf, 0);
-			rate = EndianTools.decodeShortLE(inBuf, 2);
-			accel[0] = EndianTools.decodeShortLE(inBuf, 4);
-			accel[1] = EndianTools.decodeShortLE(inBuf, 6);
-			accel[2] = EndianTools.decodeShortLE(inBuf, 8);
-		} 
-		return ret==0;
+	public void readAllData() {
+		getData(ANGLE,inBuf,10);
+		angle = EndianTools.decodeShortLE(inBuf, 0);
+		rate = EndianTools.decodeShortLE(inBuf, 2);
+		accel[0] = EndianTools.decodeShortLE(inBuf, 4);
+		accel[1] = EndianTools.decodeShortLE(inBuf, 6);
+		accel[2] = EndianTools.decodeShortLE(inBuf, 8);
 	}
 	
 	/**
@@ -158,12 +153,10 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 	 * @return the acceleration
 	 */
 	public int[] getAccel() {
-		int ret = getData(ACCEL_X,inBuf,6);
-		if (ret==0) {
-			accel[0] = EndianTools.decodeShortLE(inBuf, 0);
-			accel[1] = EndianTools.decodeShortLE(inBuf, 2);
-			accel[2] = EndianTools.decodeShortLE(inBuf, 4);
-		} 
+		getData(ACCEL_X,inBuf,6);
+		accel[0] = EndianTools.decodeShortLE(inBuf, 0);
+		accel[1] = EndianTools.decodeShortLE(inBuf, 2);
+		accel[2] = EndianTools.decodeShortLE(inBuf, 4);
 		return accel;
 	}
 	
@@ -179,10 +172,8 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 	public int getAccel(int axis) {
 		int ret = 0;
 		if ( axis>=0 && axis<=2 ) 
-			ret = getData(ACCEL_X + 2*axis, inBuf, 2);
-		if (ret==0) {
-			accel[axis] = EndianTools.decodeShortLE(inBuf, 0);
-		} 
+			getData(ACCEL_X + 2*axis, inBuf, 2);
+		accel[axis] = EndianTools.decodeShortLE(inBuf, 0);
 		return accel[axis];
 	}	
 	
@@ -192,12 +183,9 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 	 * @return the angle
 	 */
 	public int getAngle() {
-		int ret = getData(ANGLE,inBuf,2);
-		if (ret==0) {
-			angle =  EndianTools.decodeShortLE(inBuf, 0);
-			return angle;
-		}
-		return 0;
+		getData(ANGLE,inBuf,2);
+		angle =  EndianTools.decodeShortLE(inBuf, 0);
+		return angle;
 	}
 	
 	/**
@@ -206,11 +194,8 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 	 * @return the rotation rate
 	 */
 	public int getRate() {
-		int ret = getData(RATE,inBuf,2);
-		if (ret==0) {
-			return EndianTools.decodeShortLE(inBuf, 0);
-		}
-		return 0;
+		getData(RATE,inBuf,2);
+		return EndianTools.decodeShortLE(inBuf, 0);
 	}
 	
 	/**
@@ -220,45 +205,34 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 	 * 0 for +/- 2G
 	 * 1 for +/- 4G
 	 * 2 for +/- 8g
-	 * @return true, if successful
 	 */
-	public boolean setAccScale(byte sf)
+	public void setAccScale(byte sf)
 	{
-		int res = sendData(SELECT_2G+sf, (byte)0);
-		return res==0;
+		sendData(SELECT_2G+sf, (byte)0);
 	}
 	
 	/**
 	 * Sets the acceleration scale factor to 2G.
-	 *
-	 * @return true, if successful
 	 */
-	public boolean setAccScale2G()
+	public void setAccScale2G()
 	{
-		int res = sendData(SELECT_2G, (byte)0);
-		return res==0;
+		sendData(SELECT_2G, (byte)0);
 	}	
 
 	/**
 	 * Sets the acceleration scale factor to 4G.
-	 *
-	 * @return true, if successful
 	 */
-	public boolean setAccScale4G()
+	public void setAccScale4G()
 	{
-		int res = sendData(SELECT_4G, (byte)0);
-		return res==0;
+		sendData(SELECT_4G, (byte)0);
 	}	
 	
 	/**
 	 * Sets the acceleration scale factor to 8G.
-	 *
-	 * @return true, if successful
 	 */
-	public boolean setAccScale8G()
+	public void setAccScale8G()
 	{
-		int res = sendData(SELECT_8G, (byte)0);
-		return res==0;
+		sendData(SELECT_8G, (byte)0);
 	}		
 	
 	/**
@@ -266,10 +240,9 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 	 *
 	 * @return true, if successful
 	 */
-	public boolean reset() {
-		int res = sendData(RESET, (byte)0);
-		Delay.msDelay(750);
-		return res==0;		
+	public void reset() {
+		sendData(RESET, (byte)0);
+		Delay.msDelay(750);		
 	}
 
 	public float getAngularVelocity() {

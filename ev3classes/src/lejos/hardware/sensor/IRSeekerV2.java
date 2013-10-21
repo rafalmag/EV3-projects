@@ -56,9 +56,7 @@ public class IRSeekerV2 extends I2CSensor
       { 
          register = 0x42; 
       } 
-      int ret = getData(register, buf, 1); 
-      if(ret != 0) 
-         return -1; 
+      getData(register, buf, 1); 
       return (0xFF & buf[0]); 
    } 
 
@@ -109,9 +107,7 @@ public class IRSeekerV2 extends I2CSensor
       if(id < 1 || id > 5) 
          throw new IllegalArgumentException( 
                "The argument 'id' must be between 1 and 5"); 
-      int ret = getData(register + (id - 1), buf, 1); 
-      if(ret != 0) 
-         return -1; 
+      getData(register + (id - 1), buf, 1);  
       return (0xFF & buf[0]); 
    } 
 
@@ -141,9 +137,7 @@ public class IRSeekerV2 extends I2CSensor
       { 
          if(id <= 0 || id > 5) 
             return -1; 
-         int ret = getData(0x48, buf, 1); 
-         if(ret != 0) 
-            return -1; 
+         getData(0x48, buf, 1); 
          return (0xFF & buf[0]); 
       } 
       else 

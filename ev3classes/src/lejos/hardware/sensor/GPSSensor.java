@@ -79,9 +79,7 @@ public class GPSSensor extends I2CSensor {
 	*/ 
     public int getUTC() {
    	 	byte reply[] = new byte[4];
-    	int r = this.getData(DGPS_CMD_UTC, reply, 0, 4);
-
-    	if(r < 0) return r;
+    	getData(DGPS_CMD_UTC, reply, 0, 4);
 
     	return EndianTools.decodeIntBE(reply, 0);
     }
@@ -188,25 +186,24 @@ public class GPSSensor extends I2CSensor {
 	* @param latitude destination's latitude in decimal degrees
 	* @return 0 if no error else error code
 	*/
-     public int setLatitude(int latitude) {
+     public void setLatitude(int latitude) {
     	 // We set the latitude in the dGPS
     	 byte args[] = new byte[4];
     	 EndianTools.encodeIntBE(latitude, args, 0);
 
-    	 return this.sendData(DGPS_CMD_SLAT, args, 0, 4);
+    	 sendData(DGPS_CMD_SLAT, args, 0, 4);
      }
 
 
 	/**
 	* Set destination longitude coordinates
 	* @param longitude destination's longitude in decimal degrees
-	* @return 0 if no error else error code
 	*/
-     public int setLongitude(int longitude) {
+     public void setLongitude(int longitude) {
     	 // We set the longitude in the dGPS
     	 byte args[] = new byte[4];
     	 EndianTools.encodeIntBE(longitude, args, 0);
 
-    	 return this.sendData(DGPS_CMD_SLONG, args, 0, 4);
+    	 sendData(DGPS_CMD_SLONG, args, 0, 4);
      }
 }

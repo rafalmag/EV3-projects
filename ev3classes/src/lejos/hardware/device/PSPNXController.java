@@ -78,17 +78,16 @@ public class PSPNXController extends I2CSensor {
 	 * operating in. Make a note of when any distance data will become available
 	 *
 	 */
-	private int setMode(byte mode)	{
+	private void setMode(byte mode)	{
 		buf[0] = mode;
-		int ret = sendData(MODE, buf, 1);
-		return ret;
+		sendData(MODE, buf, 1);
 	}
 
-	public int powerUp(boolean activate) {
+	public void powerUp(boolean activate) {
 		if (activate)
-			return setMode(ENERGIZED);
+			setMode(ENERGIZED);
 		else
-			return setMode(DE_ENERGIZED);
+			setMode(DE_ENERGIZED);
 	}
 
 	/**
@@ -99,55 +98,54 @@ public class PSPNXController extends I2CSensor {
 	public int[] getButtons() {
 		int Buttons[] = new int[16];
 
-		if (getData(BUTTON_1, buf,2) == 0) {
-            Buttons[0] = ((buf[0] >> 7) & 0x01) > 0 ? 0 : 1;
-            Buttons[1] = ((buf[0] >> 6) & 0x01) > 0 ? 0 : 1;
-            Buttons[2] = ((buf[0] >> 5) & 0x01) > 0 ? 0 : 1;
-            Buttons[3] = ((buf[0] >> 4) & 0x01) > 0 ? 0 : 1;
-            Buttons[4] = ((buf[0] >> 3) & 0x01) > 0 ? 0 : 1;
-            Buttons[5] = ((buf[0] >> 2) & 0x01) > 0 ? 0 : 1;
+		getData(BUTTON_1, buf,2);
+        Buttons[0] = ((buf[0] >> 7) & 0x01) > 0 ? 0 : 1;
+        Buttons[1] = ((buf[0] >> 6) & 0x01) > 0 ? 0 : 1;
+        Buttons[2] = ((buf[0] >> 5) & 0x01) > 0 ? 0 : 1;
+        Buttons[3] = ((buf[0] >> 4) & 0x01) > 0 ? 0 : 1;
+        Buttons[4] = ((buf[0] >> 3) & 0x01) > 0 ? 0 : 1;
+        Buttons[5] = ((buf[0] >> 2) & 0x01) > 0 ? 0 : 1;
 
-            Buttons[6] = ((buf[0] >> 1) & 0x01) > 0 ? 0 : 1;
-            Buttons[7] = ((buf[0] >> 0) & 0x01) > 0 ? 0 : 1;
+        Buttons[6] = ((buf[0] >> 1) & 0x01) > 0 ? 0 : 1;
+        Buttons[7] = ((buf[0] >> 0) & 0x01) > 0 ? 0 : 1;
 
-            Buttons[8] = ((buf[1] >> 7) & 0x01) > 0 ? 0 : 1;
-            Buttons[9] = ((buf[1] >> 6) & 0x01) > 0 ? 0 : 1;
-            Buttons[10] = ((buf[1] >> 5) & 0x01) > 0 ? 0 : 1;
-            Buttons[11] = ((buf[1] >> 4) & 0x01) > 0 ? 0 : 1;
-            Buttons[12] = ((buf[1] >> 3) & 0x01) > 0 ? 0 : 1;
-            Buttons[13] = ((buf[1] >> 2) & 0x01) > 0 ? 0 : 1;
-            Buttons[14] = ((buf[1] >> 1) & 0x01) > 0 ? 0 : 1;
-            Buttons[15] = ((buf[1] >> 0) & 0x01) > 0 ? 0 : 1;
-        }
+        Buttons[8] = ((buf[1] >> 7) & 0x01) > 0 ? 0 : 1;
+        Buttons[9] = ((buf[1] >> 6) & 0x01) > 0 ? 0 : 1;
+        Buttons[10] = ((buf[1] >> 5) & 0x01) > 0 ? 0 : 1;
+        Buttons[11] = ((buf[1] >> 4) & 0x01) > 0 ? 0 : 1;
+        Buttons[12] = ((buf[1] >> 3) & 0x01) > 0 ? 0 : 1;
+        Buttons[13] = ((buf[1] >> 2) & 0x01) > 0 ? 0 : 1;
+        Buttons[14] = ((buf[1] >> 1) & 0x01) > 0 ? 0 : 1;
+        Buttons[15] = ((buf[1] >> 0) & 0x01) > 0 ? 0 : 1;
 
 		return Buttons;
     }
 
-	public int setDigitalMode(boolean activate) {
+	public void setDigitalMode(boolean activate) {
 		if(activate)
-			return setMode(SET_DIGITAL_MODE);
+			setMode(SET_DIGITAL_MODE);
 		else
-			return setMode(SET_ANALOG_MODE);
+			setMode(SET_ANALOG_MODE);
 	}
 
 	public int getLeftX() {
-		int ret = getData(X_LEFT_JOYSTICK, buf,1);
-		return (ret == 0 ? ((buf[0] & 0xFF) - 128) * 100 / 128 : -1);
+	    getData(X_LEFT_JOYSTICK, buf,1);
+		return (((buf[0] & 0xFF) - 128) * 100 / 128);
 	}
 
 	public int getLeftY() {
-		int ret = getData(Y_LEFT_JOYSTICK, buf,1);
-		return (ret == 0 ? ((buf[0] & 0xFF) - 128) * 100 / 128 : -1);
+		getData(Y_LEFT_JOYSTICK, buf,1);
+		return (((buf[0] & 0xFF) - 128) * 100 / 128);
 	}
 
 	public int getRightX() {
-		int ret = getData(X_RIGHT_JOYSTICK, buf,1);
-		return (ret == 0 ? ((buf[0] & 0xFF) - 128) * 100 / 128 : -1);
+		getData(X_RIGHT_JOYSTICK, buf,1);
+		return  (((buf[0] & 0xFF) - 128) * 100 / 128);
 	}
 
 	public int getRightY() {
-		int ret = getData(Y_RIGHT_JOYSTICK, buf,1);
-		return (ret == 0 ? ((buf[0] & 0xFF) - 128) * 100 / 128 : -1);
+		getData(Y_RIGHT_JOYSTICK, buf,1);
+		return  (((buf[0] & 0xFF) - 128) * 100 / 128);
 	}
 
 	/**
@@ -157,8 +155,8 @@ public class PSPNXController extends I2CSensor {
 	 * @return -1 if error otherwise the operating mode
 	 */
 	public byte getMode() {
-		int ret = getData(MODE, buf,1);
-		return (ret == 0 ? buf[0] : -1);
+		getData(MODE, buf,1);
+		return buf[0];
 	}
 
 	/**
@@ -167,15 +165,15 @@ public class PSPNXController extends I2CSensor {
 	 * @param activate
 	 * @return the status value
 	 */
-	public int setADPAMode(boolean activate) {
+	public void setADPAMode(boolean activate) {
 		/*
 		 * DEVELOPER NOTES: If all I2C sensors use the same
 		 * adpa mode address, this method could be incorporated into
 		 * the I2CSensor class instead.
 		 */
 		if(activate)
-			return setMode(SET_ADPA_MODE_ON);
+			setMode(SET_ADPA_MODE_ON);
 		else
-			return setMode(SET_ADPA_MODE_OFF);
+			setMode(SET_ADPA_MODE_OFF);
 	}
 }

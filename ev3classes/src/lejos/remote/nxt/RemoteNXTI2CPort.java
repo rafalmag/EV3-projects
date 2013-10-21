@@ -2,6 +2,7 @@ package lejos.remote.nxt;
 
 import java.io.IOException;
 
+import lejos.hardware.port.I2CException;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.PortException;
 
@@ -64,9 +65,8 @@ public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
      * @param readBuf The buffer to use for the transaction results
      * @param readOffset Location to write the results to
      * @param readLen The length of the read
-     * @return < 0 error otherwise the number of bytes read
      */
-    public synchronized int i2cTransaction(int deviceAddress, byte[]writeBuf,
+    public synchronized void i2cTransaction(int deviceAddress, byte[]writeBuf,
             int writeOffset, int writeLen, byte[] readBuf, int readOffset,
             int readLen)
     {
@@ -84,7 +84,7 @@ public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
 		do {
 			try {
 				byte[] ret = nxtCommand.LSGetStatus((byte) port);
-				if (ret == null || ret.length < 1) return -1;
+				if (ret == null || ret.length < 1) throw new I2CException("Remote NXT I2C LSGetStatus error");
 				status = (int) ret[0];
 			} catch (IOException e) {
 				throw new PortException(e);
@@ -95,14 +95,12 @@ public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
 
 		try {
 			byte [] ret = nxtCommand.LSRead((byte) port);
-            if (ret == null) return -1;
-            if (readLen > ret.length) readLen = ret.length;
+            if (ret == null) throw new I2CException("Remote NXT I2C LSRead error");
+            if (readLen != ret.length) throw new I2CException("Remote NXT I2C wrong number of bytes read");
             if (readLen > 0)
                 System.arraycopy(ret, 0, readBuf, readOffset, readLen);
 		} catch (IOException e) {
 			throw new PortException(e);
 		}
-
-		return readLen;
     }  
 }

@@ -55,9 +55,8 @@ public class BarometricHTSensor extends I2CSensor {
 	 */
 	public long getPressureImperial() {
 		long result = Long.MIN_VALUE;
-		if (0 == getData(BAROMETRIC_PRESSURE, buffer, 2)) {
-			result = ((buffer[0] & 0xff) << 8) + buffer[1];
-		}
+		getData(BAROMETRIC_PRESSURE, buffer, 2);
+		result = ((buffer[0] & 0xff) << 8) + buffer[1];
 		return result;
 	}
 
@@ -78,10 +77,8 @@ public class BarometricHTSensor extends I2CSensor {
 	 */
 	public int getTemperature() {
 		final int result = Integer.MIN_VALUE;
-		if (0 == getData(BAROMETRIC_TEMPERATURE, buffer, 2)) {
-			return (buffer[0] << 2) | (buffer[1] & 0xFF);
-		}
-		return result;
+		getData(BAROMETRIC_TEMPERATURE, buffer, 2);
+	    return (buffer[0] << 2) | (buffer[1] & 0xFF);
 	}
 
 	/**
@@ -103,11 +100,8 @@ public class BarometricHTSensor extends I2CSensor {
 	 *         been performed.
 	 */
 	public int getCalibrationImperial() {
-		int result = Integer.MIN_VALUE;
-		if (0 == getData(BAROMETRIC_PRESSURE_CALIBRATION, buffer, 2)) {
-			result = ((buffer[0] & 0xff) << 8) + buffer[1];
-		}
-		return result;
+		getData(BAROMETRIC_PRESSURE_CALIBRATION, buffer, 2);
+		return ((buffer[0] & 0xff) << 8) + buffer[1];
 	}
 
 	/**

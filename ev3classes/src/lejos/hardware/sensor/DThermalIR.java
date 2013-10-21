@@ -56,18 +56,8 @@ public class DThermalIR extends I2CSensor {
 	
 	private synchronized byte[] readRaw(int register){
 		int retryCount=0;
-		buf = new byte[2];
-		int retval;
-		retval = getData(register, buf, 2);
-		while (retval<0) {
-			Delay.msDelay(10);
-			retval = getData(register, buf, 2);
-			if (++retryCount> I2C_RETRIES) {
-				buf[0]=buf[1]=0;
-//				System.out.println("bad i2c read");
-				break;
-			}
-		}
+		buf = new byte[2];;
+		getData(register, buf, 2);
 		return buf;
 	}
 	
@@ -124,11 +114,7 @@ public class DThermalIR extends I2CSensor {
 		
 		EndianTools.encodeShortBE(intEmissivity, buf, 0);
 //		LCD.drawString("e=" + EndianTools.decodeUShortBE(buf, 0) + "  ", 0,4);
-		retval = sendData(REG_SET_EMISSIVITY, buf, 2);
-		if (retval<0) {
-			 // TODO need error notice here?
-//			System.out.println("setemsty err");
-		}
+		sendData(REG_SET_EMISSIVITY, buf, 2);
 		Delay.msDelay(500);
 	}
 	

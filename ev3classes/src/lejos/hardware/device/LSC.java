@@ -172,22 +172,21 @@ public class LSC extends I2CSensor {
 	 * 
 	 */
 	public void calibrate(){
-		int I2C_Response;
 		byte[] bufReadResponse;
 		bufReadResponse = new byte[8];
 		byte h_byte;
 		byte l_byte;		
 		
-		I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0x00);
-		I2C_Response = this.getData((int)this.SPI_PORT, bufReadResponse, 1);
+		sendData((int)this.SPI_PORT, (byte)0x00);
+		getData((int)this.SPI_PORT, bufReadResponse, 1);
 		
 		while(bufReadResponse[0] != 99){
-			I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0xFF);
-			I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0xFF);
-			I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0x7E);			
+			sendData((int)this.SPI_PORT, (byte)0xFF);
+			sendData((int)this.SPI_PORT, (byte)0xFF);
+			sendData((int)this.SPI_PORT, (byte)0x7E);			
 
-			I2C_Response = this.sendData((int)this.SPI_PORT, (byte)0x00);
-			I2C_Response = this.getData((int)this.SPI_PORT, bufReadResponse, 1);
+			sendData((int)this.SPI_PORT, (byte)0x00);
+			getData((int)this.SPI_PORT, bufReadResponse, 1);
 			
 			if((int)bufReadResponse[0] == 99){
 				break;
@@ -199,7 +198,6 @@ public class LSC extends I2CSensor {
 	 * Load all servos connected this this LSC 
 	 */
 	public void loadAllServos(){
-		int I2C_Response;
 		byte h_byte;
 		byte l_byte;		
 		
@@ -208,17 +206,16 @@ public class LSC extends I2CSensor {
 		l_byte = (byte)channel;
 	     
 	    //High Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, h_byte);
+		sendData((int)this.SPI_PORT, h_byte);
 
 	    //Low Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, l_byte);
+		sendData((int)this.SPI_PORT, l_byte);
 	}
 	
 	/**
 	 * Unload all servos connected in a LSC
 	 */
 	public void unloadAllServos(){
-		int I2C_Response;
 		byte h_byte;
 		byte l_byte;
 		
@@ -227,9 +224,9 @@ public class LSC extends I2CSensor {
 		l_byte = (byte)channel;
 	     
 	    //High Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, h_byte);
+		sendData((int)this.SPI_PORT, h_byte);
 
 	    //Low Byte Write
-		I2C_Response = this.sendData((int)this.SPI_PORT, l_byte);		
+		sendData((int)this.SPI_PORT, l_byte);		
 	}
 }

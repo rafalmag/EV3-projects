@@ -33,8 +33,7 @@ public class IRSeeker extends I2CSensor {
 	 * @return direction
 	 */
 	public int getDirection() {
-		int ret = getData(0x42, buf, 1);
-		if(ret != 0) return -1;
+		getData(0x42, buf, 1);;
 		return (0xFF & buf[0]);
 	}
 	
@@ -45,8 +44,7 @@ public class IRSeeker extends I2CSensor {
 	 */
 	public int getSensorValue(int id) {
 		if (id <= 0 || id > 5) return -1;
-		int ret = getData(0x42 + id, buf, 1);
-		if(ret != 0) return -1;
+		getData(0x42 + id, buf, 1);
 		return (0xFF & buf[0]);
 	}
 }

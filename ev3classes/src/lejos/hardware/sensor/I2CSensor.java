@@ -4,6 +4,7 @@ package lejos.hardware.sensor;
 import java.lang.IllegalArgumentException;
 
 import lejos.hardware.Device;
+import lejos.hardware.port.I2CException;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
 
@@ -90,10 +91,9 @@ public class I2CSensor extends Device implements SensorConstants {
 	 * @param register I2C register, e.g 0x41
 	 * @param buf Buffer to return data
 	 * @param len Length of the return data
-	 * @return negative value on error, 0 otherwise
 	 */
-	public int getData(int register, byte [] buf, int len) {
-        return getData(register, buf, 0, len);
+	public void getData(int register, byte [] buf, int len) {
+        getData(register, buf, 0, len);
 	}
 	
 	/**
@@ -103,13 +103,11 @@ public class I2CSensor extends Device implements SensorConstants {
 	 * @param buf Buffer to return data
      * @param offset Offset of the start of the data
      * @param len Length of the return data
-	 * @return negative value on error, 0 otherwise
 	 */
-	public synchronized int getData(int register, byte [] buf, int offset, int len) {
+	public synchronized void getData(int register, byte [] buf, int offset, int len) {
         // need to write the internal address.
         ioBuf[0] = (byte)register;
-		int ret = port.i2cTransaction(address, ioBuf, 0, 1, buf, offset, len);
-        return (ret < 0 ? ret : (ret == len ? 0 : -1));
+		port.i2cTransaction(address, ioBuf, 0, 1, buf, offset, len);
 	}
 	
 	/**
@@ -118,10 +116,9 @@ public class I2CSensor extends Device implements SensorConstants {
 	 * @param register I2C register, e.g 0x42
 	 * @param buf Buffer containing data to send
 	 * @param len Length of data to send
-	 * @return negative value on error, 0 otherwise
 	 */
-	public int sendData(int register, byte [] buf, int len) {
-        return sendData(register, buf, 0, len);
+	public void sendData(int register, byte [] buf, int len) {
+        sendData(register, buf, 0, len);
 	}
 
 	/**
@@ -131,16 +128,15 @@ public class I2CSensor extends Device implements SensorConstants {
 	 * @param buf Buffer containing data to send
      * @param offset Offset of the start of the data
      * @param len Length of data to send
-	 * @return negative value on error, 0 otherwise
 	 */
-	public synchronized int sendData(int register, byte [] buf, int offset, int len) {
+	public synchronized void sendData(int register, byte [] buf, int offset, int len) {
         if (len >= ioBuf.length)
         	throw new IllegalArgumentException();
         ioBuf[0] = (byte)register;
 		// avoid NPE in case length==0 and data==null
         if (len > 0)
         	System.arraycopy(buf, offset, ioBuf, 1, len);
-        return port.i2cTransaction(address, ioBuf, 0, len+1, null, 0, 0);
+        port.i2cTransaction(address, ioBuf, 0, len+1, null, 0, 0);
 	}
 
 	/**
@@ -148,12 +144,11 @@ public class I2CSensor extends Device implements SensorConstants {
 	 *  
 	 * @param register I2C register, e.g 0x42
 	 * @param value single byte to send
-	 * @return negative value on error, 0 otherwise
 	 */
-	public synchronized int sendData(int register, byte value) {
+	public synchronized void sendData(int register, byte value) {
         ioBuf[0] = (byte)register;
         ioBuf[1] = value;
-        return port.i2cTransaction(address, ioBuf, 0, 2, null, 0, 0);
+        port.i2cTransaction(address, ioBuf, 0, 2, null, 0, 0);
 	}
 	
 	/**
@@ -203,10 +198,14 @@ public class I2CSensor extends Device implements SensorConstants {
      */
 	protected String fetchString(byte reg, int len) {
 		byte[] buf = new byte[len];
-		int ret = getData(reg, buf, 0, len);
-		if (ret != 0)
+		try 
+		{
+			getData(reg, buf, 0, len);
+		}
+		catch (I2CException e)
+		{
 			return "";
-		
+		}
 		int i;
 		char[] charBuff = new char[len];		
 		for (i=0; i<len && buf[i] != 0; i++)

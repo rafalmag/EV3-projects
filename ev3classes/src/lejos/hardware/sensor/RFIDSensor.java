@@ -170,8 +170,7 @@ public class RFIDSensor extends I2CSensor
         startBootLoader();
         Delay.msDelay(DELAY_FIRMWARE);
         byte [] ret = new byte[LEN_SERIALNO];
-        if (getData(REG_SERIALNO, ret, ret.length) < 0)
-            ret = null;
+        getData(REG_SERIALNO, ret, ret.length);
         startFirmware();
         return ret;
     }
@@ -183,30 +182,26 @@ public class RFIDSensor extends I2CSensor
      */
     public int getStatus()
     {
-        if (getData(REG_STATUS, buf1, buf1.length) < 0)
-            return -1;
-        else
-            return (int)buf1[0];
+        getData(REG_STATUS, buf1, buf1.length);
+        return (int)buf1[0];
     }
 
     /**
      * Start a single read from the device.
      * Does not wake up the device or include any delays.
-     * @return < 0 i2c error code >= 0 no error
      */
-    public int startSingleRead()
+    public void startSingleRead()
     {
-        return sendData(REG_CMD, CMD_SINGLEREAD);
+        sendData(REG_CMD, CMD_SINGLEREAD);
     }
 
     /**
      * Start continually reading from the device.
      * Does not wake up the device or include any delays.
-     * @return < 0 i2c error code >= 0 no error
      */
-    public int startContinuousRead()
+    public void startContinuousRead()
     {
-        return sendData(REG_CMD, CMD_CONTINUOUSREAD);
+        sendData(REG_CMD, CMD_CONTINUOUSREAD);
     }
 
     /**
@@ -214,9 +209,9 @@ public class RFIDSensor extends I2CSensor
      * Places the device into sleep mode.
      * @return < 0 i2c error code >= 0 no error
      */
-    public int stop()
+    public void stop()
     {
-        return sendData(REG_CMD, CMD_STOP);
+        sendData(REG_CMD, CMD_STOP);
     }
 
     /**
@@ -254,8 +249,7 @@ public class RFIDSensor extends I2CSensor
         byte [] ret = new byte[LEN_DATA];
         for(int i = 0; i < ret.length; i++)
         {
-            if (getData(REG_DATA+i, buf1, buf1.length) < 0)
-                return null;
+            getData(REG_DATA+i, buf1, buf1.length);
             ret[i] = buf1[0];
             if (buf1[0] != 0)
                 valid = true;

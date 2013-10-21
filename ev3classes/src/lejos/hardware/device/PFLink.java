@@ -184,14 +184,13 @@ public class PFLink extends I2CSensor {
      * Executes a command 
      * 
      * @param command 
-     * @return the status (zero = success)
      */ 
-    public int runCommand(int command) { 
+    public void runCommand(int command) { 
         byte[] buf = new byte[2]; 
 
         buf[0] = NR_ID; 
         buf[1] = (byte) (command); 
-        return sendData(NR_COMMAND, buf, 2); 
+        sendData(NR_COMMAND, buf, 2); 
     } 
 
     /** 

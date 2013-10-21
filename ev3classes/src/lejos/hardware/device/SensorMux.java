@@ -42,7 +42,7 @@ public class SensorMux extends I2CSensor {
     */
    public int getType() {
    	   byte[] buf = new byte[1];
-	   int ret = getData(0x23,buf,1);
+	   getData(0x23,buf,1);
 	   return buf[0] & 0xff;
    }
 
@@ -57,48 +57,6 @@ public class SensorMux extends I2CSensor {
    }
    
    /**
-    * Method used to know the Product ID
-    */
-   public String getVendorID(){
-      byte[] buf = new byte[8];
-      int failed = this.getData(0x08, buf, 8);
-      if(failed!=0) return "failed. ";
-      String str="l:";
-      for(int i=0; i<8; i++){
-         str+=(char)buf[i];
-      }
-      return str;
-   }
-   
-   /**
-    * Method used to know the type of the sensor
-    */
-   public String getProductID(){
-      byte[] buf = new byte[8];
-      int failed = this.getData(0x10, buf, 8);
-      if(failed!=0) return "failed. ";
-      String str="l:";
-      for(int i=0; i<8; i++){
-         str+=(char)buf[i];
-      }
-      return str;
-   }
-   
-   /**
-    * Method used to know the version
-    */
-   public String getVersion(){
-      byte[] buf = new byte[8];
-      int failed = this.getData(0x00, buf, 8);
-      if(failed!=0) return "failed. ";
-      String str="l:";
-      for(int i=0; i<8; i++){
-         str+=(char)buf[i];
-      }
-      return str;
-   }
-   
-   /**
     * This method return the value from a digital sensor.
     * Currently, SMux supports Ultrasonic Sensors
     * 
@@ -108,7 +66,7 @@ public class SensorMux extends I2CSensor {
    private int getDigitalValue(int channel){
 	   byte[] buf = new byte[1];
 	   byte register = digitalRegisters[channel-1];
-	   int ret = getData(register,buf,1);
+	   getData(register,buf,1);
 	   int digitalValue = buf[0] & 0xff;
 	   return digitalValue;
    }
@@ -123,7 +81,7 @@ public class SensorMux extends I2CSensor {
    private int getAnalogValue(int channel){
 	   byte[] buf = new byte[1];
 	   byte register = analogRegisters[channel-1];
-	   int ret = getData(register,buf,1);
+	   getData(register,buf,1);
 	   int analogValue = buf[0] & 0xff;
 	   return analogValue;
    }

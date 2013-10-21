@@ -65,9 +65,7 @@ public class AccelHTSensor extends I2CSensor implements Accelerometer {
 	 * @return x-axis acceleration or {@link #ERROR}.
 	 */
 	public int getXAccel() {
-		int ret = getData(BASE_ACCEL + OFF_X_HIGH, buf, 0, OFF_2BITS + 1);
-		if (ret != 0)
-			return ERROR;
+		getData(BASE_ACCEL + OFF_X_HIGH, buf, 0, OFF_2BITS + 1);
 
 		return (buf[0] << 2) | (buf[OFF_2BITS] & 0xFF);
 	}
@@ -79,9 +77,7 @@ public class AccelHTSensor extends I2CSensor implements Accelerometer {
 	 * @return y-axis acceleration or {@link #ERROR}.
 	 */
 	public int getYAccel() {
-		int ret = getData(BASE_ACCEL + OFF_Y_HIGH, buf, 0, OFF_2BITS + 1);
-		if (ret != 0)
-			return ERROR;
+		getData(BASE_ACCEL + OFF_Y_HIGH, buf, 0, OFF_2BITS + 1);
 
 		return (buf[0] << 2) | (buf[OFF_2BITS] & 0xFF);
 	}
@@ -93,9 +89,7 @@ public class AccelHTSensor extends I2CSensor implements Accelerometer {
 	 * @return z-axis acceleration or {@link #ERROR}.
 	 */
 	public int getZAccel() {
-		int ret = getData(BASE_ACCEL + OFF_Z_HIGH, buf, 0, OFF_2BITS + 1);
-		if (ret != 0)
-			return ERROR;
+		getData(BASE_ACCEL + OFF_Z_HIGH, buf, 0, OFF_2BITS + 1);
 
 		return (buf[0] << 2) | (buf[OFF_2BITS] & 0xFF);
 	}
@@ -108,9 +102,7 @@ public class AccelHTSensor extends I2CSensor implements Accelerometer {
 	 * @return true on success, false on error
 	 */
 	public boolean getAllAccel(int[] dst, int off) {
-		int ret = getData(BASE_ACCEL, buf, 0, 6);
-		if (ret != 0)
-			return false;
+		getData(BASE_ACCEL, buf, 0, 6);
 		
 		dst[off+0] = (buf[OFF_X_HIGH] << 2) + (buf[OFF_X_HIGH + OFF_2BITS] & 0xFF);
 		dst[off+1] = (buf[OFF_Y_HIGH] << 2) + (buf[OFF_Y_HIGH + OFF_2BITS] & 0xFF);

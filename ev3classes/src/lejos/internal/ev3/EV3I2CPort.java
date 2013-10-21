@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
+import lejos.hardware.port.I2CException;
 import lejos.hardware.port.I2CPort;
 import lejos.internal.io.NativeDevice;
 import lejos.utility.Delay;
@@ -128,9 +129,8 @@ public class EV3I2CPort extends EV3IOPort implements I2CPort
      * @param readBuf The buffer to use for the transaction results
      * @param readOffset Location to write the results to
      * @param readLen The length of the read
-     * @return < 0 error otherwise the number of bytes read
      */
-    public synchronized int i2cTransaction(int deviceAddress, byte[]writeBuf,
+    public synchronized void i2cTransaction(int deviceAddress, byte[]writeBuf,
             int writeOffset, int writeLen, byte[] readBuf, int readOffset,
             int readLen)
     {
@@ -154,17 +154,16 @@ public class EV3I2CPort extends EV3IOPort implements I2CPort
             iicdata.read();
             //System.out.println("Ioctl result: " + iicdata.Result);
             if (iicdata.Result < 0)
-                return -1;
+                throw new I2CException("I2C read error");
             if (iicdata.Result == STATUS_OK)
             {
                 if (readLen > 0)
                     System.arraycopy(iicdata.RdData, 0, readBuf, readOffset,  readLen);
-                return readLen;
+                return;
             }
             Thread.yield();
         }
-        //System.out.println("Timeout");
-        return -1;
+        throw new I2CException("I2C timeout");
     }
     
     

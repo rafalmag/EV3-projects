@@ -71,8 +71,7 @@ public class NXTCam extends I2CSensor {
 	 * @return number of objects (0 - 8)
 	 */
 	public int getNumberOfObjects() {
-		int ret = getData(0x42, buf, 1);
-		if(ret != 0) return -1;
+		getData(0x42, buf, 1);
 		return (0xFF & buf[0]);
 	}
 	
@@ -109,8 +108,7 @@ public class NXTCam extends I2CSensor {
 	 * @return the color of the object (starting at zero)
 	 */
 	public int getObjectColor(int id) {
-		int ret = getData(0x43 + (id * 5), buf, 1);
-		if(ret != 0) return -1;
+		getData(0x43 + (id * 5), buf, 1);
 		return (0xFF & buf[0]);
 	}
 	

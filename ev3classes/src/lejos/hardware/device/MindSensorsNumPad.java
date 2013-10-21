@@ -119,8 +119,7 @@ public class MindSensorsNumPad extends I2CSensor {
 	}
 
 	private int readButtonsRaw() {
-		if (getData(NP_DATA_REG, ioBuf, 2) != 0)
-			return ERROR;
+		getData(NP_DATA_REG, ioBuf, 2);
 		
 		return ((ioBuf[1] & 0xFF) << 8) + (ioBuf[0] & 0xFF);
 	}

@@ -54,12 +54,11 @@ public class NXTUltrasonicSensor extends I2CSensor {
 	 * commands otherwise the commands fail.
 	 */
 	@Override
-	public synchronized int getData(int register, byte[] buf, int off, int len)
+	public synchronized void getData(int register, byte[] buf, int off, int len)
 	{
 		waitUntil(nextCmdTime);
-		int ret = super.getData(register, buf, off, len);
+		super.getData(register, buf, off, len);
 		nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
-		return ret;
 	}
 
 	/*
@@ -67,12 +66,11 @@ public class NXTUltrasonicSensor extends I2CSensor {
 	 * timing for the ultrasonic sensor.
 	 */
 	@Override
-	public synchronized int sendData(int register, byte[] buf, int off, int len)
+	public synchronized void sendData(int register, byte[] buf, int off, int len)
 	{
 		waitUntil(nextCmdTime);
-		int ret = super.sendData(register, buf, off, len);
+		super.sendData(register, buf, off, len);
 		nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
-		return ret;
 	}
 
 

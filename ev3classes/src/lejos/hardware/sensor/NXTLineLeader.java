@@ -180,13 +180,13 @@ public class NXTLineLeader extends I2CSensor {
 	public int getSteering() {
 		// [EP] 17-Jan-10:
 		// changed byte count to 1 since register is a single byte one
-		int ret = getData(LL_READ_STEERING, buf, 1);
+		getData(LL_READ_STEERING, buf, 1);
 		int steering = 0;
 		// [EP] 17-Jan-10:
 		// steering is signed => no mask should be applied
 		// In addition negative values are a valid result, so we cannot use -1
 		// as an error notification
-		steering = (ret == 0) ? buf[0] : Integer.MIN_VALUE;
+		steering = buf[0];
 
 		return steering;
 	}
@@ -197,9 +197,9 @@ public class NXTLineLeader extends I2CSensor {
 	public int getAverage() {
 		// [EP] 17-Jan-10:
 		// changed byte count to 1 since register is a single byte one
-		int ret = getData(LL_READ_AVERAGE, buf, 1);
+		getData(LL_READ_AVERAGE, buf, 1);
 		int average = 0;
-		average = (ret == 0 ? (buf[0] & 0xff) : -1);
+		average = (buf[0] & 0xff);
 
 		return average;
 	}
@@ -210,9 +210,9 @@ public class NXTLineLeader extends I2CSensor {
 	public int getResult() {
 		// [EP] 17-Jan-10:
 		// changed byte count to 1 since register is a single byte one
-		int ret = getData(LL_READ_RESULT, buf, 1);
+		getData(LL_READ_RESULT, buf, 1);
 		int result = 0;
-		result = (ret == 0 ? (buf[0] & 0xff) : -1);
+		result = (buf[0] & 0xff);
 		return result;
 	}
 
@@ -220,8 +220,8 @@ public class NXTLineLeader extends I2CSensor {
 	 * Get the set point of the PID.
 	 */
 	public int getSetPoint() {
-		int ret = getData(LL_SETPOINT, buf, 1);
-		return (ret == 0 ? (buf[0] & 0xff) : -1);
+		getData(LL_SETPOINT, buf, 1);
+		return (buf[0] & 0xff);
 	}
 
 	/**
@@ -237,9 +237,9 @@ public class NXTLineLeader extends I2CSensor {
 	public int getKP() {
 		// [EP] 17-Jan-10:
 		// changed byte count to 1 since register is a single byte one
-		int ret = getData(LL_KP, buf, 1);
+		getData(LL_KP, buf, 1);
 		int KP = 0;
-		KP = (ret == 0 ? (buf[0] & 0xff) : -1);
+		KP = (buf[0] & 0xff);
 		return KP;
 	}
 
@@ -254,8 +254,8 @@ public class NXTLineLeader extends I2CSensor {
 	 * Get KP divisor
 	 */
 	public int getKPDivisor() {
-		int ret = getData(LL_KP_DIVISOR, buf, 1);
-		return (ret == 0 ? (buf[0] & 0xff) : -1);
+		getData(LL_KP_DIVISOR, buf, 1);
+		return (buf[0] & 0xff);
 	}
 
 	/**
@@ -271,9 +271,9 @@ public class NXTLineLeader extends I2CSensor {
 	public int getKI() {
 		// [EP] 17-Jan-10:
 		// changed byte count to 1 since register is a single byte one
-		int ret = getData(LL_KI, buf, 1);
+		getData(LL_KI, buf, 1);
 		int KI = 0;
-		KI = (ret == 0 ? (buf[0] & 0xff) : -1);
+		KI = (buf[0] & 0xff);
 		return KI;
 	}
 
@@ -288,8 +288,8 @@ public class NXTLineLeader extends I2CSensor {
 	 * Get KI divisor
 	 */
 	public int getKIDivisor() {
-		int ret = getData(LL_KI_DIVISOR, buf, 1);
-		return (ret == 0 ? (buf[0] & 0xff) : -1);
+		getData(LL_KI_DIVISOR, buf, 1);
+		return (buf[0] & 0xff);
 	}
 
 	/**
@@ -305,9 +305,9 @@ public class NXTLineLeader extends I2CSensor {
 	public int getKD() {
 		// [EP] 17-Jan-10:
 		// changed byte count to 1 since register is a single byte one
-		int ret = getData(LL_KD, buf, 1);
+		getData(LL_KD, buf, 1);
 		int KD = 0;
-		KD = (ret == 0 ? (buf[0] & 0xff) : -1);
+		KD = (buf[0] & 0xff);
 		return KD;
 	}
 
@@ -322,8 +322,8 @@ public class NXTLineLeader extends I2CSensor {
 	 * Get KD divisor
 	 */
 	public int getKDDivisor() {
-		int ret = getData(LL_KD_DIVISOR, buf, 1);
-		return (ret == 0 ? (buf[0] & 0xff) : -1);
+		getData(LL_KD_DIVISOR, buf, 1);
+		return (buf[0] & 0xff);
 	}
 
 	/**
@@ -348,9 +348,9 @@ public class NXTLineLeader extends I2CSensor {
 		checkSensorId(index);
 		// [EP] 17-Jan-10:
 		// changed byte count to 1 since register is a single byte one
-		int ret = getData(LineColor.WHITE.readingLimit + index - 1, buf, 1);
+		getData(LineColor.WHITE.readingLimit + index - 1, buf, 1);
 		int status = 0;
-		status = (ret == 0 ? (buf[0] & 0xff) : -1);
+		status = (buf[0] & 0xff);
 		return status;
 	}
 
@@ -365,8 +365,8 @@ public class NXTLineLeader extends I2CSensor {
 	 */
 	public int getCalibratedSensorReading(int index) {
 		checkSensorId(index);
-		int ret = getData(LL_CAL_SENSOR_READING_BASE + index - 1, buf, 1);
-		return (ret == 0) ? buf[0] & 0xff : -1;
+		getData(LL_CAL_SENSOR_READING_BASE + index - 1, buf, 1);
+		return (buf[0] & 0xff);
 	}
 
 	/**
@@ -382,8 +382,8 @@ public class NXTLineLeader extends I2CSensor {
 	 */
 	public int getReadingLimit(int index, LineColor color) {
 		checkSensorId(index);
-		int ret = getData(color.readingLimit + index - 1, buf, 1);
-		return (ret == 0) ? buf[0] & 0xff : -1;
+		getData(color.readingLimit + index - 1, buf, 1);
+		return (buf[0] & 0xff);
 	}
 
 	/**
@@ -399,7 +399,7 @@ public class NXTLineLeader extends I2CSensor {
 	 */
 	public int getCalibrationData(int index, LineColor color) {
 		checkSensorId(index);
-		int ret = getData(color.calibrationData + index - 1, buf, 1);
-		return (ret == 0) ? buf[0] & 0xff : -1;
+		getData(color.calibrationData + index - 1, buf, 1);
+		return (buf[0] & 0xff);
 	}
 }

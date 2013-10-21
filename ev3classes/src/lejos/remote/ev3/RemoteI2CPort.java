@@ -2,6 +2,7 @@ package lejos.remote.ev3;
 
 import java.rmi.RemoteException;
 
+import lejos.hardware.port.I2CException;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.PortException;
 
@@ -34,13 +35,12 @@ public class RemoteI2CPort extends RemoteIOPort implements I2CPort {
 	}
 
 	@Override
-	public int i2cTransaction(int deviceAddress, byte[] writeBuf,
+	public void i2cTransaction(int deviceAddress, byte[] writeBuf,
 		int writeOffset, int writeLen, byte[] readBuf, int readOffset, int readLen) {
 		try {
 			byte[] res = rmi.i2cTransaction(deviceAddress, writeBuf, writeOffset, writeLen,  readLen);
-			System.out.println("Byte 0 from I2C transaction is " + res[0]);
-			System.arraycopy(res, 0, readBuf, readOffset, readLen);
-			return (res == null ? - 1 : res.length);
+			if (res == null) throw new I2CException("RMI I2C Error");
+			System.arraycopy(res, 0, readBuf, readOffset, readLen);		
 		} catch (RemoteException e) {
 			throw new PortException(e);
 		}

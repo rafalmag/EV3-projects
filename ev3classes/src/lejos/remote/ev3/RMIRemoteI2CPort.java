@@ -26,9 +26,8 @@ public class RMIRemoteI2CPort extends UnicastRemoteObject implements RMII2CPort 
 	public byte[] i2cTransaction(int deviceAddress, byte[] writeBuf,
 			int writeOffset, int writeLen, int readLen) throws RemoteException {
 		byte[] readBuf = new byte[readLen];
-		int res = port.i2cTransaction(deviceAddress, writeBuf, writeOffset, writeLen, readBuf, 0, readLen);
-		if (res >= 0) return readBuf;
-		else return null;
+		port.i2cTransaction(deviceAddress, writeBuf, writeOffset, writeLen, readBuf, 0, readLen);
+		return readBuf;
 	}
 
 	@Override

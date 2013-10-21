@@ -57,8 +57,7 @@ public class CompassMindSensor extends I2CSensor implements DirectionFinder {
 	 * @return Heading in degrees. Resolution is within 0.1 degrees
 	 */
 	public float getDegrees() {		
-		int ret = getData(0x42, buf, 2);
-		if(ret != 0) return -1;
+		getData(0x42, buf, 2);
 
 		// TODO: The following commented out code works when Mindsensors compass in integer mode
 		// Add ability to set to integer mode.

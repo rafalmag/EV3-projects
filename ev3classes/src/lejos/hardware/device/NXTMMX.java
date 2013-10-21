@@ -1,5 +1,6 @@
 package lejos.hardware.device;
 
+import lejos.hardware.port.I2CException;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
@@ -149,9 +150,7 @@ public class NXTMMX extends I2CSensor {
         	while ((buf1[0] & 0x0F) != 0) {
                 Delay.msDelay(50);
                 //System.out.println("bsy " + buf1[0] + " ");
-                if (getData(REGISTER_MAP[REG_IDX_STATUS][channel], buf1, 1)!=0) {
-                	break; // exit on i2c fault
-                }
+                getData(REGISTER_MAP[REG_IDX_STATUS][channel], buf1, 1);
             }
             if (motorState[channel]!=STATE_STOPPED) {
             	motorState[channel]=STATE_STOPPED;
@@ -208,14 +207,25 @@ public class NXTMMX extends I2CSensor {
             beginTime = System.currentTimeMillis();
             Main: while (!threadDie){
                 Delay.msDelay(POLL_DELAY_MS);
-                retVal = getData(REG_ENCODERSREAD, buffer, 8);
+                retVal = 0;
+                try {
+                	getData(REG_ENCODERSREAD, buffer, 8);
+                } catch (I2CException e) {
+                	retVal = -1;
+                }
+ 
                 failCount = 0;
                 while (retVal < 0) {
                     if (++failCount>4) {
 //                    	System.out.println("fail");
                     	continue Main;
                     }
-                    retVal=getData(REG_ENCODERSREAD, buffer, 8);
+                    retVal = 0;
+                    try {
+                    	getData(REG_ENCODERSREAD, buffer, 8);
+                    } catch (I2CException e) {
+                    	retVal = -1;
+                    }
                 }
                 
                 // baseline the time after successful I2C transaction

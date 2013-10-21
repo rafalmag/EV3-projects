@@ -22,10 +22,10 @@ public class MonitorSensors {
     void monitorSensorPorts()
     {
         // TODO: sort this table out when final class names etc are fixed.
-    	sensorClasses.put("mndsnsrsNRLink","lejos.hardware.sensor.RCXLink");
+    	sensorClasses.put("mndsnsrsNRLink","lejos.hardware.device.RCXLink");
     	sensorClasses.put("mndsnsrsACCL3X03","lejos.hardware.sensor.MindsensorsAccelerometer");
     	sensorClasses.put("HiTechncColor   ","lejos.hardware.sensor.ColorHTSensor");
-    	sensorClasses.put("HiTechncIRLink  ","lejos.hardware.sensor.IRLink");
+    	sensorClasses.put("HiTechncIRLink  ","lejos.hardware.device.IRLink");
     	sensorClasses.put("HiTechncCompass ","lejos.hardware.sensor.HiTechnicCompass");
     	sensorClasses.put("NXT Color","lejos.hardware.sensor.ColorSensor");
     	// Use LightSensor class for NXT dumb sensors

@@ -63,8 +63,7 @@ public class ColorHTSensor extends I2CSensor implements ColorDetector {
      */
     public int getColorID()
     {
-        int ret = getData(0x42, buf, 1);
-        if(ret != 0) return -1;
+        getData(0x42, buf, 1);
         int HT_val = (0xFF & buf[0]);
         return colorMap[HT_val];
     }
@@ -77,8 +76,7 @@ public class ColorHTSensor extends I2CSensor implements ColorDetector {
      */
     public int getColorIndexNumber()
     {
-        int ret = getData(0x4c, buf, 1);
-        if(ret != 0) return -1;
+        getData(0x4c, buf, 1);
         return (0x3F & buf[0]);
     }
 
@@ -93,8 +91,7 @@ public class ColorHTSensor extends I2CSensor implements ColorDetector {
 	public int getRGBComponent(int color)
     {
         // TODO: Check if color is 0-2
-    	int ret = getData(0x43 + color, buf, 1);
-        if(ret != 0) return -1;
+    	getData(0x43 + color, buf, 1);
         return (0xFF & buf[0]);
     }
 
@@ -107,8 +104,7 @@ public class ColorHTSensor extends I2CSensor implements ColorDetector {
     public int getRGBNormalized(int color)
     {
     	// TODO: Check if color is 0-2
-    	int ret = getData(0x4d + color, buf, 1);
-        if(ret != 0) return -1;
+    	getData(0x4d + color, buf, 1);;
         return (0xFF & buf[0]);
     }
 
@@ -122,8 +118,7 @@ public class ColorHTSensor extends I2CSensor implements ColorDetector {
     public int getRGBRaw(int color)
     {
     	// TODO: Check if color is 0-2
-    	int ret = getData(0x46 + (2 * color), buf, 2);
-        if(ret != 0) return -1;
+    	getData(0x46 + (2 * color), buf, 2);
         return ((0xFF & buf[0]) << 8) | (0xFF & buf[1]);
     }
 
@@ -136,8 +131,7 @@ public class ColorHTSensor extends I2CSensor implements ColorDetector {
      */
     public int getMode()
     {
-        int ret = getData(0x41, buf, 1);
-        if(ret != 0) return -1;
+        getData(0x41, buf, 1);
         return (0xFF & buf[0]);
     } 
 
@@ -148,11 +142,10 @@ public class ColorHTSensor extends I2CSensor implements ColorDetector {
      * a second the sensor lights will flash and the calibration is done. When
      * calibrated, the sensor keeps this information in non-volatile memory.
      *
-     * @return 0 if it went well and -1 otherwise
      */
-    public int initWhiteBalance()
+    public void initWhiteBalance()
     {
-        return sendData(0x41, (byte)0x43);
+        sendData(0x41, (byte)0x43);
     }
 
     /**
@@ -163,11 +156,10 @@ public class ColorHTSensor extends I2CSensor implements ColorDetector {
      * flash and the calibration is done. When calibrated, the sensor keeps
      * this information in non-volatile memory.
      *
-     * @return 0 if it went well and -1 otherwise.
      */
-    public int initBlackLevel()
+    public void initBlackLevel()
     {
-        return sendData(0x41, (byte)0x42);
+        sendData(0x41, (byte)0x42);
     }
 
     // TODO: Getting color ID causes another reading, not very efficient if just want RGB fast. Would be nice
