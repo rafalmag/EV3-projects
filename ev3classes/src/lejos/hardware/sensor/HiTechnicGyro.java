@@ -46,9 +46,8 @@ public class HiTechnicGyro extends AnalogSensor implements SensorConstants, Samp
 	}
 
 	@Override
-	public int fetchSample(float[] sample, int offset) {
+	public void fetchSample(float[] sample, int offset) {
 		sample[offset] = ((float) port.readRawValue() - zero) * TO_SI;
-		return 0;
 	}
 
 }

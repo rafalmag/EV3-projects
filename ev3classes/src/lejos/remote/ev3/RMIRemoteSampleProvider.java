@@ -38,7 +38,7 @@ public class RMIRemoteSampleProvider extends UnicastRemoteObject implements RMIS
 	public float[] fetchSample() throws RemoteException {
 		int sampleSize = provider.sampleSize();
 		float[] sample = new float[sampleSize];
-		if (provider.fetchSample(sample, 0) != 0) sample = null;
+		provider.fetchSample(sample, 0);
 		return sample;
 	}
 

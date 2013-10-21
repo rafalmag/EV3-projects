@@ -80,14 +80,11 @@ public class HiTechnicAccelerometer extends I2CSensor implements SampleProvider 
 	}
 
 	@Override
-	public int fetchSample(float[] sample, int offset) {
-		int ret = getData(BASE_ACCEL, buf, 0, 6);
+	public void fetchSample(float[] sample, int offset) {
+		getData(BASE_ACCEL, buf, 0, 6);
 		
-		if (ret == 0) {
-			sample[offset+0] = ((buf[OFF_X_HIGH] << 2) + (buf[OFF_X_HIGH + OFF_2BITS] & 0xFF)) * TO_SI;
-			sample[offset+1] = ((buf[OFF_Y_HIGH] << 2) + (buf[OFF_Y_HIGH + OFF_2BITS] & 0xFF)) * TO_SI;
-			sample[offset+2] = ((buf[OFF_Z_HIGH] << 2) + (buf[OFF_Z_HIGH + OFF_2BITS] & 0xFF)) * TO_SI;	
-		} else for(int i=0;i<3;i++) sample[offset=i] = Float.NaN;
-		return ret;
+		sample[offset+0] = ((buf[OFF_X_HIGH] << 2) + (buf[OFF_X_HIGH + OFF_2BITS] & 0xFF)) * TO_SI;
+		sample[offset+1] = ((buf[OFF_Y_HIGH] << 2) + (buf[OFF_Y_HIGH + OFF_2BITS] & 0xFF)) * TO_SI;
+		sample[offset+2] = ((buf[OFF_Z_HIGH] << 2) + (buf[OFF_Z_HIGH + OFF_2BITS] & 0xFF)) * TO_SI;	
 	}
 }

@@ -33,9 +33,8 @@ public class LowPassFilter extends AbstractFilter{
 	 * Fetches a sample from the source and low-passes it
 	 * @see http://en.wikipedia.org/wiki/Low-pass_filter
 	 */
-	public int fetchSample(float[] dst, int off) {
-		int rc=super.fetchSample(dst,off);
-		if (rc==0){ 
+	public void fetchSample(float[] dst, int off) {
+		super.fetchSample(dst,off); 
 		if (lastTime==0) {
 			for (int axis=0;axis<sampleSize;axis++) {
 				smoothed[axis]=(dst[off+axis]);
@@ -51,13 +50,6 @@ public class LowPassFilter extends AbstractFilter{
 				dst[axis+off]=smoothed[axis];
 			}
 		}
-		}
-		else {
-			for (int axis=0;axis<sampleSize;axis++) {
-				dst[axis+off]=Float.NaN;
-			}
-		}
-		return rc;
 	}
 	
 	public void setTimeConstant(float timeConstant) {

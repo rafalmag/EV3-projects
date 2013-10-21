@@ -48,12 +48,9 @@ public class MindSensorsPressureSensor extends I2CSensor implements SampleProvid
 	}
 
 	@Override
-	public int fetchSample(float[] sample, int offset) {
-		int r = this.getData(0x53, buf, 0, 4);
+	public void fetchSample(float[] sample, int offset) {
+		getData(0x53, buf, 0, 4);
 		
-		if (r == 0) sample[offset] = (float) EndianTools.decodeIntLE(buf, 0);
-		else sample[offset] = Float.NaN;
-		
-		return r;
+		sample[offset] = (float) EndianTools.decodeIntLE(buf, 0);;
 	}
 }

@@ -161,22 +161,17 @@ public class NXTUltrasonicSensor extends I2CSensor {
 		}
 
 		@Override
-		public int fetchSample(float[] sample, int offset) {
+		public void fetchSample(float[] sample, int offset) {
 			if (setMode(MODE_CONTINUOUS)) {				
 				dataAvailableTime = System.currentTimeMillis()+DELAY_DATA_CONTINUOUS; // when the sensor was in another mode, the wait period just start. Otherwise it was set the last time this method was called;
 			}
 			waitUntil(dataAvailableTime); 
-			int rc=getData(REG_DISTANCE, byteBuff, 1);
-			if (rc==0) {
+			getData(REG_DISTANCE, byteBuff, 1);
 			int raw=byteBuff[0] & 0xff;
+			
 			sample[offset]= (raw==255) ? Float.POSITIVE_INFINITY : raw*TOSI;
-			}
-			else {
-				sample[offset]=Float.NaN;
-			}
 			
 			dataAvailableTime = System.currentTimeMillis()+DELAY_DATA_CONTINUOUS; 
-			return rc;
 		}
 
 	}
@@ -189,23 +184,15 @@ public class NXTUltrasonicSensor extends I2CSensor {
 		}
 
 		@Override
-		public int fetchSample(float[] sample, int offset) {
+		public void fetchSample(float[] sample, int offset) {
 			setMode(MODE_PING);
 			Delay.msDelay(DELAY_DATA_PING);
-			int rc=getData(REG_DISTANCE, byteBuff, 8);
-			if (rc==0) {
+			getData(REG_DISTANCE, byteBuff, 8);
 			for (int i = 0; i < 8;i++) {
 				int raw=byteBuff[i] & 0xff;
 				sample[i+offset]= (raw==255) ? Float.POSITIVE_INFINITY : raw*TOSI;
 			}
-			}
-			else {
-				for (int i = 0; i < 8;i++) {
-					sample[i+offset]=Float.NaN;
-				}
-			}
 			currentMode=MODE_OFF;
-			return rc;
 		}
 	}
 

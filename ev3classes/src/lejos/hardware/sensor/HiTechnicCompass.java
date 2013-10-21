@@ -67,13 +67,10 @@ public class HiTechnicCompass extends I2CSensor implements CalibratedSampleProvi
 	}
 
 	@Override
-	public int fetchSample(float[] sample, int offset) {
-		int ret = getData(0x42, buf, 2);
-		if (ret== 0)
-			sample[offset] = (360f - ((float) (((buf[0] & 0xff)<< 1) + buf[1])) - zeroValue) % 360f;
-		else
-			sample[offset] = Float.NaN;	
-		return ret;
+	public void fetchSample(float[] sample, int offset) {
+		getData(0x42, buf, 2);
+
+		sample[offset] = (360f - ((float) (((buf[0] & 0xff)<< 1) + buf[1])) - zeroValue) % 360f;
 	}
 	
 	// TODO: Rotate in any direction while calibrating? Specify.

@@ -77,8 +77,7 @@ public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, Samp
 	
 	@Override
 	// TODO: What units is this in? Should we just return the raw value?
-	public int fetchSample(float[] sample, int offset) {
+	public void fetchSample(float[] sample, int offset) {
 		sample[offset] = (float) Math.sqrt((1023-port.readRawValue())*10);
-		return 0;
 	}
 }

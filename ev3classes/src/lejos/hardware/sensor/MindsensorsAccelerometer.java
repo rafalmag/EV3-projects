@@ -68,14 +68,12 @@ public class MindsensorsAccelerometer extends I2CSensor implements SampleProvide
 	}
 	
 	@Override
-	public int fetchSample(float[] sample, int offset) {
-		int ret = getData(BASE_ACCEL, buf, 0, 6);
-		if (ret == 0) {
-			sample[offset+0] = EndianTools.decodeShortLE(buf, OFF_X_ACCEL) * TO_SI;
-			sample[offset+1] = EndianTools.decodeShortLE(buf, OFF_Y_ACCEL) * TO_SI;
-			sample[offset+2] = EndianTools.decodeShortLE(buf, OFF_Z_ACCEL) * TO_SI;
-		} else for(int i=0;i<3;i++) sample[offset=i] = Float.NaN;
-		return ret;	
+	public void fetchSample(float[] sample, int offset) {
+		getData(BASE_ACCEL, buf, 0, 6);
+
+		sample[offset+0] = EndianTools.decodeShortLE(buf, OFF_X_ACCEL) * TO_SI;
+		sample[offset+1] = EndianTools.decodeShortLE(buf, OFF_Y_ACCEL) * TO_SI;
+		sample[offset+2] = EndianTools.decodeShortLE(buf, OFF_Z_ACCEL) * TO_SI;
 	}
 	
 	/**
@@ -102,14 +100,12 @@ public class MindsensorsAccelerometer extends I2CSensor implements SampleProvide
 		}
 
 		@Override
-		public int fetchSample(float[] sample, int offset) {
-			int ret = getData(BASE_TILT, buf, 0, 3);
-			if (ret == 0) {			
-				sample[offset+0] = (buf[0] & 0xFF) - 128;
-				sample[offset+1] = (buf[1] & 0xFF) - 128;
-				sample[offset+2] = (buf[2] & 0xFF) - 128;
-			} else for(int i=0;i<3;i++) sample[offset+i] = Float.NaN;
-			return ret;
+		public void fetchSample(float[] sample, int offset) {
+			getData(BASE_TILT, buf, 0, 3);		
+			
+			sample[offset+0] = (buf[0] & 0xFF) - 128;
+			sample[offset+1] = (buf[1] & 0xFF) - 128;
+			sample[offset+2] = (buf[2] & 0xFF) - 128;
 		}
 	}
 }

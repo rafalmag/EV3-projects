@@ -68,9 +68,8 @@ public class HiTechnicMagneticSensor extends AnalogSensor implements SensorConst
 	}
 
 	@Override
-	public int fetchSample(float[] sample, int offset) {
+	public void fetchSample(float[] sample, int offset) {
 		sample[offset] = (port.readRawValue() - zeroValue);
-		return 0;
 	}
 }
 	

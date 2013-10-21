@@ -36,9 +36,8 @@ public class RCXThermometer implements SensorConstants, SampleProvider {
 	}
 
 	@Override
-	public int fetchSample(float[] sample, int offset) {
+	public void fetchSample(float[] sample, int offset) {
 		sample[offset] = (785-port.readRawValue())/8.0f +273.15f; // Kelvin
-		return 0;
 	}
 
 }

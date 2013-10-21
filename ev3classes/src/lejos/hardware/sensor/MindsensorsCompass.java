@@ -72,13 +72,11 @@ public class MindsensorsCompass extends I2CSensor implements CalibratedSamplePro
 	}
 
 	@Override
-	public int fetchSample(float[] sample, int offset) {
-		int ret = getData(0x42, buf, 1);
-		if (ret == 0) 
-			// TODO: Could use integer mode for higher resolution
-			sample[offset] = (360f  - ((((float) (buf[0] & 0xFF)) * 360f) / 256f) - zeroValue) % 360f;
-		else sample[offset] = Float.NaN;
-		return ret;
+	public void fetchSample(float[] sample, int offset) {
+		getData(0x42, buf, 1);
+		
+		// TODO: Could use integer mode for higher resolution
+		sample[offset] = (360f  - ((((float) (buf[0] & 0xFF)) * 360f) / 256f) - zeroValue) % 360f;
 	}
 	
 	// TODO: Rotate in any direction while calibrating? Specify.
