@@ -3,6 +3,7 @@ package lejos.remote.ev3;
 import java.rmi.RemoteException;
 
 import lejos.hardware.port.AnalogPort;
+import lejos.hardware.port.PortException;
 
 public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
 	protected RMIAnalogPort rmi;
@@ -17,8 +18,7 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
 		try {
 			rmi = rmiEV3.openAnalogPort(getName());
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return false;
+			throw new PortException(e);
 		}
 		return res;
 	}
@@ -29,7 +29,7 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
 		try {
 			rmi.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
 	}
 
@@ -38,8 +38,7 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
 		try {
 			return rmi.getPin6();
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return -1;
+			throw new PortException(e);
 		}
 	}
 
@@ -48,8 +47,7 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
 		try {
 			return rmi.getPin1();
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return -1;
+			throw new PortException(e);
 		}
 	}
 	
@@ -58,7 +56,7 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
 		try {
 			rmi.setPinMode(mode);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
 	}
 	
@@ -119,7 +117,7 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
         try {
             rmi.getShorts(vals, offset, length);
         } catch (RemoteException e) {
-            e.printStackTrace();
+			throw new PortException(e);
         }
     }
 }

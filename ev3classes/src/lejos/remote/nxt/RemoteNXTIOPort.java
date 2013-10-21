@@ -5,8 +5,9 @@ import lejos.hardware.port.IOPort;
 import lejos.hardware.sensor.EV3SensorConstants;
 
 /**
- * This class provides the base operations for local EV3 sensor ports.
- * @author andy
+ * This class provides the base operations for remote NXT sensor ports.
+ * 
+ * @author Lawrie Griffiths
  *
  */
 public abstract class RemoteNXTIOPort implements IOPort, BasicSensorPort, EV3SensorConstants
@@ -62,7 +63,6 @@ public abstract class RemoteNXTIOPort implements IOPort, BasicSensorPort, EV3Sen
     public boolean setType(int type)
     {
         throw new UnsupportedOperationException("This operation is for legacy modes only");
-
     }
 
     /** {@inheritDoc}
@@ -119,6 +119,7 @@ public abstract class RemoteNXTIOPort implements IOPort, BasicSensorPort, EV3Sen
      */
     public void setPinMode(int mode)
     {
+    	throw new UnsupportedOperationException("Not supported fo a remote NXT");
     }
 
 }

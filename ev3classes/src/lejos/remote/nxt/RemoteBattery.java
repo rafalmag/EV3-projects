@@ -3,6 +3,7 @@ package lejos.remote.nxt;
 import java.io.*;
 
 import lejos.hardware.Battery;
+import lejos.hardware.port.PortException;
 
 
 /**
@@ -26,8 +27,8 @@ public class RemoteBattery implements Battery, NXTProtocol {
 	     */
 		try {
 			return nxtCommand.getBatteryLevel();
-		} catch (IOException ioe) {
-			return 0;
+		} catch (IOException e) {
+			throw new PortException(e);
 		}
 	}
 
@@ -41,14 +42,12 @@ public class RemoteBattery implements Battery, NXTProtocol {
 
 	@Override
 	public float getBatteryCurrent() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new UnsupportedOperationException("Battery current not supported by the NXT");
 	}
 
 	@Override
 	public float getMotorCurrent() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new UnsupportedOperationException("Motor current not supported by the NXT");
 	}
 }
 

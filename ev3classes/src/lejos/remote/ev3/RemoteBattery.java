@@ -3,6 +3,7 @@ package lejos.remote.ev3;
 import java.rmi.RemoteException;
 
 import lejos.hardware.Battery;
+import lejos.hardware.port.PortException;
 
 public class RemoteBattery implements Battery {
 	RMIBattery battery;
@@ -16,8 +17,7 @@ public class RemoteBattery implements Battery {
 		try {
 			return battery.getVoltageMilliVolt();
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return -1;
+			throw new PortException(e);
 		}
 	}
 
@@ -26,19 +26,25 @@ public class RemoteBattery implements Battery {
 		try {
 			return battery.getVoltage();
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return -1f;
+			throw new PortException(e);
 		}
 	}
 
 	@Override
 	public float getBatteryCurrent() {
-		return 0;
+		try {
+			return battery.getBatteryCurrent();
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
 	}
 
 	@Override
 	public float getMotorCurrent() {
-		return 0;
+		try {
+			return battery.getMotorCurrent();
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
 	}
-
 }

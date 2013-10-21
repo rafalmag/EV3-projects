@@ -8,7 +8,6 @@ import lejos.hardware.port.Port;
 import lejos.hardware.port.TachoMotorPort;
 import lejos.hardware.port.UARTPort;
 import lejos.hardware.sensor.EV3SensorConstants;
-import lejos.internal.ev3.EV3UARTPort;
 
 public class RemotePort implements Port
 {

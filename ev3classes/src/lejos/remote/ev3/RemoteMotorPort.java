@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 
 import lejos.hardware.port.BasicMotorPort;
 import lejos.hardware.port.MotorPort;
+import lejos.hardware.port.PortException;
 import lejos.hardware.port.TachoMotorPort;
 
 public class RemoteMotorPort extends RemoteIOPort implements TachoMotorPort {
@@ -19,8 +20,7 @@ public class RemoteMotorPort extends RemoteIOPort implements TachoMotorPort {
 		try {
 			rmi = rmiEV3.openMotorPort(getName());
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return false;
+			throw new PortException(e);
 		}
 		return res;
 	}
@@ -39,7 +39,7 @@ public class RemoteMotorPort extends RemoteIOPort implements TachoMotorPort {
     	try {
 			rmi.controlMotor(power, mode);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
     }
 
@@ -52,9 +52,7 @@ public class RemoteMotorPort extends RemoteIOPort implements TachoMotorPort {
     	try {
 			return rmi.getTachoCount();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return -1;
+			throw new PortException(e);
 		}
     }
     
@@ -66,7 +64,7 @@ public class RemoteMotorPort extends RemoteIOPort implements TachoMotorPort {
     	try {
 			rmi.resetTachoCount();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
     }
     
@@ -75,7 +73,7 @@ public class RemoteMotorPort extends RemoteIOPort implements TachoMotorPort {
     	try {
 			rmi.setPWMMode(mode);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
     }
     
@@ -83,7 +81,7 @@ public class RemoteMotorPort extends RemoteIOPort implements TachoMotorPort {
     	try {
 			rmi.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
     }
 }

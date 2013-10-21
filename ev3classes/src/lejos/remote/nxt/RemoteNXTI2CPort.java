@@ -3,6 +3,7 @@ package lejos.remote.nxt;
 import java.io.IOException;
 
 import lejos.hardware.port.I2CPort;
+import lejos.hardware.port.PortException;
 
 public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
 {
@@ -76,8 +77,8 @@ public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
 		int status;
 		try {
 			nxtCommand.LSWrite((byte) port, txData, (byte) readLen);
-		} catch (IOException ioe) {
-			return -1;
+		} catch (IOException e) {
+			throw new PortException(e);
 		}
 		
 		do {
@@ -86,7 +87,7 @@ public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
 				if (ret == null || ret.length < 1) return -1;
 				status = (int) ret[0];
 			} catch (IOException e) {
-				return -1;
+				throw new PortException(e);
 			}
 			
 		} while (status == ErrorMessages.PENDING_COMMUNICATION_TRANSACTION_IN_PROGRESS || 
@@ -98,8 +99,8 @@ public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
             if (readLen > ret.length) readLen = ret.length;
             if (readLen > 0)
                 System.arraycopy(ret, 0, readBuf, readOffset, readLen);
-		} catch (IOException ioe) {
-			return -1;
+		} catch (IOException e) {
+			throw new PortException(e);
 		}
 
 		return readLen;

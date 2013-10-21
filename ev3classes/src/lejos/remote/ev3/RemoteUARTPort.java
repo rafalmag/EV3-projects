@@ -2,6 +2,7 @@ package lejos.remote.ev3;
 
 import java.rmi.RemoteException;
 
+import lejos.hardware.port.PortException;
 import lejos.hardware.port.UARTPort;
 
 public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
@@ -17,8 +18,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			rmi = rmiEV3.openUARTPort(getName());
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return false;
+			throw new PortException(e);
 		}
 		return res;
 	}
@@ -29,7 +29,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			rmi.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
 	}
 	@Override
@@ -37,8 +37,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			return rmi.getByte();
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return -1;
+			throw new PortException(e);
 		}
 	}
 
@@ -47,7 +46,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			rmi.getBytes(vals, offset, len);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
 	}
 
@@ -56,8 +55,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			return rmi.getShort();
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return -1;
+			throw new PortException(e);
 		}
 	}
 
@@ -66,7 +64,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			rmi.getShorts(vals, offset, len);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
 	}
 
@@ -75,8 +73,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			return rmi.getModeName(mode);
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return null;
+			throw new PortException(e);
 		}
 	}
 
@@ -85,8 +82,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			return rmi.initialiseSensor(mode);
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return false;
+			throw new PortException(e);
 		}
 	}
 
@@ -95,7 +91,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			rmi.resetSensor();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
 	}
 	
@@ -104,8 +100,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			return rmi.toStringValue();
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return this.toString();
+			throw new PortException(e);
 		}
 	}
 	
@@ -114,10 +109,7 @@ public class RemoteUARTPort extends RemoteIOPort implements UARTPort {
 		try {
 			return rmi.setMode(mode);
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
+			throw new PortException(e);
 		}
 	}
-
 }

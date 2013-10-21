@@ -3,6 +3,7 @@ package lejos.remote.nxt;
 import java.io.IOException;
 
 import lejos.hardware.port.BasicMotorPort;
+import lejos.hardware.port.PortException;
 import lejos.hardware.port.TachoMotorPort;
 
 /**
@@ -49,7 +50,9 @@ public class RemoteNXTMotorPort extends RemoteNXTIOPort implements NXTProtocol, 
 		}
 		try {
 			nxtCommand.setOutputState((byte) port, (byte) lcpPower, lcpMode, REGULATION_MODE_IDLE, 0, runState, 0);
-		} catch (IOException ioe) {}
+		} catch (IOException e) {
+			throw new PortException(e);
+		}
     }
 
 
@@ -60,8 +63,8 @@ public class RemoteNXTMotorPort extends RemoteNXTIOPort implements NXTProtocol, 
     {
 		try {
 			return nxtCommand.getTachoCount(port);
-		} catch (IOException ioe) {
-			return 0;
+		} catch (IOException e) {
+			throw new PortException(e);
 		}
     }
     
@@ -72,11 +75,13 @@ public class RemoteNXTMotorPort extends RemoteNXTIOPort implements NXTProtocol, 
     {
 		try {
 			nxtCommand.resetMotorPosition(port, false);
-		} catch (IOException ioe) { }
+		} catch (IOException e) {
+			throw new PortException(e);
+		}
     }
     
     public void setPWMMode(int mode)
     {
-    }
-    
+    	// TODO: How can we support this on a remote NXT?
+    }  
 }

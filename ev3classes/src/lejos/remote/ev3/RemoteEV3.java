@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import lejos.hardware.Battery;
 import lejos.hardware.ev3.EV3;
 import lejos.hardware.port.Port;
+import lejos.hardware.port.PortException;
 
 public class RemoteEV3 implements EV3 {
 	private String host;
@@ -59,8 +60,7 @@ public class RemoteEV3 implements EV3 {
 		try {
 			return rmiEV3.createSampleProvider(portName, sensorName, modeName);
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return null;
+			throw new PortException(e);
 		}
 	}
 	
@@ -68,8 +68,7 @@ public class RemoteEV3 implements EV3 {
 		try {
 			return rmiEV3.createRegulatedMotor(portName);
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return null;
+			throw new PortException(e);
 		}
 	}
 	
@@ -77,9 +76,7 @@ public class RemoteEV3 implements EV3 {
 		try {
 			return rmiEV3.getSound();
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return null;
+			throw new PortException(e);
 		}
 	}
-
 }

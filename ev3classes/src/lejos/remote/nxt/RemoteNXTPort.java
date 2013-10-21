@@ -1,4 +1,5 @@
 package lejos.remote.nxt;
+
 import lejos.hardware.DeviceException;
 import lejos.hardware.port.AnalogPort;
 import lejos.hardware.port.BasicMotorPort;

@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import lejos.hardware.port.AnalogPort;
 import lejos.hardware.port.LegacySensorPort;
+import lejos.hardware.port.PortException;
 
 /**
  * This class provides access to the EV3 Analog based sensor ports and other
  * analog data sources.
  * 
- * @author andy
+ * @author Lawrie Griffiths
  *
  */
 public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, LegacySensorPort
@@ -20,24 +21,6 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
 
 	private int id;
 	private int type, mode;
-	
-    /**
-     * Return the analog voltage reading from pin 1
-     * @return the voltage in mV
-     */
-    public int getPin1()
-    {
-        return -1;
-    }
-    
-    /**
-     * Return the analog voltage reading from pin 6
-     * @return the voltage in mV
-     */
-    public int getPin6()
-    {
-        return -1;
-    }
 
     // The following method provide compatibility with NXT sensors
     
@@ -52,7 +35,9 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
 		this.mode = mode;
 		try {
 			nxtCommand.setInputMode(id, type, mode);
-		} catch (IOException ioe) {}
+		} catch (IOException e) {
+			throw new PortException(e);
+		}
 		return true;
 	}
 	
@@ -84,8 +69,8 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
 		try {
 			InputValues vals = nxtCommand.getInputValues(id);
 			return (vals.rawADValue<600);			
-		} catch (IOException ioe) {
-			return false;
+		} catch (IOException e) {
+			throw new PortException(e);
 		}
     }
 
@@ -95,8 +80,8 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
 		try {
 			InputValues vals = nxtCommand.getInputValues(id);
 			return vals.rawADValue;
-		} catch (IOException ioe) {
-			return 0;
+		} catch (IOException e) {
+			throw new PortException(e);
 		}
     }
 
@@ -117,58 +102,7 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
 	    
 	    return rawValue;
     }
-
-    // The following methods should arguably be in different class, but they
-    // share the same memory structures as those used for analog I/O. Perhaps
-    // we need to restructure at some point and mode them to a common private
-    // class.
     
-    /**
-     * Return the analog voltage reading from pin 5 on the output port
-     * @param p the port number to return the reading for
-     * @return the voltage in mV
-     */
-    protected static short getOutputPin5(int p)
-    {
-        return -1;
-    }
-
-    /**
-     * Return the battery temperature reading
-     * @return
-     */
-    protected static short getBatteryTemperature()
-    {
-        return -1;
-    }
-
-    /**
-     * return the motor current
-     * @return
-     */
-    protected static short getMotorCurrent()
-    {
-        return -1;
-    }
-
-    /**
-     * return the battery current
-     * @return
-     */
-    protected static short getBatteryCurrent()
-    {
-        return -1;
-    }
-
-    /**
-     * return the battery voltage
-     * @return
-     */
-    protected static short getBatteryVoltage()
-    {
-        return -1;
-    }
-
     /**
      * get the type of the port
      * @param port
@@ -193,20 +127,29 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
         return 0;
     }
 
-    @Override
-    public void getShorts(short[] vals, int offset, int length)
-    {
-    }
-
 	@Override
 	public void activate() {
-		// TODO Auto-generated method stub
-		
+		// TODO: How can we support this for a remote NXT?
 	}
 
 	@Override
 	public void passivate() {
-		// TODO Auto-generated method stub
+		// TODO: How can we support this for a remote NXT?	
+	}
+
+	@Override
+	public void getShorts(short[] vals, int offset, int length) {
+		throw new UnsupportedOperationException("Not supported for a remote NXT");
 		
+	}
+
+	@Override
+	public int getPin6() {
+		throw new UnsupportedOperationException("Not supported for a remote NXT");
+	}
+
+	@Override
+	public int getPin1() {
+		throw new UnsupportedOperationException("Not supported for a remote NXT");
 	}
 }

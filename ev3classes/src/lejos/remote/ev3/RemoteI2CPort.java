@@ -3,6 +3,7 @@ package lejos.remote.ev3;
 import java.rmi.RemoteException;
 
 import lejos.hardware.port.I2CPort;
+import lejos.hardware.port.PortException;
 
 public class RemoteI2CPort extends RemoteIOPort implements I2CPort {
 	protected RMII2CPort rmi;
@@ -17,8 +18,7 @@ public class RemoteI2CPort extends RemoteIOPort implements I2CPort {
 		try {
 			rmi = rmiEV3.openI2CPort(getName());
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return false;
+			throw new PortException(e);
 		}
 		return res;
 	}
@@ -29,7 +29,7 @@ public class RemoteI2CPort extends RemoteIOPort implements I2CPort {
 		try {
 			rmi.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			throw new PortException(e);
 		}
 	}
 
@@ -42,8 +42,7 @@ public class RemoteI2CPort extends RemoteIOPort implements I2CPort {
 			System.arraycopy(res, 0, readBuf, readOffset, readLen);
 			return (res == null ? - 1 : res.length);
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			return -1;
+			throw new PortException(e);
 		}
 	}
 }
