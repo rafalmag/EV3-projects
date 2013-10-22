@@ -18,12 +18,6 @@ import lejos.utility.EndianTools;
  * For the given values, the formula yields the integer value 77048553.
  * Basically, this is equivalent to decimal degrees times a million.</p>
  * 
- * <p>You can use the standard <code>javax.microedition.location</code> package with this class by
- * using a <code>dGPSCriteria</code> object to request a LocationProvider as follows:</p>
- * <p><code>dGPSCriteria criteria = new gGPSCriteria(SensorPort.S1);<br>
- * LocationProvider lp = LocationProvider.getInstance(criteria);
- * </p></code>
- *
  * @author Mark Crosbie  <mark@mastincrosbie.com>
  * 22 January, 2011
  *
@@ -89,17 +83,17 @@ public class DexterGPSSensor extends I2CSensor implements SampleProvider {
 	@Override
 	public void fetchSample(float[] sample, int offset) {
     	getData(DGPS_CMD_LAT, reply, 0, 4); 	
-    	sample[0+offset] = EndianTools.decodeIntBE(reply, 0);
+    	sample[0+offset] = EndianTools.decodeIntBE(reply, 0) / 1000000f;
     	
     	getData(DGPS_CMD_LONG, reply, 0, 4);
-    	sample[1+offset] = EndianTools.decodeIntBE(reply, 0);
+    	sample[1+offset] = EndianTools.decodeIntBE(reply, 0) / 1000000f;
     	
     	getData(DGPS_CMD_HEAD, reply, 0, 2);
     	sample[2+offset] = EndianTools.decodeUShortBE(reply, 0);
     	
     	getData(DGPS_CMD_VELO, reply, 1, 3);
     	reply[0] = 0;
-    	sample[3+offset] =  EndianTools.decodeIntBE(reply, 0);
+    	sample[3+offset] =  EndianTools.decodeIntBE(reply, 0) / 10f;
   
     	getData(DGPS_CMD_UTC, reply, 0, 4);
     	sample[4+offset] = EndianTools.decodeIntBE(reply, 0);
