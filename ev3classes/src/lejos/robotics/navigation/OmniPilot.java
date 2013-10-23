@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import lejos.hardware.Battery;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
-import lejos.hardware.sensor.CruizcoreGyro;
+import lejos.hardware.sensor.CruizcoreGyroOld;
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.RegulatedMotorListener;
 import lejos.robotics.geometry.Point;
@@ -69,7 +69,7 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 	
 	private double minTurnRadius = 0; // This vehicle can turn withgout moving therefore minimum turn radius = 0
 	
-	private CruizcoreGyro gyro;
+	private CruizcoreGyroOld gyro;
 	
 	private boolean gyroEnabled = false;
 	
@@ -131,7 +131,7 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 			Battery battery, Port gyroPort) {
 		this(wheelDistanceFromCenter, wheelDiameter,centralMotor, CW120degMotor, CCW120degMotor,  
 				centralWheelFrontal, motorReverse, battery);
-		gyro = new CruizcoreGyro(gyroPort);
+		gyro = new CruizcoreGyroOld(gyroPort);
 //		gyro = new CruizcoreGyro(gyroPort), I2CPort.HIGH_SPEED);
 //		gyro = new CruizcoreGyro(gyroPort, I2CPort.LEGO_MODE);
 		gyro.reset();
