@@ -18,5 +18,9 @@ public interface Gyroscope {
     /** Implementor must calculate and set the offset/bias value for use in <code>getAngularVelocity()</code>.
      */
     public void recalibrateOffset();
+    
+    public int getAngle();
+    
+    public void reset();
 
  }

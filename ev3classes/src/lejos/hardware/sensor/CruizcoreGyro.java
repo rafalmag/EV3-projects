@@ -2,15 +2,9 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.Accelerometer;
-import lejos.robotics.Gyroscope;
+import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 import lejos.utility.EndianTools;
-
-/*
- * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
- * DO NOT EDIT THE VERSION IN pccomms AS IT WILL BE OVERWRITTEN WHEN THE PROJECT IS BUILT.
- */
 
 /**
  * This Class manages the Micro Infinity Cruizcore XG1300L
@@ -18,7 +12,7 @@ import lejos.utility.EndianTools;
  * @author Daniele Benedettelli, February 2011
  * @version 1.0
  */
-public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer {
+public class CruizcoreGyro extends I2CSensor implements SampleProvider {
 
 	/*
 	 * Documentation can be obtained here: http://xgl.minfinity.com/Downloads/Downloads.html
@@ -48,13 +42,6 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 	
 	private static final byte SELECT_8G = 0x63;
 	
-	// last read data
-	private int angle = 0;
-	
-	private int rate = 0;
-	
-	private int[] accel = new int[3];
-	
 	/**
 	 * Instantiates a new Cruizcore Gyro sensor.
 	 *
@@ -67,136 +54,6 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
     public CruizcoreGyro(Port port) {
         super(port, GYRO_ADDRESS);
     }
-    
-	/**
-	 * Read all data from the sensor and save values in the private properties of the class. 
-	 * Use {@link #getLastAccel} and similar methods to retrieve values.
-	 */
-	public void readAllData() {
-		getData(ANGLE,inBuf,10);
-		angle = EndianTools.decodeShortLE(inBuf, 0);
-		rate = EndianTools.decodeShortLE(inBuf, 2);
-		accel[0] = EndianTools.decodeShortLE(inBuf, 4);
-		accel[1] = EndianTools.decodeShortLE(inBuf, 6);
-		accel[2] = EndianTools.decodeShortLE(inBuf, 8);
-	}
-	
-	/**
-	 * Gets the last acceleration read from the 3 axes.
-	 * See {@link #readAllData}
-	 *
-	 * @return the last acceleration
-	 */
-	public int[] getLastAccel() {
-		return accel;
-	}
-	
-	/**
-	 * Gets the last accel.
-	 * See {@link #readAllData}
-	 *
-	 * @param axis the axis (0 for X, 1 for Y, 2 for Z)
-	 * @return the last acceleration
-	 */
-	public int getLastAccel(int axis) {
-		if ( axis>=0 && axis<=2) 
-			return accel[axis];
-		return 0;
-	}
-	
-	/**
-	 * Gets the last pitch.
-	 * See {@link #readAllData}
-	 *
-	 * @return the last pitch
-	 */
-	public float getLastPitch() {
-		float sinPitch = accel[1]/1000;
-		return (float) Math.asin(sinPitch);
-	}
-	
-	/**
-	 * Gets the last roll.
-	 * See {@link #readAllData}
-	 *
-	 * @return the last roll
-	 */
-	public float getLastRoll() {
-		float sinRoll = (float) (accel[0]/(1000*Math.cos(getLastPitch())));
-		return (float) Math.asin(sinRoll);
-	}
-	
-	/**
-	 * Gets the last rate.
-	 * See {@link #readAllData}
-	 *
-	 * @return the last rotation rate
-	 */
-	public int getLastRate() {
-		return rate;
-	}
-	
-	/**
-	 * Gets the last angle.
-	 * See {@link #readAllData}
-	 *
-	 * @return the last angle
-	 */
-	public int getLastAngle() {
-		return angle;
-	}
-	
-	/**
-	 * Gets the accel.
-	 * See {@link #readAllData}
-	 *
-	 * @return the acceleration
-	 */
-	public int[] getAccel() {
-		getData(ACCEL_X,inBuf,6);
-		accel[0] = EndianTools.decodeShortLE(inBuf, 0);
-		accel[1] = EndianTools.decodeShortLE(inBuf, 2);
-		accel[2] = EndianTools.decodeShortLE(inBuf, 4);
-		return accel;
-	}
-	
-	// 0 -> X
-	// 1 -> Y
-	// 2 -> Z
-	/**
-	 * Gets the acceleration in the specified axis.
-	 *
-	 * @param axis the axis (0 for X, 1 for Y, 2 for Z)
-	 * @return the acceleration
-	 */
-	public int getAccel(int axis) {
-		int ret = 0;
-		if ( axis>=0 && axis<=2 ) 
-			getData(ACCEL_X + 2*axis, inBuf, 2);
-		accel[axis] = EndianTools.decodeShortLE(inBuf, 0);
-		return accel[axis];
-	}	
-	
-	/**
-	 * Gets the accumulated angle (heading).
-	 *
-	 * @return the angle
-	 */
-	public int getAngle() {
-		getData(ANGLE,inBuf,2);
-		angle =  EndianTools.decodeShortLE(inBuf, 0);
-		return angle;
-	}
-	
-	/**
-	 * Gets the rate.
-	 *
-	 * @return the rotation rate
-	 */
-	public int getRate() {
-		getData(RATE,inBuf,2);
-		return EndianTools.decodeShortLE(inBuf, 0);
-	}
 	
 	/**
 	 * Sets the acc scale.
@@ -245,26 +102,50 @@ public class CruizcoreGyro extends I2CSensor implements Gyroscope, Accelerometer
 		Delay.msDelay(750);		
 	}
 
-	public float getAngularVelocity() {
-		// Not entirely sure if this is converted to proper units - degrees/second. It works with Segoway.
-		return getRate()/100F;
+	@Override
+	public int sampleSize() {
+		return 3;
 	}
 
-	public void recalibrateOffset() {
-		// The Cruizcore gyro calibrates the offset automatically in first second it is turned on according to brochure.
+	@Override
+	public void fetchSample(float[] sample, int offset) {
+		getData(ACCEL_X,inBuf,6);
+		sample[0+offset] = EndianTools.decodeShortLE(inBuf, 0);
+		sample[1+offset] = EndianTools.decodeShortLE(inBuf, 2);
+		sample[2+offset] = EndianTools.decodeShortLE(inBuf, 4);		
 	}
-
-	public int getXAccel() {
-		// TODO: I'm unsure of the return units for Cruizecore. I think it is in milli-G (1G = 9.8 m/s squared). 
-		// Should be meters/second squared.
-		return getAccel(0); //  * 0.00981f;
+	
+	public SampleProvider getRateMode() {
+		return new RateMode();
 	}
+	
+	private class RateMode implements SampleProvider {
+		@Override
+		public int sampleSize() {
+			return 1;
+		}
 
-	public int getYAccel() {
-		return getAccel(1);
+		@Override
+		public void fetchSample(float[] sample, int offset) {
+			getData(RATE,inBuf,2);
+			sample[offset] = -EndianTools.decodeShortLE(inBuf, 0) /100f;		
+		}		
 	}
+	
+	public SampleProvider getAngleMode() {
+		return new AngleMode();
+	}
+	
+	private class AngleMode implements SampleProvider {
+		@Override
+		public int sampleSize() {
+			return 1;
+		}
 
-	public int getZAccel() {
-		return getAccel(2);
+		@Override
+		public void fetchSample(float[] sample, int offset) {
+			getData(ANGLE,inBuf,2);
+			sample[offset] = 360 - EndianTools.decodeShortLE(inBuf, 0);		
+		}		
 	}
 }
