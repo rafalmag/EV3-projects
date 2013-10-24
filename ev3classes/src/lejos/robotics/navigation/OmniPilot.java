@@ -3,9 +3,7 @@ package lejos.robotics.navigation;
 import java.util.ArrayList;
 
 import lejos.hardware.Battery;
-import lejos.hardware.port.Port;
-import lejos.hardware.port.SensorPort;
-import lejos.hardware.sensor.CruizcoreGyro;
+import lejos.robotics.Gyroscope;
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.RegulatedMotorListener;
 import lejos.robotics.geometry.Point;
@@ -37,7 +35,7 @@ import lejos.utility.Matrix;
  * that allow the robot to move in any direction without changing heading. 
  * The robot can also spin while driving straight, and perform any kind of maneuvre the other steering and differential drive vehicles can do.
  * The odometry is computed by this class directly. 
- * For the class to work properly, take care to design the robot simmetrically, so that the three wheel axes meet in the center of the robot.</p>
+ * For the class to work properly, take care to design the robot symmetrically, so that the three wheel axes meet in the center of the robot.</p>
  * @author Daniele Benedettelli
  * 
  */
@@ -69,7 +67,7 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 	
 	private double minTurnRadius = 0; // This vehicle can turn withgout moving therefore minimum turn radius = 0
 	
-	private CruizcoreGyro gyro;
+	private Gyroscope gyro;
 	
 	private boolean gyroEnabled = false;
 	
@@ -123,15 +121,15 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 	 * @param CCW120degMotor the motor at 120 degrees counter-clockwise from front
 	 * @param centralWheelFrontal if true, the central wheel frontal else it is facing back
 	 * @param motorReverse if motors are mounted reversed
-	 * @param gyroPort the gyro port
+	 * @param gyro the gyroscope
 	 */
 	public OmniPilot(float wheelDistanceFromCenter, float wheelDiameter, 
 			RegulatedMotor centralMotor, RegulatedMotor CW120degMotor, RegulatedMotor CCW120degMotor,  
 			boolean centralWheelFrontal, boolean motorReverse, 
-			Battery battery, Port gyroPort) {
+			Battery battery, Gyroscope gyro) {
 		this(wheelDistanceFromCenter, wheelDiameter,centralMotor, CW120degMotor, CCW120degMotor,  
 				centralWheelFrontal, motorReverse, battery);
-		gyro = new CruizcoreGyro(gyroPort);
+		this.gyro = gyro;
 //		gyro = new CruizcoreGyro(gyroPort), I2CPort.HIGH_SPEED);
 //		gyro = new CruizcoreGyro(gyroPort, I2CPort.LEGO_MODE);
 		gyro.reset();

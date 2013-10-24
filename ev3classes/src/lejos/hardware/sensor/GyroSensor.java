@@ -243,5 +243,17 @@ public class GyroSensor extends AnalogSensor implements SensorConstants, Gyrosco
 		//Average the sum of the samples.
 		gOffset = gSum / OFFSET_SAMPLES; // TODO: Used to have +1, which was mainly for stopping Segway wandering.	
 	}
+
+	@Override
+	public int getAngle() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

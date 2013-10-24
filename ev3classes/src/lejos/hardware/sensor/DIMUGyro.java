@@ -254,6 +254,18 @@ public class DIMUGyro extends I2CSensor {
 			// TODO: Way to calibrate only the one axis? 
 			calculateOffset();
 		}
+
+		@Override
+		public int getAngle() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void reset() {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 	
 	/**
