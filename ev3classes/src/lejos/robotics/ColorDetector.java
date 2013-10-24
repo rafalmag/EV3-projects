@@ -11,18 +11,12 @@ package lejos.robotics;
  * @see lejos.hardware.sensor.ColorSensor
  * @see lejos.hardware.sensor.ColorHTSensor
  */
-public interface ColorDetector {
+public interface ColorDetector extends ColorIdentifier {
 
 	/**
 	 * Return the Red, Green and Blue values together in one object.
 	 * @return Color object containing the three RGB component values between 0-255.
 	 */
 	public Color getColor();
-	
-	/**
-	 * Return an enumerated constant that indicates the color detected. e.g. Color.BLUE
-	 * @return An integer from the Color constants, such as Color.BLUE
-	 */
-	public int getColorID();
 	
 }

@@ -16,7 +16,7 @@ import lejos.robotics.*;
  *  155 and sunlight is around 713.
  * 
  */
-public class RCXLightSensor implements SensorConstants, LampLightDetector {
+public class RCXLightSensor implements SensorConstants, LampController {
 	LegacySensorPort port;
 	
 	private int _zero = 1023;

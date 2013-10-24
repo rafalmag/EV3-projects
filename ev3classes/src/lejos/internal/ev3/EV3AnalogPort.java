@@ -60,8 +60,10 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
     {
         if (!super.open(typ, port, ref))
             return false;
+        //System.out.println("Open port");
         if (ldm.getPortType(port) == CONN_NXT_COLOR)
         {
+            //System.out.println("In color mode");
             // Read NXT color sensor calibration data
             getColorData();
         }
@@ -258,6 +260,16 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
         case TYPE_LOWSPEED_9V:
             setPinMode(CMD_SET|CMD_PIN1);
             break;
+        case TYPE_COLORFULL:
+        case TYPE_COLORRED:
+        case TYPE_COLORGREEN:
+        case TYPE_COLORBLUE:
+        case TYPE_COLORNONE:
+            // Sensor type and pin modes are aligned
+            //System.out.println("Set type :" + type);
+            setPinMode(type);
+            break;
+
         default:
             throw new UnsupportedOperationException("Unrecognised sensor type");
         }

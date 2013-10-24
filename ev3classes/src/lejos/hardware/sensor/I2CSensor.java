@@ -19,7 +19,7 @@ import lejos.hardware.port.Port;
  * @author Lawrie Griffiths (lawrie.griffiths@ntlworld.com) and Andy Shaw.
  *
  */
-public class I2CSensor extends Device implements SensorConstants {
+public class I2CSensor extends BaseSensor implements SensorConstants {
 	/**
 	 * Register number of sensor version string, as defined by standard Lego I2C register layout.
 	 * @see #getVersion() 

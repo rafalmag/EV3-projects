@@ -10,7 +10,7 @@ import lejos.utility.Delay;
  * @author andy
  *
  */
-public class UARTSensor extends Device
+public class UARTSensor extends BaseSensor
 {
     protected UARTPort port;
     protected int currentMode;

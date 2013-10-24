@@ -3,17 +3,18 @@ package lejos.hardware.sensor;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.UARTPort;
 import lejos.robotics.Color;
-import lejos.robotics.ColorDetector;
-import lejos.robotics.LampLightDetector;
-import lejos.robotics.LightDetector;
+import lejos.robotics.ColorIdentifier;
+import lejos.robotics.LampController;
+import lejos.robotics.SampleProvider;
 
 /**
  * Basic sensor driver for the Lego EV3 color sensor <BR>
  * TODO: Add extra methods to make it more compatible with the NXT, check SWITCH_DELAY
+ * TODO: RGB mode seems to cause the sensor to crash!
  * @author andy
  *
  */
-public class EV3ColorSensor extends UARTSensor implements LampLightDetector, LightDetector, ColorDetector
+public class EV3ColorSensor extends UARTSensor implements LampController, ColorIdentifier, SensorMode
 {
     protected static int[] colorMap =
     {
@@ -27,101 +28,75 @@ public class EV3ColorSensor extends UARTSensor implements LampLightDetector, Lig
     protected static final int COL_REFRAW = 3;
     protected static final int COL_RGBRAW = 4;
     protected static final int COL_CAL = 5;
+    // following maps operating mode to lamp color
+    protected static final int []lightColor = {Color.RED, Color.BLUE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE};
+    protected short[]raw = new short[3];
     
-    protected int light = Color.RED;
-    
+    private class ModeProvider implements SensorMode
+    {
+        final int mode;
+        final int sampleSize;
+        final String name;
+        
+        ModeProvider(String name, int mode, int sz)
+        {
+            this.name = name;
+            this.mode = mode;
+            sampleSize = sz;
+        }
 
+        @Override
+        public int sampleSize()
+        {
+            return sampleSize;
+        }
+
+        @Override
+        public void fetchSample(float[] sample, int offset)
+        {
+            switchMode(mode, SWITCH_DELAY);
+            if (sampleSize == 1)
+                sample[offset] = (float) (port.getByte() & 0xff);
+            else
+            {
+                port.getShorts(raw, 0, raw.length);
+                for(int i = 0; i < sampleSize; i++)
+                    sample[offset+i] = raw[i];
+            }
+        }
+
+        @Override
+        public String getName()
+        {
+            return name;
+        }
+        
+    }
+
+    protected void initModes()
+    {
+        setModes(new SensorMode[]{getColorIDMode(), getRedMode(), getRGBMode(), getAmbientMode() });        
+    }
+    
     public EV3ColorSensor(UARTPort port)
     {
         super(port);
+        initModes();
     }
 
     public EV3ColorSensor(Port port)
     {
         super(port);
+        initModes();
     }
 
-    /** {@inheritDoc}
-     */    
-    @Override
-    public int getLightValue()
-    {
-        switchMode((light == Color.RED ? COL_REFLECT : COL_AMBIENT), SWITCH_DELAY);
-        return port.getByte() & 0xff;
-    }
-
-    /** {@inheritDoc}
-     */    
-    @Override
-    public int getNormalizedLightValue()
-    {
-        // TODO Auto-generated method stub
-        return getLightValue();
-    }
-
-    /** {@inheritDoc}
-     */    
-    @Override
-    public int getHigh()
-    {
-        // TODO Auto-generated method stub
-        return 100;
-    }
-
-    /** {@inheritDoc}
-     */    
-    @Override
-    public int getLow()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    /** {@inheritDoc}
-     */    
-    @Override
-    public Color getColor()
-    {
-        /*
-         * TODO: Understand why this code does not work. It seems to send the sensor
-         * into some sort of reset.
-        short [] vals = new short[3];
-        switchMode(COL_RGBRAW, SWITCH_DELAY);
-        port.getShorts(vals, 0, 3);
-        switchMode(COL_COLOR, SWITCH_DELAY);
-        System.out.println("Red " + vals[0] + " Green " + vals[1] + " blue " + vals[2]);
-        // TODO: confirm that the scale factor below is correct
-        return new Color(vals[0]*255/1022,vals[1]*255/1022,vals[2]*255/1022, colorMap[port.getByte()] );
-        */
-        switchMode(COL_COLOR, SWITCH_DELAY);
-        return new Color(0, 0, 0, colorMap[port.getByte()] );
-        
-    }
-
-    /**
-     * Return a Color Object that contains the raw color readings.
-     * @return Raw Color data (Note the color Id is always Color.NONE)
-     */
-    public Color getRawColor()
-    {
-        /*
-        short [] vals = new short[3];
-        switchMode(COL_RGBRAW, SWITCH_DELAY);
-        port.getShorts(vals, 0, 3);
-        System.out.println("Raw Red " + vals[0] + " Green " + vals[1] + " blue " + vals[2]);
-        // TODO: confirm that the scale factor below is correct
-        return new Color(vals[0]*255/1022,vals[1]*255/1022,vals[2]*255/1022, Color.NONE);
-        */
-        return new Color(0, 0, 0, Color.NONE);
-        
-    }
 
     /** {@inheritDoc}
      */    
     @Override
     public int getColorID()
     {
-        switchMode(COL_COLOR, SWITCH_DELAY);
+        setFloodlight(Color.WHITE);
         return colorMap[port.getByte()];
     }
 
@@ -130,8 +105,7 @@ public class EV3ColorSensor extends UARTSensor implements LampLightDetector, Lig
     @Override
     public void setFloodlight(boolean floodlight)
     {
-        light = (floodlight ? Color.RED : Color.BLUE);
-        switchMode((light == Color.RED ? COL_REFLECT : COL_AMBIENT), SWITCH_DELAY);
+        setFloodlight(floodlight ? Color.RED : Color.NONE);
     }
 
     /** {@inheritDoc}
@@ -140,7 +114,7 @@ public class EV3ColorSensor extends UARTSensor implements LampLightDetector, Lig
     public boolean isFloodlightOn()
     {
         // TODO Auto-generated method stub
-        return light == Color.RED;
+        return lightColor[currentMode] != Color.NONE;
     }
 
     /** {@inheritDoc}
@@ -149,7 +123,7 @@ public class EV3ColorSensor extends UARTSensor implements LampLightDetector, Lig
     public int getFloodlight()
     {
         // TODO Auto-generated method stub
-        return light;
+        return lightColor[currentMode];
     }
 
     /** {@inheritDoc}
@@ -158,7 +132,6 @@ public class EV3ColorSensor extends UARTSensor implements LampLightDetector, Lig
     public boolean setFloodlight(int color)
     {
         int mode;
-        light = color;
         switch (color)
         {
         case Color.BLUE:
@@ -177,6 +150,72 @@ public class EV3ColorSensor extends UARTSensor implements LampLightDetector, Lig
         switchMode(mode, SWITCH_DELAY);
         // TODO Auto-generated method stub
         return true;
+    }
+
+    /**
+     * get a sample provider in color ID mode
+     * @return the sample provider
+     */
+    public SensorMode getColorIDMode()
+    {
+        return this;
+    }
+    
+    /**
+     * get a sample provider the returns the light value when illuminated with a
+     * Red light source.
+     * @return the sample provider
+     */
+    public SensorMode getRedMode()
+    {
+        return new ModeProvider("Red", COL_REFLECT, 1);
+    }
+
+
+    /**
+     * get a sample provider the returns the light value when illuminated without a
+     * light source.
+     * @return the sample provider
+     */
+    public SensorMode getAmbientMode()
+    {
+        return new ModeProvider("None", COL_AMBIENT, 1);
+    }
+    
+    /**
+     * get a sample provider that returns the light values (RGB) when illuminated by a
+     * white light source.
+     * @return the sample provider
+     */
+    public SensorMode getRGBMode()
+    {
+        //TODO: Should this return 3 or 4 values, 4 values would require an extra
+        // mode switch to get ambient value.
+        return new ModeProvider("RGB", COL_RGBRAW, 3);
+    }
+    
+
+    /** {@inheritDoc}
+     */    
+    @Override
+    public int sampleSize()
+    {
+        // TODO Auto-generated method stub
+        return 1;
+    }
+
+    /** {@inheritDoc}
+     */    
+    @Override
+    public void fetchSample(float[] sample, int offset)
+    {
+        sample[offset] = getColorID();        
+    }
+
+    @Override
+    public String getName()
+    {
+        return "ColorID";
     }
 
 }

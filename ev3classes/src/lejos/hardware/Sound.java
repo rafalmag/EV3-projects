@@ -159,9 +159,10 @@ public class Sound
      */
     static void playFreq(int aFrequency, int aDuration, int aVolume)
     {
+        System.out.println("Volume " + aVolume);
         byte[] cmd = new byte[6];
         cmd[0] = OP_TONE;
-        cmd[1] = (byte) ((aVolume*13)/100);
+        cmd[1] = (byte) aVolume;
         cmd[2] = (byte) aFrequency;
         cmd[3] = (byte) (aFrequency >> 8);
         cmd[4] = (byte) aDuration;
@@ -276,7 +277,8 @@ public class Sound
             byte []buf = new byte[PCM_BUFFER_SIZE*4+1];
             // get ready to play, set the volume
             buf[0] = OP_PLAY;
-            buf[1] = (byte)((vol*8)/100);
+            //buf[1] = (byte)((vol*8)/100);
+            buf[1] = (byte)vol;
             dev.write(buf, 2);
             // now play the file
             buf[1] = 0;
@@ -328,8 +330,6 @@ public class Sound
     /**
      * Queue a series of PCM samples to play at the
      * specified volume and sample rate.
-     * Returns the number of samples that have actually been queued.
-     * If the queue is full, the method exits immediately and returns 0.
      * 
      * @param data Buffer containing the samples
      * @param offset Offset of the first sample in the buffer
@@ -344,8 +344,33 @@ public class Sound
             vol = (vol*masterVolume)/100;
         else
             vol = -vol;
-        //return playQueuedSample(data, offset, len, freq, vol);
-        return 0;
+        if (freq != 8000)
+            throw new UnsupportedOperationException("Sample rate must be 8KHz");
+        int inOffset = offset;
+        len += offset;
+        byte[] buf = new byte[PCM_BUFFER_SIZE+1];
+        // get ready to play, set the volume
+        buf[0] = OP_PLAY;
+        //buf[1] = (byte)((vol*8)/100);
+        buf[1] = (byte)vol;
+        dev.write(buf, 2);
+        buf[1] = 0;
+        while (inOffset < len)
+        {
+            int writeLen = len - inOffset;
+            if (writeLen > PCM_BUFFER_SIZE)
+                writeLen = PCM_BUFFER_SIZE;
+            System.arraycopy(data, inOffset, buf, 1, writeLen);
+            buf[0] = OP_SERVICE;
+            int written = dev.write(buf, writeLen+1);
+            //System.out.println("Written " + written);;
+            if (written == 0)
+                Delay.msDelay(1);
+            else
+                inOffset += written;
+            //Delay.msDelay(1);
+        }
+        return len - offset;
     }
 
     static int waitUntil(int t)
@@ -378,18 +403,26 @@ public class Sound
         // basis of note generation.
         int segLen = inst[0];
         // All volume settings are scaled by 100.
-        int step = 8000 / segLen;
-        int vol = 2000;
+        int step = 9000 / segLen;
+        int vol = 1000;
+        int oldVol = 0;
+System.out.println("Start playing");
         // We do not really have fine grained enough timing so try and keep
         // things aligned as closely as possible to a tick by waiting here
         // before we start for the next tick.
         int t = waitUntil((int) System.currentTimeMillis() + 1);
         // Generate the attack profile from 20 to full volume
+        Sound.playTone(freq, len+2000, vol / 100);
         len /= 2;
         for (int i = 0; i < segLen; i++)
         {
-            Sound.playTone(freq, 10, vol / 100);
             vol += step;
+            if (oldVol != vol/100)
+            {
+                Sound.playTone(freq, 10, vol / 100);
+                oldVol = vol/100;
+            }
+            //Sound.playTone(freq, 10, vol / 100);
             t = waitUntil(t + 2);
         }
         len -= segLen;
@@ -400,8 +433,13 @@ public class Sound
             step = inst[2] / segLen;
             for (int i = 0; i < segLen; i++)
             {
-                Sound.playTone(freq, 10, vol / 100);
                 vol -= step;
+                if (oldVol != vol/100)
+                {
+                    Sound.playTone(freq, 10, vol / 100);
+                    oldVol = vol/100;
+                }
+                //Sound.playTone(freq, 10, vol / 100);
                 t = waitUntil(t + 2);
             }
             len -= segLen;
@@ -415,8 +453,12 @@ public class Sound
             step = inst[3] / len;
             for (int i = 0; i < len; i++)
             {
-                Sound.playTone(freq, 10, vol / 100);
                 vol -= step;
+                if (oldVol != vol/100)
+                {
+                    Sound.playTone(freq, 10, vol / 100);
+                    oldVol = vol/100;
+                }
                 t = waitUntil(t + 2);
             }
         }
@@ -428,11 +470,20 @@ public class Sound
             step = (vol - 1000) / segLen;
             for (int i = 0; i < segLen; i++)
             {
-                Sound.playTone(freq, 10, vol / 100);
                 vol -= step;
+                if (oldVol != vol/100)
+                {
+                    Sound.playTone(freq, 10, vol / 100);
+                    oldVol = vol/100;
+                }
+                //Sound.playTone(freq, 10, vol / 100);
                 t = waitUntil(t + 2);
             }
         }
+        byte []cmd = new byte[1];
+        cmd[0] = OP_BREAK;
+        dev.write(cmd, 1);
+        //Sound.playTone(freq, 10, 1);
     }
 
     /**

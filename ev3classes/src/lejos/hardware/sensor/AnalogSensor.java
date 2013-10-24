@@ -9,7 +9,7 @@ import lejos.hardware.port.Port;
  * @author andy
  *
  */
-public class AnalogSensor extends Device
+public class AnalogSensor extends BaseSensor
 {
     protected AnalogPort port;
     
