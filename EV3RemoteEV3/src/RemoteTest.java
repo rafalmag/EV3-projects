@@ -3,7 +3,7 @@ import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.AnalogPort;
 import lejos.hardware.sensor.AccelMindSensor;
 import lejos.hardware.sensor.EV3IRSensor;
-import lejos.hardware.sensor.LightSensor;
+import lejos.hardware.sensor.NXTLightSensor;
 import lejos.remote.ev3.RemoteAnalogPort;
 import lejos.remote.ev3.RemoteEV3;
 import lejos.utility.Delay;
@@ -16,9 +16,9 @@ public class RemoteTest {
 		System.out.println("Battery voltage: " + ev3.getBattery().getVoltage());
 
 		AnalogPort port = ev3.getPort("S1").open(RemoteAnalogPort.class);
-		LightSensor light = new LightSensor(port);
+		NXTLightSensor light = new NXTLightSensor(port);
 		
-		System.out.println("Light value is " + light.getLightValue());
+		//System.out.println("Light value is " + light.getLightValue());
 		
 		AccelMindSensor accel = new AccelMindSensor(ev3.getPort("S2"));
 		
