@@ -11,7 +11,7 @@ import lejos.utility.Delay;
  * @author Aswin
  *
  */
-public class NXTUltrasonicSensor extends I2CSensor {
+public class NXTUltrasonicSensor extends I2CSensor  {
 	// Supported modes
 	// According to the datasheet there are other modes. These modes do not function on the sensor and are not implemented;
 	protected static final byte MODE_OFF = 0x00;
@@ -30,8 +30,6 @@ public class NXTUltrasonicSensor extends I2CSensor {
 	//multiplication factor to convert to SI unit meter.
 	private static final float TOSI=0.01f; 
 
-	private SampleProvider continuousMode;
-	private SampleProvider pingMode;
 	private byte currentMode=0;
 	private byte[] byteBuff = new byte[8];
 	private long nextCmdTime = 0;
@@ -86,6 +84,7 @@ public class NXTUltrasonicSensor extends I2CSensor {
 	}
 	
 	private void init() {
+	  setModes(new SensorMode[]{ new ContinuousMode(), new PingMode()}); 
 		nextCmdTime = System.currentTimeMillis() + DELAY_CMD;
 		setMode(MODE_CONTINUOUS);		
 		dataAvailableTime = System.currentTimeMillis()+DELAY_DATA_CONTINUOUS; 
@@ -101,10 +100,7 @@ public class NXTUltrasonicSensor extends I2CSensor {
 	 * A SamplePrivider
 	 */
 	public SampleProvider getContinuousMode() {
-		if (continuousMode==null) {
-			continuousMode=new ContinuousMode();
-		}
-		return continuousMode;
+	  return getMode(0);
 	}
 
 	
@@ -116,10 +112,7 @@ public class NXTUltrasonicSensor extends I2CSensor {
 	 * @return
 	 */
 	public SampleProvider getPingMode() {
-		if (pingMode==null) {
-			pingMode=new PingMode();
-		}
-		return pingMode;
+    return getMode(0);
 	}
 	
 	public void enable() {
@@ -151,7 +144,7 @@ public class NXTUltrasonicSensor extends I2CSensor {
 	}
 
 	
-	public class ContinuousMode implements SampleProvider {
+	public class ContinuousMode implements SampleProvider, SensorMode {
 
 		@Override
 		public int sampleSize() {
@@ -172,9 +165,14 @@ public class NXTUltrasonicSensor extends I2CSensor {
 			dataAvailableTime = System.currentTimeMillis()+DELAY_DATA_CONTINUOUS; 
 		}
 
+    @Override
+    public String getName() {
+      return "Distance";
+    }
+
 	}
 	
-	public class PingMode implements SampleProvider {
+	public class PingMode implements SampleProvider, SensorMode {
 
 		@Override
 		public int sampleSize() {
@@ -192,6 +190,11 @@ public class NXTUltrasonicSensor extends I2CSensor {
 			}
 			currentMode=MODE_OFF;
 		}
+
+    @Override
+    public String getName() {
+      return "Distances";
+    }
 	}
 
 }

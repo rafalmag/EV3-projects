@@ -1,5 +1,6 @@
 package lejos.hardware.sensor;
 
+import java.util.ArrayList;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
@@ -14,30 +15,73 @@ import lejos.utility.EndianTools;
  * datasheets</a>
  * 
  * @author Aswin
+ * @author Andy
  * 
  */
-public class DexterIMUSensor {
+public class DexterIMUSensor implements SensorModes {
+  // TODO: Make it work for the EV3
   // TODO: Add support for sensor configuration
   // TODO: use both I2CPort and Port types
 
   // I2C Addresses for the gyro and acceleration chips with the default values
-  protected int               Accel_I2C_address = 0x3A;
-  protected int               Gyro_I2C_address  = 0xD2;
-  private Port                port;
-  private I2CPort             I2Cport;
+  protected int          Accel_I2C_address = 0x3A;
+  protected int          Gyro_I2C_address  = 0xD2;
 
-  private SampleProvider      accel;
-  private DexterIMUGyroSensor gyro;
+  protected SensorMode[] modes;
+  ArrayList<String>      modeList;
+
+  /**
+   * Define the set of modes to be made available for this sensor.
+   * 
+   * @param m
+   *          An array containing a list of modes
+   */
+  protected void setModes(SensorMode[] m) {
+    modes = m;
+    // force the list to be rebuilt
+    modeList = null;
+  }
+
+  @Override
+  public ArrayList<String> getAvailableModes() {
+    if (modeList == null) {
+      modeList = new ArrayList<String>(modes.length);
+      if (modes != null)
+        for (SensorMode m : modes)
+          modeList.add(m.getName());
+    }
+    return modeList;
+  }
+
+  @Override
+  public SensorMode getMode(int mode) {
+    if (mode < 0)
+      throw new IllegalArgumentException("Invalid mode " + mode);
+    if (modes == null || mode >= modes.length)
+      return null;
+    return modes[mode];
+  }
+
+  @Override
+  public SensorMode getMode(String modeName) {
+    // TODO: I'm sure there is a better way to do this, but it is late!
+    int i = 0;
+    for (String s : getAvailableModes()) {
+      if (s.equals(modeName))
+        return modes[i];
+      i++;
+    }
+    throw new IllegalArgumentException("No such mode " + modeName);
+  }
 
   public DexterIMUSensor(I2CPort port) {
-    this.I2Cport = port;
-    System.out.println("I2CPort");
+    DexterIMUGyroSensor gyro = new DexterIMUGyroSensor(port);
+    setModes(new SensorMode[] { gyro.getMode(0), new DexterIMUAccelerationSensor(port), gyro.getMode(1) });
   }
-  
 
   public DexterIMUSensor(Port port) {
-    this.port = port;
-    System.out.println("Port");
+    DexterIMUGyroSensor gyro = new DexterIMUGyroSensor(port, Gyro_I2C_address);
+    setModes(new SensorMode[] { gyro.getMode(0), new DexterIMUAccelerationSensor(port, Accel_I2C_address), gyro.getMode(1) });
   }
 
   /**
@@ -46,10 +90,7 @@ public class DexterIMUSensor {
    * @return a SampleProvider
    */
   public SampleProvider getAccelerationMode() {
-    if (accel == null) {
-      accel = new DexterIMUAccelerationSensor(port, Accel_I2C_address);
-    }
-    return accel;
+    return getMode(1);
   }
 
   /**
@@ -58,10 +99,7 @@ public class DexterIMUSensor {
    * @return a SampleProvider
    */
   public SampleProvider getGyroMode() {
-    if (gyro == null) {
-      gyro = new DexterIMUGyroSensor(port, Gyro_I2C_address);
-    }
-    return gyro.getGyroMode();
+    return getMode(0);
   }
 
   /**
@@ -72,10 +110,7 @@ public class DexterIMUSensor {
    * @return a SampleProvider
    */
   public SampleProvider getTemperatureMode() {
-    if (gyro == null) {
-      gyro = new DexterIMUGyroSensor(port, Gyro_I2C_address);
-    }
-    return gyro.getTemperatureMode();
+    return getMode(2);
   }
 
   /**
@@ -106,13 +141,16 @@ public class DexterIMUSensor {
     private int[]            RANGECODES  = { 0x00, 0x10, 0x20 };
     private float[]          MULTIPLIERS = { 8.75f, 17.5f, 70f };
 
-    private SampleProvider   temperatureMode;
-    private SampleProvider   gyroMode;
     private int              range       = 2;
     private int              rate        = 3;
     private float            toSI        = MULTIPLIERS[range] / 1000f;
 
     private byte[]           buf         = new byte[7];
+
+    public DexterIMUGyroSensor(I2CPort port) {
+      super(port);
+      init();
+    }
 
     public DexterIMUGyroSensor(Port port, int address) {
       super(port, address, TYPE_LOWSPEED_9V);
@@ -123,6 +161,7 @@ public class DexterIMUSensor {
      * This method configures the sensor
      */
     private void init() {
+      setModes(new SensorMode[] { new GyroMode(), new TemperatureMode() });
       int reg;
       // put in sleep mode;
       sendData(CTRL_REG1, (byte) 0x08);
@@ -166,10 +205,7 @@ public class DexterIMUSensor {
      * @return
      */
     public SampleProvider getTemperatureMode() {
-      if (temperatureMode == null) {
-        temperatureMode = new TemperatureMode();
-      }
-      return temperatureMode;
+      return getMode(1);
     }
 
     /**
@@ -178,10 +214,7 @@ public class DexterIMUSensor {
      * @return
      */
     public SampleProvider getGyroMode() {
-      if (temperatureMode == null) {
-        gyroMode = new GyroMode();
-      }
-      return gyroMode;
+      return getMode(0);
     }
 
     /**
@@ -190,7 +223,7 @@ public class DexterIMUSensor {
      * @author Aswin
      * 
      */
-    private class TemperatureMode implements SampleProvider {
+    private class TemperatureMode implements SampleProvider, SensorMode {
       private static final int DATA_REG = 0x26 | 0x80;
 
       @Override
@@ -205,6 +238,11 @@ public class DexterIMUSensor {
         sample[offset] = buf[0];
       }
 
+      @Override
+      public String getName() {
+        return "Temperature";
+      }
+
     }
 
     /**
@@ -213,7 +251,7 @@ public class DexterIMUSensor {
      * @author Aswin
      * 
      */
-    private class GyroMode implements SampleProvider {
+    private class GyroMode implements SampleProvider, SensorMode {
       private static final int DATA_REG = 0x27 | 0x80;
 
       @Override
@@ -244,17 +282,22 @@ public class DexterIMUSensor {
           }
         }
       }
+
+      @Override
+      public String getName() {
+        return "Rate";
+      }
     }
   }
 
   /**
-   * Class to access the Acceleration sensor from Dexter Industries IMU
-   * the acceleration sensor is the Freescale MMA7455
+   * Class to access the Acceleration sensor from Dexter Industries IMU the
+   * acceleration sensor is the Freescale MMA7455
    * 
    * @author Aswin
    * 
    */
-  public class DexterIMUAccelerationSensor extends I2CSensor implements SampleProvider {
+  public class DexterIMUAccelerationSensor extends I2CSensor implements SampleProvider, SensorMode {
     protected static final int   DATA_REG = 0x00;
     protected static final int   MODE_REG = 0x16;
     protected static final float TOSI     = 1.0f / (64.0f * 9.81f);
@@ -263,7 +306,11 @@ public class DexterIMUSensor {
 
     private DexterIMUAccelerationSensor(Port port, int address) {
       super(port, address, I2CPort.TYPE_LOWSPEED_9V);
-      //System.out.println("Port, Address: "+port.getName()+", " + this.address);
+      sendData(MODE_REG, (byte) 0x05);
+    }
+
+    private DexterIMUAccelerationSensor(I2CPort port) {
+      super(port);
       sendData(MODE_REG, (byte) 0x05);
     }
 
@@ -287,5 +334,11 @@ public class DexterIMUSensor {
       }
 
     }
+
+    @Override
+    public String getName() {
+      return "Acceleration";
+    }
   }
+
 }
