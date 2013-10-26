@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 
 /**
  * HiTechnic IRSeeker v2
@@ -12,20 +11,26 @@ import lejos.robotics.SampleProvider;
  * @author Lawrie Griffiths
  * 
  */
-public class HiTechnicIRSeekerV2 extends I2CSensor implements SampleProvider 
+public class HiTechnicIRSeekerV2 extends I2CSensor implements SensorMode 
 {
     private static final byte   address   = 0x10;
     private byte[] buf = new byte[1]; 
 
     public HiTechnicIRSeekerV2(I2CPort port) { 
        super(port, address);
+       init();
     } 
 
     public HiTechnicIRSeekerV2(Port port)  { 
        super(port, address);
+       init();
     } 
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ getModulatedMode(), getModulatedMode() });
+    }
 	
-	public SampleProvider getModulatedMode() {
+	public SensorMode getModulatedMode() {
 		return this;
 	}
 	
@@ -45,11 +50,16 @@ public class HiTechnicIRSeekerV2 extends I2CSensor implements SampleProvider
 		sample[offset] = angle;
 	}	
 	
-	public SampleProvider getUnmodulatedMode() {
+	@Override
+	public String getName() {
+		return "Modulated";
+	}
+	
+	public SensorMode getUnmodulatedMode() {
 		return new UnmodulatedMode();
 	}
 	
-	private class UnmodulatedMode implements SampleProvider {
+	private class UnmodulatedMode implements SensorMode {
 		@Override
 		public int sampleSize() {
 			return 1;
@@ -64,6 +74,11 @@ public class HiTechnicIRSeekerV2 extends I2CSensor implements SampleProvider
 				angle = -(buf[0] * 30 - 150);
 			}
 			sample[offset] = angle;	
+		}
+
+		@Override
+		public String getName() {
+			return "Unmodulated";
 		}		
 	}
 }

@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 import lejos.utility.EndianTools;
 
 /**
@@ -15,7 +14,7 @@ import lejos.utility.EndianTools;
  * <br><br>Lum, Many thanks for helping me test this class.
  * 
  */
-public class MindsensorsDistanceSensor extends I2CSensor implements SampleProvider {
+public class MindsensorsDistanceSensor extends I2CSensor implements SensorMode {
 	private byte[] buf = new byte[2];
 	
 	//Registers
@@ -32,6 +31,7 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SampleProvid
 	 */
 	public MindsensorsDistanceSensor(I2CPort port){
 	    this(port, DEFAULT_I2C_ADDRESS);
+	    init();
 	}
 
     /**
@@ -41,7 +41,7 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SampleProvid
      */
     public MindsensorsDistanceSensor(I2CPort port, int address){
         super(port, address);
-        powerOn();
+        init();
     }
      
     /**
@@ -50,6 +50,7 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SampleProvid
      */
     public MindsensorsDistanceSensor(Port port){
         this(port, DEFAULT_I2C_ADDRESS);
+        init();
     }
 
     /**
@@ -59,7 +60,12 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SampleProvid
      */
     public MindsensorsDistanceSensor(Port port, int address){
         super(port, address, TYPE_LOWSPEED);
-        powerOn();
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
+    	powerOn();
     }
 
 	/**
@@ -82,7 +88,7 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SampleProvid
 	/**
 	 * Returns a sample provider in distance mode.
 	 */
-	public SampleProvider getDistanceMode() {
+	public SensorMode getDistanceMode() {
 		return this;
 	}
 	
@@ -95,5 +101,10 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SampleProvid
 	public void fetchSample(float[] sample, int offset) {
 		getData(DIST_DATA_LSB, buf, 2);
 		sample[offset] = (float) EndianTools.decodeIntLE(buf, 0) / 100f;		
+	}
+
+	@Override
+	public String getName() {
+		return "Distance";
 	}
 }

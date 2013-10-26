@@ -2,25 +2,30 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 
 /**
  * HiTechnic IRSeeker sensor - untested.
  * www.hitechnic.com
  * 
  */
-public class HiTechnicIRSeeker extends I2CSensor implements SampleProvider {
+public class HiTechnicIRSeeker extends I2CSensor implements SensorMode {
 	byte[] buf = new byte[1];
 	
     public HiTechnicIRSeeker(I2CPort port) {
         super(port);
+        init();
     }
     
     public HiTechnicIRSeeker(Port port) {
         super(port);
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
     }
 	
-	public SampleProvider getUnmodulatedMode() {
+	public SensorMode getUnmodulatedMode() {
 		return this;
 	}
 
@@ -38,5 +43,10 @@ public class HiTechnicIRSeeker extends I2CSensor implements SampleProvider {
 			angle = -(buf[0] * 30 - 150);
 		}
 		sample[offset] = angle;
+	}
+
+	@Override
+	public String getName() {
+		return "Unmodulated";
 	}
 }

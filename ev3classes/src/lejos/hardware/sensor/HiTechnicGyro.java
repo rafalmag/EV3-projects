@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.AnalogPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 
 /**
  * Support the HiTechnic Gyro sensor NGY1044 (or equivalent). 
@@ -11,7 +10,7 @@ import lejos.robotics.SampleProvider;
  * @author Lawrie Griffiths
  *
  */
-public class HiTechnicGyro extends AnalogSensor implements SensorConstants, SampleProvider {
+public class HiTechnicGyro extends AnalogSensor implements SensorConstants, SensorMode {
 	private static final float TO_SI=-1;
 	private float zero = 600f;
 	
@@ -24,8 +23,7 @@ public class HiTechnicGyro extends AnalogSensor implements SensorConstants, Samp
      */
 	public HiTechnicGyro(AnalogPort port) {
 		super(port);
-	    this.port = port;
-	    port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+	    init();
 	}
 	
 	/**
@@ -37,7 +35,12 @@ public class HiTechnicGyro extends AnalogSensor implements SensorConstants, Samp
 	 */
     public HiTechnicGyro(Port port) {
         super(port);
-        this.port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
+    	port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
     }
 
 	@Override
@@ -50,4 +53,8 @@ public class HiTechnicGyro extends AnalogSensor implements SensorConstants, Samp
 		sample[offset] = ((float) port.readRawValue() - zero) * TO_SI;
 	}
 
+	@Override
+	public String getName() {
+		return "Gyro";
+	}
 }

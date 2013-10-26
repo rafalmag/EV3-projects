@@ -3,7 +3,6 @@ package lejos.hardware.sensor;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
 import lejos.robotics.Calibrate;
-import lejos.robotics.SampleProvider;
 
 /**
  * This class supports the <a href="http://www.hitechnic.com">HiTechnic</a> compass sensor.
@@ -11,7 +10,7 @@ import lejos.robotics.SampleProvider;
  * See http://www.hitechnic.com/cgi-bin/commerce.cgi?preadd=action&key=NMC1034
  * 
  */
-public class HiTechnicCompass extends I2CSensor implements Calibrate, SampleProvider {
+public class HiTechnicCompass extends I2CSensor implements Calibrate, SensorMode {
 	private final static byte COMMAND = 0x41;	
 	private final static byte BEGIN_CALIBRATION = 0x43;
 	private final static byte END_CALIBRATION = 0x00; // Back to measurement mode
@@ -25,6 +24,7 @@ public class HiTechnicCompass extends I2CSensor implements Calibrate, SampleProv
      */
 	public HiTechnicCompass(I2CPort port, int address) {
 		super(port, address);
+		init();
 	}
 
    /**
@@ -33,6 +33,7 @@ public class HiTechnicCompass extends I2CSensor implements Calibrate, SampleProv
      */
     public HiTechnicCompass(I2CPort port) {
         super(port, DEFAULT_I2C_ADDRESS);
+        init();
     }
      
     /**
@@ -42,6 +43,7 @@ public class HiTechnicCompass extends I2CSensor implements Calibrate, SampleProv
      */
     public HiTechnicCompass(Port port, int address) {
         super(port, address);
+        init();
     }
     
     /**
@@ -50,14 +52,19 @@ public class HiTechnicCompass extends I2CSensor implements Calibrate, SampleProv
      */
     public HiTechnicCompass(Port port) {
         super(port);
+        init();
     }
     
     /**
      * Get a compass mode sensor provider
      * @return the sample provider
      */
-    public SampleProvider getCompassMode() {
+    public SensorMode getCompassMode() {
     	return this;
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
     }
 
 	@Override
@@ -68,8 +75,12 @@ public class HiTechnicCompass extends I2CSensor implements Calibrate, SampleProv
 	@Override
 	public void fetchSample(float[] sample, int offset) {
 		getData(0x42, buf, 2);
-
 		sample[offset] = ((buf[0] & 0xff)<< 1) + buf[1];
+	}
+	
+	@Override
+	public String getName() {
+		return "Compass";
 	}
 	
 	// TODO: Rotate in any direction while calibrating? Specify.

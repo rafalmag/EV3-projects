@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 
 /**
  * This class supports the <a href="http://www.hitechnic.com">HiTechnic</a>
@@ -11,7 +10,7 @@ import lejos.robotics.SampleProvider;
  * @author Matthias Paul Scholz
  * 
  */
-public class HiTechnicBarometer extends I2CSensor implements SampleProvider {
+public class HiTechnicBarometer extends I2CSensor implements SensorMode {
 
 	private static final int BAROMETRIC_TEMPERATURE = 0x42;
 	private static final int BAROMETRIC_PRESSURE = 0x44;
@@ -37,14 +36,21 @@ public class HiTechnicBarometer extends I2CSensor implements SampleProvider {
 	 */
 	public HiTechnicBarometer(final I2CPort port, final int address) {
 		super(port, address);
+		init();
 	}
 
 	public HiTechnicBarometer(final Port port, final int address) {
 	        super(port, address, TYPE_LOWSPEED);
+	        init();
 	}
 
     public HiTechnicBarometer(final Port port) {
         this(port, DEFAULT_I2C_ADDRESS);
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ getPressureMode(), getTemperatureMode() });
     }
 
 	/**
@@ -74,6 +80,16 @@ public class HiTechnicBarometer extends I2CSensor implements SampleProvider {
 	public int sampleSize() {
 		return 1;
 	}
+	
+
+	@Override
+	public String getName() {
+		return "Pressure";
+	}
+	
+	public SensorMode getPressureMode() {
+		return this;
+	}
 
 	@Override
 	public void fetchSample(float[] sample, int offset) {
@@ -81,11 +97,11 @@ public class HiTechnicBarometer extends I2CSensor implements SampleProvider {
 		sample[0] = (float) (((((buffer[0] & 0xff) << 8) + buffer[1]) / INHG_TO_HPA) * 10);
 	}
 	
-	public SampleProvider getTemperatureMode() {
+	public SensorMode getTemperatureMode() {
 		return new TemperatureMode();
 	}
 	
-	private class TemperatureMode implements SampleProvider {
+	private class TemperatureMode implements SensorMode {
 		@Override
 		public int sampleSize() {
 			return 1;
@@ -95,6 +111,11 @@ public class HiTechnicBarometer extends I2CSensor implements SampleProvider {
 		public void fetchSample(float[] sample, int offset) {
 			getData(BAROMETRIC_TEMPERATURE, buffer, 2);
 		    sample[offset] =  (float) (((buffer[0] << 2) | (buffer[1] & 0xFF)) * 10 + 273.15);	
+		}
+
+		@Override
+		public String getName() {
+			return "Temperature";
 		}	
 	}
 }

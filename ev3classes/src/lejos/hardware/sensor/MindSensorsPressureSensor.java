@@ -11,7 +11,7 @@ import lejos.utility.EndianTools;
  * See http://www.mindsensors.com/index.php?module=pagemaster&PAGE_user_op=view_page&PAGE_id=150
  * 
  */
-public class MindSensorsPressureSensor extends I2CSensor implements SampleProvider {
+public class MindSensorsPressureSensor extends I2CSensor implements SensorMode {
 
 	/*
 	 * Code contributed and tested by fussel_dlx on the forums:
@@ -28,17 +28,23 @@ public class MindSensorsPressureSensor extends I2CSensor implements SampleProvid
     public MindSensorsPressureSensor(I2CPort port) {
         // also works with high speed mode
         super(port, ADDRESS);
+        init();
     }
     
     public MindSensorsPressureSensor(Port port) {
         // also works with high speed mode
         super(port, ADDRESS);
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
     }
     
     /**
      * Return a ample provider for pressure mode
      */
-    public SampleProvider getPressureMode() {
+    public SensorMode getPressureMode() {
     	return this;
     }
 
@@ -49,8 +55,12 @@ public class MindSensorsPressureSensor extends I2CSensor implements SampleProvid
 
 	@Override
 	public void fetchSample(float[] sample, int offset) {
-		getData(0x53, buf, 0, 4);
-		
+		getData(0x53, buf, 0, 4);		
 		sample[offset] = (float) EndianTools.decodeIntLE(buf, 0);
+	}
+
+	@Override
+	public String getName() {
+		return "Pressure";
 	}
 }

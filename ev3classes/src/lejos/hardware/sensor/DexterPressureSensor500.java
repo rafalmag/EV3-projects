@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.AnalogPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 
 /**
  * Support for Dexter Industries DPressure500
@@ -13,7 +12,7 @@ import lejos.robotics.SampleProvider;
  * @author Lawrie Griffiths
  *
  */
-public class DexterPressureSensor500 extends AnalogSensor implements SensorConstants, SampleProvider {
+public class DexterPressureSensor500 extends AnalogSensor implements SensorConstants, SensorMode {
 	/*
 	 * TODO: Can 1023 really be right? Should it be 1024?
 	 * 
@@ -34,18 +33,24 @@ public class DexterPressureSensor500 extends AnalogSensor implements SensorConst
 	
     public DexterPressureSensor500(AnalogPort port) {
         super(port);
-        port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        init();
     }
     
     public DexterPressureSensor500(Port port) {
         super(port);
-        this.port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        init();
     }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
+    	port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+    }
+    
     
     /**
      * Return a sample provider for pressure mode.
      */
-    public SampleProvider getPressureMode() {
+    public SensorMode getPressureMode() {
     	return this;
     }
 
@@ -56,6 +61,11 @@ public class DexterPressureSensor500 extends AnalogSensor implements SensorConst
 
 	@Override
 	public void fetchSample(float[] sample, int offset) {
-		sample[offset] = (port.readRawValue() * DPRESS_MULT - DPRESS_OFFSET) * 1000f; // in pacals
+		sample[offset] = (port.readRawValue() * DPRESS_MULT - DPRESS_OFFSET) * 1000f; // in pascals
+	}
+
+	@Override
+	public String getName() {
+		return "Pressure";
 	}
 }

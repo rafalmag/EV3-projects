@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 import lejos.utility.EndianTools;
 
 
@@ -22,7 +21,7 @@ import lejos.utility.EndianTools;
  * 22 January, 2011
  *
 */
-public class DexterGPSSensor extends I2CSensor implements SampleProvider {
+public class DexterGPSSensor extends I2CSensor implements SensorMode {
 	/*
 	 * Documentation can be found here: http://www.dexterindustries.com/download.html#dGPS
 	 */
@@ -48,6 +47,7 @@ public class DexterGPSSensor extends I2CSensor implements SampleProvider {
 	*/
     public DexterGPSSensor(I2CPort i2cPort) {
         super(i2cPort, DGPS_I2C_ADDR);
+        init();
     }
     
 	/**
@@ -56,6 +56,11 @@ public class DexterGPSSensor extends I2CSensor implements SampleProvider {
 	*/
     public DexterGPSSensor(Port sensorPort) {
         super(sensorPort, DGPS_I2C_ADDR);
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
     }
     
     /**
@@ -71,7 +76,7 @@ public class DexterGPSSensor extends I2CSensor implements SampleProvider {
     /**
      * Return a sample provider in GPS mode
      */
-    public SampleProvider getGPSMode() {
+    public SensorMode getGPSMode() {
     	return this;
     }
 
@@ -97,5 +102,10 @@ public class DexterGPSSensor extends I2CSensor implements SampleProvider {
   
     	getData(DGPS_CMD_UTC, reply, 0, 4);
     	sample[4+offset] = EndianTools.decodeIntBE(reply, 0);
+	}
+
+	@Override
+	public String getName() {
+		return "GPS";
 	}
 }

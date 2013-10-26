@@ -1,7 +1,6 @@
 package lejos.hardware.sensor;
 
 import lejos.hardware.port.LegacySensorPort;
-import lejos.robotics.SampleProvider;
 
 /** 
  *Abstraction for an RCX temperature sensor. 
@@ -9,7 +8,7 @@ import lejos.robotics.SampleProvider;
  * @author Soren Hilmer
  * 
  */
-public class RCXThermometer implements SensorConstants, SampleProvider {
+public class RCXThermometer extends AnalogSensor implements SensorConstants, SensorMode {
     LegacySensorPort port;
     
     /**
@@ -18,15 +17,19 @@ public class RCXThermometer implements SensorConstants, SampleProvider {
      */
     public RCXThermometer(LegacySensorPort port)
     {
-        this.port = port;
-        port.setTypeAndMode(TYPE_TEMPERATURE,
-                            MODE_RAW);
+        super(port);
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
+    	port.setTypeAndMode(TYPE_TEMPERATURE, MODE_RAW);
     }
     
     /**
      * Return a sample provider in temperature mode
      */
-    public SampleProvider getTemperatureMode() {
+    public SensorMode getTemperatureMode() {
     	return this;
     }
 
@@ -40,4 +43,8 @@ public class RCXThermometer implements SensorConstants, SampleProvider {
 		sample[offset] = (785-port.readRawValue())/8.0f +273.15f; // Kelvin
 	}
 
+	@Override
+	public String getName() {
+		return "Temperature";
+	}
 }

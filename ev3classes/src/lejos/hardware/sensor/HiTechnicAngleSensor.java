@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 import lejos.utility.EndianTools;
 
@@ -15,7 +14,7 @@ import lejos.utility.EndianTools;
  * date 2nd April 2011
  */
 
-public class HiTechnicAngleSensor extends I2CSensor implements SampleProvider {
+public class HiTechnicAngleSensor extends I2CSensor implements SensorMode {
    protected static final int REG_ANGLE = 0x42;
    protected static final int REG_ACCUMULATED_ANGLE = 0x44;
    protected static final int REG_SPEED = 0x48;
@@ -26,11 +25,17 @@ public class HiTechnicAngleSensor extends I2CSensor implements SampleProvider {
 
    public HiTechnicAngleSensor(I2CPort port) {
        super(port, DEFAULT_I2C_ADDRESS);
+       init();
     }
     
    public HiTechnicAngleSensor(Port port) {
        super(port);
+       init();
     }
+   
+   protected void init() {
+   	setModes(new SensorMode[]{ getAngleMode(), getAngularVelocityMode(), getAccumulatedAngleMode()});
+   }
    
    /** 
     * Reset the rotation count of accumulated angle to zero. 
@@ -50,7 +55,7 @@ public class HiTechnicAngleSensor extends I2CSensor implements SampleProvider {
       Delay.msDelay(50);
    }
    
-   public SampleProvider getAngleMode() {
+   public SensorMode getAngleMode() {
 	   return this;
    }
 
@@ -68,11 +73,16 @@ public class HiTechnicAngleSensor extends I2CSensor implements SampleProvider {
 	    sample[offset] = (bits9to2 << 1) | bit1;		
 	}
 	
-	public SampleProvider getAccumulatedAngleMode() {
+	@Override
+	public String getName() {
+		return "Angle";
+	}
+	
+	public SensorMode getAccumulatedAngleMode() {
 		return new AccumulatedAngle();
 	}
 	
-	private class AccumulatedAngle implements SampleProvider {
+	private class AccumulatedAngle implements SensorMode {
 		@Override
 		public int sampleSize() {
 			return 1;
@@ -83,14 +93,19 @@ public class HiTechnicAngleSensor extends I2CSensor implements SampleProvider {
 	      getData(REG_ACCUMULATED_ANGLE, buf, 4); 
 	      
 	      sample[offset] = -EndianTools.decodeIntBE(buf, 0);
+		}
+
+		@Override
+		public String getName() {
+			return "AccumulatedAngle";
 		}		
 	}
 	
-	public SampleProvider getAngularVelocityMode() {
+	public SensorMode getAngularVelocityMode() {
 		return new AngularVelocity();
 	}
 	
-	private class AngularVelocity implements SampleProvider {
+	private class AngularVelocity implements SensorMode {
 		@Override
 		public int sampleSize() {
 			return 1;
@@ -101,6 +116,11 @@ public class HiTechnicAngleSensor extends I2CSensor implements SampleProvider {
 	      getData(REG_SPEED, buf, 2);
 		      
 		  sample[offset] = -EndianTools.decodeShortBE(buf, 0) / 60;
+		}
+
+		@Override
+		public String getName() {
+			return "AngularVelocity";
 		}		
 	}
 }

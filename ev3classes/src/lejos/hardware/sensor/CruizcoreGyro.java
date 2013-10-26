@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 import lejos.utility.EndianTools;
 
@@ -12,7 +11,7 @@ import lejos.utility.EndianTools;
  * @author Daniele Benedettelli, February 2011
  * @version 1.0
  */
-public class CruizcoreGyro extends I2CSensor implements SampleProvider {
+public class CruizcoreGyro extends I2CSensor implements SensorMode {
 
 	/*
 	 * Documentation can be obtained here: http://xgl.minfinity.com/Downloads/Downloads.html
@@ -53,6 +52,10 @@ public class CruizcoreGyro extends I2CSensor implements SampleProvider {
     
     public CruizcoreGyro(Port port) {
         super(port, GYRO_ADDRESS);
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ getAccelerationMode(), getRateMode(), getAngleMode() });
     }
 	
 	/**
@@ -115,11 +118,20 @@ public class CruizcoreGyro extends I2CSensor implements SampleProvider {
 		sample[2+offset] = EndianTools.decodeShortLE(inBuf, 4);		
 	}
 	
-	public SampleProvider getRateMode() {
+	@Override
+	public String getName() {
+		return "Acceleration";
+	}
+	
+	public SensorMode getAccelerationMode() {
+		return this;
+	}
+	
+	public SensorMode getRateMode() {
 		return new RateMode();
 	}
 	
-	private class RateMode implements SampleProvider {
+	private class RateMode implements SensorMode {
 		@Override
 		public int sampleSize() {
 			return 1;
@@ -129,14 +141,19 @@ public class CruizcoreGyro extends I2CSensor implements SampleProvider {
 		public void fetchSample(float[] sample, int offset) {
 			getData(RATE,inBuf,2);
 			sample[offset] = -EndianTools.decodeShortLE(inBuf, 0) /100f;		
+		}
+
+		@Override
+		public String getName() {
+			return "Rate";
 		}		
 	}
 	
-	public SampleProvider getAngleMode() {
+	public SensorMode getAngleMode() {
 		return new AngleMode();
 	}
 	
-	private class AngleMode implements SampleProvider {
+	private class AngleMode implements SensorMode {
 		@Override
 		public int sampleSize() {
 			return 1;
@@ -146,6 +163,11 @@ public class CruizcoreGyro extends I2CSensor implements SampleProvider {
 		public void fetchSample(float[] sample, int offset) {
 			getData(ANGLE,inBuf,2);
 			sample[offset] = 360 - EndianTools.decodeShortLE(inBuf, 0);		
+		}
+
+		@Override
+		public String getName() {
+			return "Angle";
 		}		
 	}
 }

@@ -12,7 +12,7 @@ import lejos.robotics.SampleProvider;
  * @author Lawrie Griffiths
  * 
  */
-public class HiTechnicMagneticSensor extends AnalogSensor implements SensorConstants, SampleProvider {;
+public class HiTechnicMagneticSensor extends AnalogSensor implements SensorConstants, SensorMode {;
 	
 	/**
 	 * Create a magnetic sensor on an analog port
@@ -21,7 +21,7 @@ public class HiTechnicMagneticSensor extends AnalogSensor implements SensorConst
 	 */
     public HiTechnicMagneticSensor(AnalogPort port) {
         super(port);
-        port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        init();
     }
     
 	/**
@@ -31,7 +31,12 @@ public class HiTechnicMagneticSensor extends AnalogSensor implements SensorConst
 	 */
     public HiTechnicMagneticSensor(Port port) {
         super(port);
-        this.port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
+    	port.setTypeAndMode(TYPE_CUSTOM, MODE_RAW);
     }
     
     /**
@@ -49,6 +54,11 @@ public class HiTechnicMagneticSensor extends AnalogSensor implements SensorConst
 	@Override
 	public void fetchSample(float[] sample, int offset) {
 		sample[offset] = port.readRawValue();
+	}
+
+	@Override
+	public String getName() {
+		return "Magnetic";
 	}
 }
 	

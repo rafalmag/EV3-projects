@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 
 /**
  * This class manages the sensor NXT Line Leader from Mindsensors. The sensor
@@ -14,7 +13,7 @@ import lejos.robotics.SampleProvider;
  * @author Juan Antonio Brenha Moral
  * @author Eric Pascual (EP)
  */
-public class MindsensorsLineLeader extends I2CSensor implements SampleProvider {
+public class MindsensorsLineLeader extends I2CSensor implements SensorMode {
 	private byte[] buf = new byte[8];
 	private final static byte COMMAND = 0x41;
 
@@ -26,6 +25,7 @@ public class MindsensorsLineLeader extends I2CSensor implements SampleProvider {
      */
     public MindsensorsLineLeader(I2CPort port, int address) {
         super(port, address);
+        init();
     }
 
     /**
@@ -35,6 +35,7 @@ public class MindsensorsLineLeader extends I2CSensor implements SampleProvider {
      */
     public MindsensorsLineLeader(I2CPort port) {
         this(port, DEFAULT_I2C_ADDRESS);
+        init();
     }
     
     /**
@@ -45,6 +46,7 @@ public class MindsensorsLineLeader extends I2CSensor implements SampleProvider {
      */
     public MindsensorsLineLeader(Port port, int address) {
         super(port, address, TYPE_LOWSPEED_9V);
+        init();
     }
 
     /**
@@ -54,13 +56,17 @@ public class MindsensorsLineLeader extends I2CSensor implements SampleProvider {
      */
     public MindsensorsLineLeader(Port port) {
         this(port, DEFAULT_I2C_ADDRESS);
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
     }
     
 	/**
 	 * Send a single byte command represented by a letter
 	 * 
-	 * @param cmd
-	 *            the command to be sent
+	 * @param cmd the command to be sent
 	 */
 	public void sendCommand(char cmd) {
 		sendData(COMMAND, (byte) cmd);
@@ -92,7 +98,7 @@ public class MindsensorsLineLeader extends I2CSensor implements SampleProvider {
 	/**
 	 * Return a sample provider in light mode
 	 */
-	public SampleProvider getLightMode() {
+	public SensorMode getLightMode() {
 		return this;
 	}
 
@@ -108,5 +114,10 @@ public class MindsensorsLineLeader extends I2CSensor implements SampleProvider {
 		for(int i=0;i<8;i++) {
 			sample[offset+i] = buf[i];
 		}	
+	}
+
+	@Override
+	public String getName() {
+		return "Light";
 	}
 }

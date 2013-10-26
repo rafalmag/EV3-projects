@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 import lejos.utility.EndianTools;
 
@@ -20,7 +19,7 @@ import lejos.utility.EndianTools;
  * @author Kirk P. Thompson
  *
  */
-public class DexterThermalIRSensor extends I2CSensor implements SampleProvider  {
+public class DexterThermalIRSensor extends I2CSensor implements SensorMode  {
 	private static final int I2C_ADDRESS = 0x0E;
 	private static final int REG_GET_OBJECT = 0x01;
 	private static final int REG_GET_AMBIENT = 0x00;
@@ -36,12 +35,16 @@ public class DexterThermalIRSensor extends I2CSensor implements SampleProvider  
 	 */
     public DexterThermalIRSensor(I2CPort port) {
         super(port, I2C_ADDRESS);
-        Delay.msDelay(100);
+        init();
     }
     
     public DexterThermalIRSensor(Port port) {
         super(port, I2C_ADDRESS);
-        Delay.msDelay(100);
+        init();
+    }
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ getObjectMode(), getAmbientMode() });
     }
 	
 	/**
@@ -86,7 +89,7 @@ public class DexterThermalIRSensor extends I2CSensor implements SampleProvider  
 		return "Dexter";
 	}
 	
-	public SampleProvider getObjectMode() {
+	public SensorMode getObjectMode() {
 		return this;
 	}
 
@@ -101,10 +104,15 @@ public class DexterThermalIRSensor extends I2CSensor implements SampleProvider  
 		sample[offset] = .02f * EndianTools.decodeUShortLE(buf, 0); // degrees Kelvin		
 	}	
 	
-	public SampleProvider getAmbientMode() {
+	@Override
+	public String getName() {
+		return "Object";
+	}
+	
+	public SensorMode getAmbientMode() {
 		return new AmbientMode();
 	}
-	private class AmbientMode implements SampleProvider {
+	private class AmbientMode implements SensorMode {
 		@Override
 		public int sampleSize() {
 			return 1;
@@ -114,6 +122,11 @@ public class DexterThermalIRSensor extends I2CSensor implements SampleProvider  
 		public void fetchSample(float[] sample, int offset) {
 			getData(REG_GET_AMBIENT, buf, 2);
 			sample[offset] = .02f * EndianTools.decodeUShortLE(buf, 0); // degrees Kelvin				
+		}
+
+		@Override
+		public String getName() {
+			return "Ambient";
 		}	
 	}
 }

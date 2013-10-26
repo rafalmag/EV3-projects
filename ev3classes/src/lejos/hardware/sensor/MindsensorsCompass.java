@@ -3,7 +3,6 @@ package lejos.hardware.sensor;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
 import lejos.robotics.Calibrate;
-import lejos.robotics.SampleProvider;
 
 /**
  * This class supports the <a href="http://mindsensors.com">Mindsensors</a> compass sensor.
@@ -13,7 +12,7 @@ import lejos.robotics.SampleProvider;
  * author Lawrie Griffiths
  * 
  */
-public class MindsensorsCompass extends I2CSensor implements Calibrate, SampleProvider {
+public class MindsensorsCompass extends I2CSensor implements Calibrate, SensorMode {
 	private final static byte COMMAND = 0x41;
 	private final static byte BEGIN_CALIBRATION = 0x43;
 	private final static byte END_CALIBRATION = 0x44;
@@ -28,6 +27,7 @@ public class MindsensorsCompass extends I2CSensor implements Calibrate, SamplePr
     public MindsensorsCompass(I2CPort port, int address)
     {
 		super(port, address);
+		init();
     }
 	
 	/**
@@ -36,6 +36,7 @@ public class MindsensorsCompass extends I2CSensor implements Calibrate, SamplePr
 	 */
 	public MindsensorsCompass(I2CPort port) {
 		super(port, DEFAULT_I2C_ADDRESS);
+		init();
 	}
 	
     /**
@@ -46,6 +47,7 @@ public class MindsensorsCompass extends I2CSensor implements Calibrate, SamplePr
     public MindsensorsCompass(Port port, int address)
     {
         super(port, address);
+        init();
     }
     
 	/**
@@ -54,13 +56,18 @@ public class MindsensorsCompass extends I2CSensor implements Calibrate, SamplePr
 	 */
 	public MindsensorsCompass(Port port) {
 		super(port);
+		init();
 	}
+	
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
+    }
     
     /**
      * Get a compass mode sensor provider
      * @return the sample provider
      */
-	public SampleProvider getCompassMode() {
+	public SensorMode getCompassMode() {
 		return this;
 	}
 	
@@ -75,6 +82,12 @@ public class MindsensorsCompass extends I2CSensor implements Calibrate, SamplePr
 		
 		// TODO: Could use integer mode for higher resolution
 		sample[offset] = (((buf[0] & 0xFF)) * 360f) / 256f;
+	}
+	
+
+	@Override
+	public String getName() {
+		return "Compass";
 	}
 	
 	// TODO: Rotate in any direction while calibrating? Specify.
