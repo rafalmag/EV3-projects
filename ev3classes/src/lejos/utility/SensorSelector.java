@@ -4,10 +4,10 @@ import lejos.hardware.device.IRLink;
 import lejos.hardware.device.IRTransmitter;
 import lejos.hardware.device.RCXLink;
 import lejos.hardware.port.I2CPort;
-import lejos.hardware.sensor.AccelHTSensor;
-import lejos.hardware.sensor.AccelMindSensor;
+import lejos.hardware.sensor.HiTechnicAccelerometer;
 import lejos.hardware.sensor.I2CSensor;
-import lejos.robotics.Accelerometer;
+import lejos.hardware.sensor.MindsensorsAccelerometer;
+import lejos.hardware.sensor.SensorMode;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.
@@ -27,14 +27,14 @@ public class SensorSelector {
 	private static final String MINDSENSORS_ID = "mndsnsrs";
 	private static final String HITECHNIC_ID = "hitechnc";
 		
-	public static Accelerometer createAccelerometer(I2CPort port) throws SensorSelectorException {
+	public static SensorMode createAccelerometer(I2CPort port) throws SensorSelectorException {
 		I2CSensor tester = new I2CSensor(port);
 		String type = tester.getVendorID().toLowerCase();
 		
 		if (type.equals(MINDSENSORS_ID))
-			return new AccelMindSensor(port);
+			return new MindsensorsAccelerometer(port).getAccelerationMode();
 		if (type.equals(HITECHNIC_ID))
-			return new AccelHTSensor(port);
+			return new HiTechnicAccelerometer(port).getAccelerationMode();
 		
 		throw new SensorSelectorException("No Such Sensor");	
 	}

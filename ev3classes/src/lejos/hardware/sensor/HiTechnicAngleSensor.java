@@ -34,7 +34,7 @@ public class HiTechnicAngleSensor extends I2CSensor implements SensorMode {
     }
    
    protected void init() {
-   	setModes(new SensorMode[]{ getAngleMode(), getAngularVelocityMode(), getAccumulatedAngleMode()});
+   	setModes(new SensorMode[]{ this, new AccumulatedAngleMode(), new AngularVelocityMode() });
    }
    
    /** 
@@ -79,10 +79,10 @@ public class HiTechnicAngleSensor extends I2CSensor implements SensorMode {
 	}
 	
 	public SensorMode getAccumulatedAngleMode() {
-		return new AccumulatedAngle();
+		return getMode(1);
 	}
 	
-	private class AccumulatedAngle implements SensorMode {
+	private class AccumulatedAngleMode implements SensorMode {
 		@Override
 		public int sampleSize() {
 			return 1;
@@ -102,10 +102,10 @@ public class HiTechnicAngleSensor extends I2CSensor implements SensorMode {
 	}
 	
 	public SensorMode getAngularVelocityMode() {
-		return new AngularVelocity();
+		return getMode(2);
 	}
 	
-	private class AngularVelocity implements SensorMode {
+	private class AngularVelocityMode implements SensorMode {
 		@Override
 		public int sampleSize() {
 			return 1;
@@ -113,8 +113,7 @@ public class HiTechnicAngleSensor extends I2CSensor implements SensorMode {
 
 		@Override
 		public void fetchSample(float[] sample, int offset) {
-	      getData(REG_SPEED, buf, 2);
-		      
+	      getData(REG_SPEED, buf, 2);	      
 		  sample[offset] = -EndianTools.decodeShortBE(buf, 0) / 60;
 		}
 

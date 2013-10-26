@@ -1,9 +1,8 @@
-package lejos.hardware.sensor;
+package lejos.utility;
 
 import lejos.robotics.DirectionFinder;
 import lejos.robotics.Gyroscope;
 
-import lejos.utility.Delay;
 
 /*
  * WARNING: THIS CLASS IS SHARED BETWEEN THE classes AND pccomms PROJECTS.

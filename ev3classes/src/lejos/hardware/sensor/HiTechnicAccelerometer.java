@@ -2,7 +2,6 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.SampleProvider;
 
 /**
  * Class to access the HiTechnic NXT Acceleration / Tilt Sensor (NAC1040).
@@ -19,7 +18,7 @@ import lejos.robotics.SampleProvider;
  * @author Lawrie Griffiths
  * @author Michael Mirwaldt
  */
-public class HiTechnicAccelerometer extends I2CSensor implements SampleProvider {
+public class HiTechnicAccelerometer extends I2CSensor implements SensorMode {
 	private static final int BASE_ACCEL = 0x42;	
 	private static final int OFF_X_HIGH = 0x00;
 	private static final int OFF_Y_HIGH = 0x01;
@@ -37,6 +36,7 @@ public class HiTechnicAccelerometer extends I2CSensor implements SampleProvider 
 	 */
 	public HiTechnicAccelerometer(I2CPort port, int address) {
 		super(port, address);
+		init();
 	}
 	
 	/**
@@ -46,6 +46,7 @@ public class HiTechnicAccelerometer extends I2CSensor implements SampleProvider 
 	 */
 	public HiTechnicAccelerometer(I2CPort port) {
 		this(port, DEFAULT_I2C_ADDRESS);
+		init();
 	}
 	
 	/**
@@ -56,6 +57,7 @@ public class HiTechnicAccelerometer extends I2CSensor implements SampleProvider 
 	 */
 	public HiTechnicAccelerometer(Port port, int address) {
 		super(port, address, TYPE_LOWSPEED_9V);
+		init();
 	}
 	
 	/**
@@ -65,12 +67,17 @@ public class HiTechnicAccelerometer extends I2CSensor implements SampleProvider 
 	 */
     public HiTechnicAccelerometer(Port port) {
         this(port, DEFAULT_I2C_ADDRESS);
+        init();
     }
+    
+    protected void init() {
+       	setModes(new SensorMode[]{ this});
+       }
     
     /**
      * Get s sample provider in acceleration mode
      */
-    public SampleProvider getAccelerationMode() {
+    public SensorMode getAccelerationMode() {
     	return this;
     }
 
@@ -86,5 +93,10 @@ public class HiTechnicAccelerometer extends I2CSensor implements SampleProvider 
 		sample[offset+0] = ((buf[OFF_X_HIGH] << 2) + (buf[OFF_X_HIGH + OFF_2BITS] & 0xFF)) * TO_SI;
 		sample[offset+1] = ((buf[OFF_Y_HIGH] << 2) + (buf[OFF_Y_HIGH + OFF_2BITS] & 0xFF)) * TO_SI;
 		sample[offset+2] = ((buf[OFF_Z_HIGH] << 2) + (buf[OFF_Z_HIGH + OFF_2BITS] & 0xFF)) * TO_SI;	
+	}
+
+	@Override
+	public String getName() {
+		return "Acceleration";
 	}
 }

@@ -56,11 +56,10 @@ public class HiTechnicBarometer extends I2CSensor implements SensorMode {
 	/**
 	 * Re-calibrates the sensor.
 	 * 
-	 * @param calibrationImperial
-	 *            the recalibration value in units of 1/1000 inches of mercury
-	 *            (inHg).
+	 * @param pascals the recalibration value in pascals
 	 */
-	public void recalibrate(final int calibrationImperial) {
+	public void recalibrate(float pascals ) {
+		int calibrationImperial = (int) ((pascals / 10) / INHG_TO_HPA); 
 		buffer[0] = (byte) ((calibrationImperial & 0xff00) >> 8);
 		buffer[1] = (byte) (calibrationImperial & 0x00ff);
 		sendData(BAROMETRIC_PRESSURE_CALIBRATION, buffer, 2);
@@ -81,7 +80,6 @@ public class HiTechnicBarometer extends I2CSensor implements SensorMode {
 		return 1;
 	}
 	
-
 	@Override
 	public String getName() {
 		return "Pressure";

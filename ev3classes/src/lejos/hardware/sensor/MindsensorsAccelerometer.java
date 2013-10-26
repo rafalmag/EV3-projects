@@ -20,7 +20,6 @@ public class MindsensorsAccelerometer extends I2CSensor implements SensorMode {
 	private static final byte OFF_Z_ACCEL = 0x04;
 	private static final float TO_SI = 0.00980665f;
 	
-	private SensorMode tiltMode;
 	private byte[] buf = new byte[6];
 	
 	/**
@@ -64,7 +63,7 @@ public class MindsensorsAccelerometer extends I2CSensor implements SensorMode {
     }
     
     protected void init() {
-    	setModes(new SensorMode[]{ getAccelerationMode(), getTiltMode() });
+    	setModes(new SensorMode[]{ this, new TiltMode() });
     }
 	
 	@Override
@@ -97,10 +96,7 @@ public class MindsensorsAccelerometer extends I2CSensor implements SensorMode {
 	 * Return a SampleProvider in tilt mode
 	 */
 	public SensorMode getTiltMode() {
-		if (tiltMode == null) {
-			tiltMode = new TiltMode();
-		}
-		return tiltMode;
+		return getMode(1);
 	}
 
 	private class TiltMode implements SensorMode {

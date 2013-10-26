@@ -55,16 +55,17 @@ public class HiTechnicCompass extends I2CSensor implements Calibrate, SensorMode
         init();
     }
     
+    
+    protected void init() {
+    	setModes(new SensorMode[]{ this });
+    }
+    
     /**
      * Get a compass mode sensor provider
      * @return the sample provider
      */
     public SensorMode getCompassMode() {
     	return this;
-    }
-    
-    protected void init() {
-    	setModes(new SensorMode[]{ this });
     }
 
 	@Override

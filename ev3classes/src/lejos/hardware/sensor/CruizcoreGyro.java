@@ -55,7 +55,7 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
     }
     
     protected void init() {
-    	setModes(new SensorMode[]{ getAccelerationMode(), getRateMode(), getAngleMode() });
+    	setModes(new SensorMode[]{ this, new RateMode(),  new AngleMode() });
     }
 	
 	/**
@@ -128,7 +128,7 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 	}
 	
 	public SensorMode getRateMode() {
-		return new RateMode();
+		return getMode(1);
 	}
 	
 	private class RateMode implements SensorMode {
@@ -150,7 +150,7 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 	}
 	
 	public SensorMode getAngleMode() {
-		return new AngleMode();
+		return getMode(2);
 	}
 	
 	private class AngleMode implements SensorMode {

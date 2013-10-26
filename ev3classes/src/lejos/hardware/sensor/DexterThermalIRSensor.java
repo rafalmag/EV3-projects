@@ -44,7 +44,7 @@ public class DexterThermalIRSensor extends I2CSensor implements SensorMode  {
     }
     
     protected void init() {
-    	setModes(new SensorMode[]{ getObjectMode(), getAmbientMode() });
+    	setModes(new SensorMode[]{ this, new AmbientMode() });
     }
 	
 	/**
@@ -110,7 +110,7 @@ public class DexterThermalIRSensor extends I2CSensor implements SensorMode  {
 	}
 	
 	public SensorMode getAmbientMode() {
-		return new AmbientMode();
+		return getMode(1);
 	}
 	private class AmbientMode implements SensorMode {
 		@Override

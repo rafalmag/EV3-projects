@@ -27,7 +27,7 @@ public class HiTechnicIRSeekerV2 extends I2CSensor implements SensorMode
     } 
     
     protected void init() {
-    	setModes(new SensorMode[]{ getModulatedMode(), getModulatedMode() });
+    	setModes(new SensorMode[]{ this, new UnmodulatedMode() });
     }
 	
 	public SensorMode getModulatedMode() {
@@ -56,7 +56,7 @@ public class HiTechnicIRSeekerV2 extends I2CSensor implements SensorMode
 	}
 	
 	public SensorMode getUnmodulatedMode() {
-		return new UnmodulatedMode();
+		return getMode(1);
 	}
 	
 	private class UnmodulatedMode implements SensorMode {
