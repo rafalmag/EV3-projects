@@ -28,6 +28,7 @@ public class RemoteI2CPort extends RemoteIOPort implements I2CPort {
 	@Override
 	public void close() {
 		try {
+			super.close();
 			rmi.close();
 		} catch (RemoteException e) {
 			throw new PortException(e);

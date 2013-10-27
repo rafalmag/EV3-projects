@@ -16,11 +16,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -49,9 +51,14 @@ import javax.swing.event.ListSelectionListener;
 
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
+import lejos.hardware.port.I2CPort;
+import lejos.hardware.port.Port;
+import lejos.hardware.sensor.BaseSensor;
+import lejos.hardware.sensor.SensorMode;
 import lejos.remote.ev3.RMIMenu;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RemoteEV3;
+import lejos.remote.ev3.RemoteI2CPort;
 import lejos.remote.nxt.NXTProtocol;
 
 /**
@@ -102,13 +109,36 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private static final String[] sensorTypes = { "No Sensor", "EV3 Touch",
 			"EV3 IR", "EV3 Color", "EV3 Ultrasonic", "EV3 Gyro",
 			"NXT Touch", "NXT Sound", "NXT Light", "NXT Color", "NXT Ultrasonic",
-			"HiTechnic Gyro" };
+			"HiTechnic Gyro", "HiTechnic Acceleration", "HiTechnic Color",
+			"HiTechnic Compass", "HiTechnic Barometric", "HiTechnic Angle",
+			"HiTechnic Magnetic","HiTechnic IRSeeker", "HiTechnic EOPD",
+			"Mindsensors Acceleration", "Mindsensors Compass", "Mindsensors Distance",
+			"Mindsensors LineLeader", "Mindsensors Pressure",
+			"Dexter IMU", "Dexter Pressure 250", "Dexter Pressure 500", "Dexter Thermal IR",
+			"Cruizcore Gyro", "RCX Temperature", "RCX Light"
+			};
+	
+	private static final String[] sensorClasses = { "", "EV3TouchSensor",
+		"EV3IRSensor", "EV3ColorSensor", "EV3UltrasonicSensor", "EV3GyroSensor",
+		"NXTTouchSensor", "NXTSoundSensor", "NXTLightSensor", "NXTColorSensor", "NXTUltrasonicSensor",
+		"HiTechnicGyro", "HiTechnicAccelerometer", "HiTechnicColorSensor",
+		"HiTechnicCompassSensor", "HiTechnicBarometer", "HiTechnicAngleSensor",
+		"HiTechnicMagneticSensor","HiTechnicIRSeekerv2", "HiTechnicEOPD",
+		"MindsensorsAccelerometer", "MindsensorsCompass", "MindsensorsDistanceSensor",
+		"MindsensorsLineLeader", "MindsensorsPressureSensor",
+		"DexterIMU", "DexterPressureSensor250", "DexterPressureSensor500", "DexterThermalIRSensor",
+		"CruizcoreGyro", "RCXThermometer", "RCXLightSensor"
+		};
 
-	private static final String[] sensors = { "S1", "S2", "S3", "S4" };
+	private static final String[] sensorPorts = { "S1", "S2", "S3", "S4" };
+	
+	private String[] sensorModes = {};
 	
 	private final String[] motorNames = { "A", "B", "C", "D" };
 	
 	private final String[] volumeLevels = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+	
+	private BaseSensor[] sensors = new BaseSensor[4];
 
 	// GUI components
 	private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
@@ -132,7 +162,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JPanel otherPanel = new JPanel();
 	private JTextArea theConsoleLog = new JTextArea(16, 68);
 	private JTextArea theDataLog = new JTextArea(20, 68);
-	private LabeledGauge batteryGauge = new LabeledGauge("Battery", 10000);
 	private JSlider[] sliders = new JSlider[4];
 	private JLabel[] tachos = new JLabel[4];
 	private JCheckBox[] selectors = new JCheckBox[4];
@@ -160,12 +189,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JRadioButton rconsoleButton = new JRadioButton("RConsole");
 	private JFormattedTextField freq = new JFormattedTextField(new Integer(500));
 	private JFormattedTextField duration = new JFormattedTextField(new Integer(1000));
-	private JComboBox sensorList = new JComboBox(sensors);
-	private JComboBox sensorList2 = new JComboBox(sensors);
+	private JComboBox sensorList = new JComboBox(sensorPorts);
+	private JComboBox sensorList2 = new JComboBox(sensorPorts);
 	private JComboBox sensorTypeList = new JComboBox(sensorTypes);
-	private SensorPanel[] sensorPanels = { new SensorPanel("Sensor Port 1"),
-			new SensorPanel("Sensor Port 2"), new SensorPanel("Sensor Port 3"),
-			new SensorPanel("Sensor Port 4") };
+	private JComboBox<String> sensorModeList;
 	private JFormattedTextField txData = new JFormattedTextField();
 	private JFormattedTextField rxDataLength = new JFormattedTextField(new Integer(1));
 	private JFormattedTextField address;
@@ -174,6 +201,11 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JButton soundButton = new JButton("Play Sound File");
 	private JTextField newName = new JTextField(16);
 	private JTabbedPane tabbedPane = new JTabbedPane();
+	private JLabel batteryValue = new JLabel("");
+	private JLabel s1Value = new JLabel("");
+	private JLabel s2Value = new JLabel("");
+	private JLabel s3Value = new JLabel("");
+	private JLabel s4Value = new JLabel("");
 	
 	// Other instance data
 	private ExtendedFileModel fmPrograms, fmSamples;
@@ -578,9 +610,15 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private void createMonitorPanel() {
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+		JPanel rightPanel = new JPanel();
+		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+		JLabel batteryLabel = new JLabel("Battery:");
 		JPanel batteryPanel = new JPanel();
 		batteryPanel.setBorder(etchedBorder);
-		batteryPanel.add(batteryGauge);
+		batteryPanel.add(batteryLabel);
+		batteryPanel.add(batteryValue);
 		leftPanel.add(batteryPanel);
 		JPanel setSensorPanel = new JPanel();
 		setSensorPanel.setBorder(etchedBorder);
@@ -598,12 +636,40 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		JLabel typeLabel = new JLabel("Name:");
 		typePanel.add(typeLabel);
 		typePanel.add(sensorTypeList);
+		JLabel modeLabel = new JLabel("Mode:");
+		typePanel.add(modeLabel);
 		setSensorPanel.add(typePanel);
+		sensorModeList = new JComboBox<String>(sensorModes);
+		typePanel.add(sensorModeList);
 		JButton setSensorButton = new JButton("Set Sensor");
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(setSensorButton);
 		setSensorPanel.add(buttonPanel);
 		leftPanel.add(setSensorPanel);
+		JLabel s1Label = new JLabel("S1:");
+		JPanel s1Panel = new JPanel();
+		s1Panel.setBorder(etchedBorder);
+		s1Panel.add(s1Label);
+		s1Panel.add(s1Value);
+		centerPanel.add(s1Panel);
+		JLabel s2Label = new JLabel("S2:");
+		JPanel s2Panel = new JPanel();
+		s2Panel.setBorder(etchedBorder);
+		s2Panel.add(s2Label);
+		s2Panel.add(s2Value);
+		centerPanel.add(s2Panel);
+		JLabel s3Label = new JLabel("S3:");
+		JPanel s3Panel = new JPanel();
+		s3Panel.setBorder(etchedBorder);
+		s3Panel.add(s3Label);
+		s3Panel.add(s3Value);
+		centerPanel.add(s3Panel);
+		JLabel s4Label = new JLabel("S4:");
+		JPanel s4Panel = new JPanel();
+		s4Panel.setBorder(etchedBorder);
+		s4Panel.add(s4Label);
+		s4Panel.add(s4Value);
+		centerPanel.add(s4Panel);
 		
 		setSensorButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -612,9 +678,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		});
 		
 		monitorPanel.add(leftPanel);
-		for (int i = 0; i < 4; i++) {
-			monitorPanel.add(sensorPanels[i]);
-		}
+		monitorPanel.add(centerPanel);
+		monitorPanel.add(rightPanel);
 		monitorPanel.add(monitorUpdateButton);
 	}
 
@@ -819,12 +884,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		rxPanel.add(rxData);
 		i2cPanel.add(rxPanel);
 		JButton txDataSend = new JButton("Send");
-		JButton i2cStatus = new JButton("Status");
-		JButton rxDataReceive = new JButton("Receive");
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.add(txDataSend);
-		buttonsPanel.add(i2cStatus);
-		buttonsPanel.add(rxDataReceive);
 		i2cPanel.add(buttonsPanel);
 		i2cPanel.setBorder(BorderFactory.createEtchedBorder());
 		i2cPanel.setPreferredSize(i2cPanelSize);
@@ -836,17 +897,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			}
 		});
 		
-		rxDataReceive.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				i2cReceive();
-			}
-		});
-		
-		i2cStatus.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				i2cStatus();
-			}
-		});
 	}
 
 	/**
@@ -1196,7 +1246,38 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	private void updateSensors() {
 		if (ev3 == null) return;
-		batteryGauge.setVal(mv);
+		batteryValue.setText("" + mv);
+		for(int i=0;i<sensors.length;i++) {
+			if (sensors[i] != null) {
+				int selected = sensorModeList.getSelectedIndex();
+				SensorMode m = sensors[i].getMode(selected);
+				float[] sample = new float[m.sampleSize()];
+				m.fetchSample(sample, 0);
+				
+				StringBuilder sb = new StringBuilder();
+				DecimalFormat df= new DecimalFormat( "#,###,###,##0.00" );
+				
+				for(int j=0;j<m.sampleSize();j++) {
+					sb.append(df.format(sample[j]));
+					if (j<m.sampleSize()-1) sb.append(',');
+				}
+				
+				switch(i) {
+				case 0:
+					s1Value.setText(sb.toString());
+					break;
+				case 1:
+					s2Value.setText(sb.toString());
+					break;
+				case 2:
+					s3Value.setText(sb.toString());
+					break;
+				case 3:
+					s4Value.setText(sb.toString());
+					break;
+				}		
+			}
+		}
 	}
 
 	/**
@@ -1233,6 +1314,9 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Close all connections
 	 */
 	private void closeAll() {
+		for(int i=0;i<sensors.length;i++) {
+			if (sensors[i] != null) sensors[i].close();		
+		}
 	}
 
 	/**
@@ -1508,6 +1592,46 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Set the sensor type and mode
 	 */
 	private void setSensor() {
+		int selected = sensorTypeList.getSelectedIndex();
+		String className = "lejos.hardware.sensor." + sensorClasses[selected];
+		System.out.println("Sensor type is " + sensorTypes[selected]);
+		System.out.println("Sensor class is " + className);
+		
+		int portNumber = sensorList2.getSelectedIndex();
+		
+		String portName = sensorPorts[portNumber];
+		
+		System.out.println("Port is " + portName);
+		
+		Port p = ev3.getPort(portName);
+		
+		if (sensors[portNumber] != null) sensors[portNumber].close();
+		
+		try {
+			Class<?> c = Class.forName(className);
+			Class<?>[] params = new Class<?>[1];
+			params[0] = Port.class;
+			Constructor<?> con = c.getConstructor(params);
+			System.out.println("Created constructor");
+			Object[] args = new Object[1];
+			args[0] = p;
+			BaseSensor s = (BaseSensor) con.newInstance(args);
+			System .out.println("Created sensor class");
+			
+			sensorModeList.removeAllItems();
+			
+			for(String m: s.getAvailableModes()) {
+				sensorModeList.addItem(m);
+			}
+			
+			monitorPanel.revalidate();
+			sensors[portNumber] = s;		
+			
+		} catch (Exception e) {
+			System.err.println("Failed to create sensor class: " + e);
+			System.err.println("Cause: " + e.getCause());
+			e.getCause().printStackTrace();
+		}	
 	}
 	
 	/**
@@ -1552,19 +1676,71 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Send I2C request
 	 */
 	private void i2cSend() {
-		byte[] addr = new byte[1];
-		addr[0] = ((Number)address.getValue()).byteValue(); // default I2C address
+		int addr= ((Number)address.getValue()).intValue(); 
 		
 		try {
-			/*nxtCommand.LSWrite(
-					(byte) sensorList.getSelectedIndex(),
-					appendBytes(addr, fromHex(txData.getText())),
-					((Number) rxDataLength.getValue()).byteValue());*/
-		} catch (Exception ioe) {
-			showMessage("IO Exception sending txData");
+			Port p = ev3.getPort((String) sensorList.getSelectedItem()); 
+			
+			I2CPort i2c = p.open(RemoteI2CPort.class);
+			
+			int rLen = ((Number) rxDataLength.getValue()).intValue();
+			byte[] reply = new byte[rLen];
+			byte[] data = fromHex(txData.getText());
+			
+			i2c.i2cTransaction(addr, data, 0, data.length, reply, 0, rLen);
+			
+			if (rLen > 0) {
+				String hex = toHex(reply);
+				rxData.setText(hex);
+			} else
+				rxData.setText("null");
+			
+			i2c.close();
+			
+		} catch (Exception e) {
+			showMessage("IO Exception sending txData: " + e);
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Convert a byte array to a string of hex characters
+	 */
+	private String toHex(byte[] b) {
+		StringBuilder output = new StringBuilder();
+		for (int i = 0; i < b.length; i++) {
+			if (i > 0)
+				output.append(' ');
+			byte j = b[i];
+			output.append(Character.forDigit((j >> 4) & 0xF, 16));
+			output.append(Character.forDigit(j & 0xF, 16));
+		}
+		return output.toString();
+	}
+
+	
+	/**
+	 * Convert a string of hex characters to a byte array
+	 */
+	private byte[] fromHex(String s) {
+		byte[] reply = new byte[s.length() / 2];
+		for (int i = 0; i < reply.length; i++) {
+			char c1 = s.charAt(i * 2);
+			char c2 = s.charAt(i * 2 + 1);
+			reply[i] = (byte) (getHexDigit(c1) << 4 | getHexDigit(c2));
+		}
+		return reply;
+	}
+	
+	/**
+	 * Convert a character to a hex digit
+	 */
+	private int getHexDigit(char c) {
+		if (c >= '0' && c <= '9') return c - '0';
+		if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+		if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+		return 0;
+	}
 	/** 
 	 * Send an i2c status request
 	 */
