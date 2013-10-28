@@ -1,7 +1,5 @@
 package lejos.hardware.sensor;
 
-import java.util.ArrayList;
-
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
 import lejos.robotics.SampleProvider;
@@ -15,65 +13,17 @@ import lejos.utility.EndianTools;
  * datasheets</a>
  * 
  * @author Aswin
- * @author Andy
  * 
  */
-public class DexterIMUSensor implements SensorModes {
+public class DexterIMUSensor extends BaseSensor implements SensorModes {
   // TODO: Make it work for the EV3
   // TODO: Add support for sensor configuration
-  // TODO: use both I2CPort and Port types
-
+  
   // I2C Addresses for the gyro and acceleration chips with the default values
   protected int          Accel_I2C_address = 0x3A;
   protected int          Gyro_I2C_address  = 0xD2;
 
-  protected SensorMode[] modes;
-  ArrayList<String>      modeList;
-
-  /**
-   * Define the set of modes to be made available for this sensor.
-   * 
-   * @param m
-   *          An array containing a list of modes
-   */
-  protected void setModes(SensorMode[] m) {
-    modes = m;
-    // force the list to be rebuilt
-    modeList = null;
-  }
-
-  @Override
-  public ArrayList<String> getAvailableModes() {
-    if (modeList == null) {
-      modeList = new ArrayList<String>(modes.length);
-      if (modes != null)
-        for (SensorMode m : modes)
-          modeList.add(m.getName());
-    }
-    return modeList;
-  }
-
-  @Override
-  public SensorMode getMode(int mode) {
-    if (mode < 0)
-      throw new IllegalArgumentException("Invalid mode " + mode);
-    if (modes == null || mode >= modes.length)
-      return null;
-    return modes[mode];
-  }
-
-  @Override
-  public SensorMode getMode(String modeName) {
-    // TODO: I'm sure there is a better way to do this, but it is late!
-    int i = 0;
-    for (String s : getAvailableModes()) {
-      if (s.equals(modeName))
-        return modes[i];
-      i++;
-    }
-    throw new IllegalArgumentException("No such mode " + modeName);
-  }
-
+  
   public DexterIMUSensor(I2CPort port) {
     DexterIMUGyroSensor gyro = new DexterIMUGyroSensor(port);
     setModes(new SensorMode[] { gyro.getMode(0), new DexterIMUAccelerationSensor(port), gyro.getMode(1) });
