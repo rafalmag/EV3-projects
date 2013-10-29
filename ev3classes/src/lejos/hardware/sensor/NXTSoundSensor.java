@@ -9,9 +9,7 @@ import lejos.robotics.SampleProvider;
  * 
  */
 public class NXTSoundSensor extends AnalogSensor implements SensorConstants, SensorMode {
-  private static final int RESOLUTION=4095;
-  private static final float TO_PERCENT=100f / RESOLUTION;
-
+  protected static final long SWITCH_DELAY = 10;
   /**
    * Create a sound sensor.
    * 
@@ -37,7 +35,7 @@ public class NXTSoundSensor extends AnalogSensor implements SensorConstants, Sen
   private void init() {
     setModes(new SensorMode[]{ this, new DBMode() }); 
   }
-  
+
   public class DBMode implements  SensorMode {
 
     @Override
@@ -47,8 +45,8 @@ public class NXTSoundSensor extends AnalogSensor implements SensorConstants, Sen
 
     @Override
     public void fetchSample(float[] sample, int offset) {
-      port.setType(TYPE_SOUND_DB);
-      sample[offset] = (RESOLUTION-port.getPin1()) * TO_PERCENT;
+      switchType(TYPE_SOUND_DB, SWITCH_DELAY);
+      sample[offset] = 1.0f - normalize(port.getPin1());
     }
 
     @Override
@@ -73,8 +71,8 @@ public class NXTSoundSensor extends AnalogSensor implements SensorConstants, Sen
 
   @Override
   public void fetchSample(float[] sample, int offset) {
-    port.setType(TYPE_SOUND_DBA);
-    sample[offset] =  (RESOLUTION-port.getPin1()) * TO_PERCENT;;
+    switchType(TYPE_SOUND_DBA, SWITCH_DELAY);
+    sample[offset] =  1.0f - normalize(port.getPin1());
   }
 
   @Override

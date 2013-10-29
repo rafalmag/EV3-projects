@@ -56,12 +56,12 @@ public class EV3ColorSensor extends UARTSensor implements LampController, ColorI
         {
             switchMode(mode, SWITCH_DELAY);
             if (sampleSize == 1)
-                sample[offset] = (float) (port.getByte() & 0xff);
+                sample[offset] = (float) (port.getByte() & 0xff)/100.0f;
             else
             {
                 port.getShorts(raw, 0, raw.length);
                 for(int i = 0; i < sampleSize; i++)
-                    sample[offset+i] = raw[i];
+                    sample[offset+i] = (float)raw[i]/1020.0f;
             }
         }
 
@@ -113,7 +113,6 @@ public class EV3ColorSensor extends UARTSensor implements LampController, ColorI
     @Override
     public boolean isFloodlightOn()
     {
-        // TODO Auto-generated method stub
         return lightColor[currentMode] != Color.NONE;
     }
 
@@ -122,8 +121,7 @@ public class EV3ColorSensor extends UARTSensor implements LampController, ColorI
     @Override
     public int getFloodlight()
     {
-        // TODO Auto-generated method stub
-        return lightColor[currentMode];
+         return lightColor[currentMode];
     }
 
     /** {@inheritDoc}
@@ -179,7 +177,7 @@ public class EV3ColorSensor extends UARTSensor implements LampController, ColorI
      */
     public SensorMode getAmbientMode()
     {
-        return new ModeProvider("None", COL_AMBIENT, 1);
+        return new ModeProvider("Ambient", COL_AMBIENT, 1);
     }
     
     /**
@@ -191,6 +189,8 @@ public class EV3ColorSensor extends UARTSensor implements LampController, ColorI
     {
         //TODO: Should this return 3 or 4 values, 4 values would require an extra
         // mode switch to get ambient value.
+        //TODO: This mode seems to crash the sensor. So return values have not been
+        // verified
         return new ModeProvider("RGB", COL_RGBRAW, 3);
     }
     

@@ -40,7 +40,7 @@ public class RCXThermometer extends AnalogSensor implements SensorConstants, Sen
 
 	@Override
 	public void fetchSample(float[] sample, int offset) {
-		sample[offset] = (785-port.readRawValue())/8.0f +273.15f; // Kelvin
+		sample[offset] = (785-NXTRawValue(port.getPin1()))/8.0f +273.15f; // Kelvin
 	}
 
 	@Override

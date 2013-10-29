@@ -11,6 +11,7 @@ import lejos.hardware.port.Port;
  */
 public class SumoEyesSensor extends AnalogSensor implements SensorConstants {
 
+    protected final static long SWITCH_DELAY = 10;
 	
     /** The Constant NO_DETECTION (0). */
     public final static int NO_DETECTION = 0;
@@ -33,20 +34,10 @@ public class SumoEyesSensor extends AnalogSensor implements SensorConstants {
      * @param port the sensor port
      */
     public SumoEyesSensor(AnalogPort port) {
-        this(port, false);
+        super(port);
+        port.setTypeAndMode(TYPE_LIGHT_INACTIVE,MODE_RAW);
     }
 
-    /**
-     * Constructor with range specification.
-     *
-     * @param port the sensor port
-     * @param longRange if true, enables long range
-     */
-    public SumoEyesSensor(AnalogPort port, boolean longRange) {
-        super(port);
-        this.longRange = longRange;
-        port.setTypeAndMode(TYPE_LIGHT_ACTIVE,MODE_PCTFULLSCALE);
-    }
 
     /**
      * Default constructor.
@@ -54,18 +45,8 @@ public class SumoEyesSensor extends AnalogSensor implements SensorConstants {
      * @param port the sensor port
      */
     public SumoEyesSensor(Port port) {
-        this(port, false);
-    }
-
-    /**
-     * Constructor with range specification.
-     *
-     * @param port the sensor port
-     * @param longRange if true, enables long range
-     */
-    public SumoEyesSensor(Port port, boolean longRange) {
         super(port);
-        setLongRange(longRange);
+        this.port.setTypeAndMode(TYPE_LIGHT_INACTIVE,MODE_RAW);
     }
 
     /**
@@ -74,7 +55,7 @@ public class SumoEyesSensor extends AnalogSensor implements SensorConstants {
      * @return the raw sensor value
      */
     public int getValue() {
-        return port.readRawValue();
+        return NXTRawIntValue(port.getPin1());
     }
 
     /**
@@ -83,7 +64,7 @@ public class SumoEyesSensor extends AnalogSensor implements SensorConstants {
      *
      */
     public int getObstacle() {
-        int value = port.readRawValue();
+        int value = NXTRawIntValue(port.getPin1());
         if (value == 1023) {
             return NO_DETECTION;
         }
@@ -104,9 +85,9 @@ public class SumoEyesSensor extends AnalogSensor implements SensorConstants {
     public void setLongRange(boolean longRange) {
         this.longRange = longRange;
         if (this.longRange) {
-        	port.setTypeAndMode(TYPE_LIGHT_ACTIVE, MODE_PCTFULLSCALE);
+        	switchType(TYPE_LIGHT_ACTIVE, SWITCH_DELAY);
         } else
-        	port.setTypeAndMode(TYPE_LIGHT_INACTIVE, MODE_PCTFULLSCALE);
+        	switchType(TYPE_LIGHT_INACTIVE, SWITCH_DELAY);
     }
 
     /**

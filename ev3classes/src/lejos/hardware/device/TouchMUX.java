@@ -159,7 +159,7 @@ public class TouchMUX extends AnalogSensor {
     public int readSensors()
     {
         int ret;
-        int val = port.readRawValue();
+        int val = NXTRawIntValue(port.getPin1());
         /*
          * Note the following code can be used to correct the RAW value to be
          * the same as the RAW value for a Lego light sensor. Allowing the use

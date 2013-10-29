@@ -13,7 +13,8 @@ import lejos.robotics.Touch;
  * Also works with RCX touch sensors.
  * 
  */
-public class TouchSensor extends AnalogSensor implements SensorConstants, Touch {
+public class NXTTouchSensor extends AnalogSensor implements SensorConstants, SensorMode
+{
 	
 	/**
 	 * Create a touch sensor object attached to the specified open port. Note this
@@ -21,27 +22,42 @@ public class TouchSensor extends AnalogSensor implements SensorConstants, Touch 
 	 * place externally.
 	 * @param open an open Analog port
 	 */
-	public TouchSensor(AnalogPort port)
+	public NXTTouchSensor(AnalogPort port)
 	{
 	   super(port);
-	   port.setTypeAndMode(TYPE_SWITCH, MODE_BOOLEAN);
+	   port.setTypeAndMode(TYPE_SWITCH, MODE_RAW);
 	}
 
 	/**
 	 * Create an NXT touch sensor object attached to the specified port.
 	 * @param port the port that has the sensor attached
 	 */
-	public TouchSensor(Port port)
+	public NXTTouchSensor(Port port)
 	{
 	    super(port);
-	    this.port.setTypeAndMode(TYPE_SWITCH, MODE_BOOLEAN);	    
+	    this.port.setTypeAndMode(TYPE_SWITCH, MODE_RAW);	    
 	}
-	/**
-	 * Check if the sensor is pressed.
-	 * @return <code>true</code> if sensor is pressed, <code>false</code> otherwise.
-	 */
-	public boolean isPressed()
+
+	public SensorMode getTouchMode()
 	{
-		return (port.readRawValue() < 600);  
+	    return this;
 	}
+	
+    @Override
+    public int sampleSize()
+    {
+        return 1;
+    }
+
+    @Override
+    public void fetchSample(float[] sample, int offset)
+    {
+        sample[offset] = (port.getPin1() > EV3SensorConstants.ADC_REF/2f ? 0.0f : 1.0f);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Touch";
+    }
 }

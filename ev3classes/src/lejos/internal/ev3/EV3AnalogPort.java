@@ -72,21 +72,21 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
 
         
     /**
-     * Return the analog voltage reading from pin 1
-     * @return the voltage in mV
+     * {@inheritDoc}
      */
-    public int getPin1()
+    @Override
+    public float getPin1()
     {
-        return shortVals.getShort(ANALOG_PIN1_OFF + port*2);
+        return (float)shortVals.getShort(ANALOG_PIN1_OFF + port*2)*ADC_REF/ADC_RES;
     }
     
     /**
-     * Return the analog voltage reading from pin 6
-     * @return the voltage in mV
+     * {@inheritDoc}
      */
-    public int getPin6()
+    @Override
+    public float getPin6()
     {
-        return shortVals.getShort(ANALOG_PIN6_OFF + port*2);
+        return (float)shortVals.getShort(ANALOG_PIN6_OFF + port*2)*ADC_REF/ADC_RES;
     }
     
     protected void getColorData()
@@ -213,7 +213,7 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
     }
     
     @Override
-    public void getShorts(short [] vals, int offset, int length)
+    public void getFloats(float [] vals, int offset, int length)
     {
         if (length > 0)
         {
@@ -221,7 +221,8 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
             int cnt = length;
             if (cnt > rawValues.length)
                 cnt = rawValues.length;
-            System.arraycopy(rawValues, 0, vals, offset, cnt);
+            for(int i = 0; i < cnt; i++)
+                vals[offset+i] = (float)rawValues[i]*ADC_REF/ADC_RES;
             offset += cnt;
             length -= cnt;
             if (length > 0)
@@ -277,23 +278,6 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
     }
 
     
-    @Override
-    public boolean readBooleanValue()
-    {
-        return getPin1() < ADC_RES/2;
-    }
-
-    @Override
-    public int readRawValue()
-    {
-        return (getPin1() + 3)/4;
-    }
-
-    @Override
-    public int readValue()
-    {
-        return (getPin1() + 3)/4;
-    }
 
     // The following methods should arguably be in different class, but they
     // share the same memory structures as those used for analog I/O. Perhaps
@@ -379,5 +363,4 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
         inConn = pAnalog.getByteBuffer(ANALOG_INCONN_OFF, PORTS);
         shortVals = pAnalog.getByteBuffer(0, ANALOG_SIZE);
     }
-
 }

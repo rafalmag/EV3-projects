@@ -14,14 +14,15 @@ import lejos.hardware.port.Port;
  * 
  */
 public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, SensorMode {
-	
+
+    protected static final long SWITCH_DELAY = 10;
     /**
      * By default the sensor is short range.
      * @param port NXT sensor port 1-4
      */
     public HiTechnicEOPD (AnalogPort port){
         super(port);
-        init(false);
+        init();
     }
     
     /**
@@ -30,23 +31,12 @@ public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, Sens
      */
     public HiTechnicEOPD (Port port){
         super(port);
-        init(false);
+        init();
     }
-	
-	/**
-	 * 
-	 * @param port NXT sensor port 1-4.
-	 * @param longRange true = long range false = short range.
-	 */
-	public HiTechnicEOPD(Port port, boolean longRange)
-	{
-	    super(port);
-		init(longRange);
-	}
-	
-    protected void init(boolean longRange) {
+		
+    protected void init() {
     	setModes(new SensorMode[]{ this });
-    	port.setTypeAndMode((longRange ? TYPE_LIGHT_ACTIVE : TYPE_LIGHT_INACTIVE),MODE_PCTFULLSCALE);
+    	port.setTypeAndMode(TYPE_LIGHT_INACTIVE, MODE_RAW);
     }
     
 	// TODO: Should we hae these set methods, or two sample modes?
@@ -56,7 +46,7 @@ public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, Sens
 	 *
 	 */
 	public void setModeShort(){
-		port.setTypeAndMode(TYPE_LIGHT_INACTIVE, MODE_PCTFULLSCALE);
+	    switchType(TYPE_LIGHT_INACTIVE, SWITCH_DELAY);
 	}
 	
 	/**
@@ -64,7 +54,7 @@ public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, Sens
 	 *
 	 */
 	public void setModeLong(){
-		port.setTypeAndMode(TYPE_LIGHT_ACTIVE, MODE_PCTFULLSCALE);
+        switchType(TYPE_LIGHT_ACTIVE, SWITCH_DELAY);
 	}
 	
 	/**
@@ -82,7 +72,7 @@ public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, Sens
 	@Override
 	// TODO: What units is this in? Should we just return the raw value?
 	public void fetchSample(float[] sample, int offset) {
-		sample[offset] = (float) Math.sqrt((1023-port.readRawValue())*10);
+		sample[offset] = (float) Math.sqrt((1023-NXTRawValue(port.getPin1()))*10);
 	}
 
 	@Override

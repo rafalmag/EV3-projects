@@ -61,6 +61,6 @@ public interface SensorConstants {
 	public static final int MODE_FARENHEIT = 0xC0;
 	public static final int MODE_ANGLESTEP = 0xE0;
 
-    /** MAX value returned as a RAW sensor reading for standard A/D sensors */
-    public static final int MAX_AD_RAW = 1023;
+    /** MAX value returned as a RAW sensor reading for standard NXT A/D sensors */
+    public static final int NXT_ADC_RES = 1023;
 }

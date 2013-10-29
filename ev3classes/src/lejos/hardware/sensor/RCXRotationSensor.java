@@ -1,6 +1,8 @@
 package lejos.hardware.sensor;
 
+import lejos.hardware.port.AnalogPort;
 import lejos.hardware.port.LegacySensorPort;
+import lejos.hardware.port.Port;
 import lejos.robotics.Tachometer;
 import lejos.utility.Delay;
 
@@ -18,14 +20,13 @@ import lejos.utility.Delay;
  * @author Andy Shaw
  * 
  */
-public class RCXRotationSensor extends Thread implements Tachometer, SensorConstants
+public class RCXRotationSensor extends AnalogSensor implements Tachometer, SensorConstants
 {
 	/**
 	 * The incremental count for one whole rotation (360 degrees).
 	 */
     public static final int ONE_ROTATION = 16;
     protected static final int UPDATE_TIME = 2;
-    protected LegacySensorPort port;
     protected int count;
     protected final Reader reader;
     private int speed = 0;
@@ -35,13 +36,13 @@ public class RCXRotationSensor extends Thread implements Tachometer, SensorConst
      * Create an RCX rotation sensor object attached to the specified port.
      * @param port port, e.g. Port.S1
      */
-    public RCXRotationSensor(LegacySensorPort port)
+    public RCXRotationSensor(Port p)
     {
-        this.port = port;
+        super(p);
         port.setTypeAndMode(TYPE_ANGLE, MODE_RAW);
         reader = new Reader();
         reader.setDaemon(true);
-        reader.setPriority(MAX_PRIORITY);
+        reader.setPriority(Thread.MAX_PRIORITY);
         reader.start();
         count = 0;
     }
@@ -59,7 +60,7 @@ public class RCXRotationSensor extends Thread implements Tachometer, SensorConst
      */
     protected int getPhase()
     {
-        int val = port.readRawValue();
+        int val = NXTRawIntValue(port.getPin1());
         if (val < 450) return 0;
         if (val < 675) return 1;
         if (val < 911) return 2;

@@ -60,7 +60,7 @@ public class DexterPressureSensor250 extends AnalogSensor implements SensorConst
 
 	@Override
 	public void fetchSample(float[] sample, int offset) {
-		sample[offset] = (port.readRawValue() * DPRESS_MULT - DPRESS_OFFSET)* 1000f; // in pascals
+		sample[offset] = (NXTRawValue(port.getPin1()) * DPRESS_MULT - DPRESS_OFFSET)* 1000f; // in pascals
 	}
 
 	@Override

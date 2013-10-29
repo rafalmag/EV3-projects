@@ -14,6 +14,7 @@ import lejos.robotics.SampleProvider;
  */
 public class NXTLightSensor extends AnalogSensor implements LampController, SensorConstants, SensorMode
 {
+    protected static final long SWITCH_DELAY = 10;
 	private boolean floodlight = false;
 
 	private class AmbientMode implements SensorMode
@@ -30,7 +31,7 @@ public class NXTLightSensor extends AnalogSensor implements LampController, Sens
         public void fetchSample(float[] sample, int offset)
         {
             setFloodlight(false);
-            sample[offset] = port.getPin1();
+            sample[offset] = 1.0f - normalize(port.getPin1());
         }
 
         @Override
@@ -48,7 +49,7 @@ public class NXTLightSensor extends AnalogSensor implements LampController, Sens
     
     /**
      * Create a light sensor object attached to the specified port.
-     * The sensor will be set to floodlit mode, i.e. the LED will be turned on.
+     * The sensor will be set to floodlight mode, i.e. the LED will be turned on.
      * @param port port, e.g. Port.S1
      */
     public NXTLightSensor(AnalogPort port)
@@ -59,7 +60,7 @@ public class NXTLightSensor extends AnalogSensor implements LampController, Sens
     
     /**
      * Create a light sensor object attached to the specified port.
-     * The sensor will be set to floodlit mode, i.e. the LED will be turned on.
+     * The sensor will be set to floodlight mode, i.e. the LED will be turned on.
      * @param port port, e.g. Port.S1
      */
     public NXTLightSensor(Port port)
@@ -70,22 +71,16 @@ public class NXTLightSensor extends AnalogSensor implements LampController, Sens
     
 	public void setFloodlight(boolean floodlight)
 	{
-	    if (this.floodlight != floodlight)
-	    {
-	        port.setType(floodlight ? TYPE_LIGHT_ACTIVE
-		                         : TYPE_LIGHT_INACTIVE);
+	        switchType(floodlight ? TYPE_LIGHT_ACTIVE : TYPE_LIGHT_INACTIVE, SWITCH_DELAY);
 	        this.floodlight = floodlight;
-	    }
 	}
 	
 	public boolean setFloodlight(int color) {
 		if(color == Color.RED) {
-			port.setType(TYPE_LIGHT_ACTIVE);
-			this.floodlight = true;
+		    setFloodlight(true);
 			return true;
 		} else if (color == Color.NONE) {
-			port.setType(TYPE_LIGHT_INACTIVE);
-			this.floodlight = false;
+            setFloodlight(false);
 			return true;
 		} else return false;
 	}
@@ -114,7 +109,6 @@ public class NXTLightSensor extends AnalogSensor implements LampController, Sens
     @Override
     public int sampleSize()
     {
-        // TODO Auto-generated method stub
         return 1;
     }
 
@@ -122,7 +116,7 @@ public class NXTLightSensor extends AnalogSensor implements LampController, Sens
     public void fetchSample(float[] sample, int offset)
     {
         setFloodlight(true);
-        sample[offset] = port.getPin1();
+        sample[offset] = 1.0f - normalize(port.getPin1());
         
     }
 

@@ -17,12 +17,12 @@ public class RMIRemoteAnalogPort extends UnicastRemoteObject implements RMIAnalo
 	}
 
 	@Override
-	public int getPin6() throws RemoteException {
+	public float getPin6() throws RemoteException {
 		return port.getPin6();
 	}
 
 	@Override
-	public int getPin1() throws RemoteException {
+	public float getPin1() throws RemoteException {
 		return port.getPin1();
 	}
 
@@ -37,9 +37,9 @@ public class RMIRemoteAnalogPort extends UnicastRemoteObject implements RMIAnalo
 	}
 
     @Override
-    public void getShorts(short[] vals, int offset, int length)
+    public void getFloats(float[] vals, int offset, int length)
             throws RemoteException
     {
-        port.getShorts(vals, offset, length);        
+        port.getFloats(vals, offset, length);        
     }
 }

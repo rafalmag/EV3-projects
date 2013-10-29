@@ -9,7 +9,7 @@ import lejos.robotics.Touch;
  * @author andy
  *
  */
-public class EV3TouchSensor extends AnalogSensor implements Touch
+public class EV3TouchSensor extends AnalogSensor implements SensorMode
 {
     
     public EV3TouchSensor(AnalogPort port)
@@ -21,11 +21,29 @@ public class EV3TouchSensor extends AnalogSensor implements Touch
     {
         super(port);
     }
+
+    public SensorMode getTouchMode()
+    {
+        return this;
+    }
     
     @Override
-    public boolean isPressed()
+    public int sampleSize()
     {
-        return port.getPin6() > EV3SensorConstants.ADC_RES/2;
+        return 1;
+    }
+
+    @Override
+    public void fetchSample(float[] sample, int offset)
+    {
+        sample[offset] = (port.getPin6() > EV3SensorConstants.ADC_REF/2f ? 1.0f : 0.0f);
+       
+    }
+
+    @Override
+    public String getName()
+    {
+       return "Touch";
     }
 
 }

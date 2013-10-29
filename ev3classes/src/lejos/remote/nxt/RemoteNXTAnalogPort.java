@@ -5,6 +5,8 @@ import java.io.IOException;
 import lejos.hardware.port.AnalogPort;
 import lejos.hardware.port.LegacySensorPort;
 import lejos.hardware.port.PortException;
+import lejos.hardware.sensor.EV3SensorConstants;
+import lejos.hardware.sensor.SensorConstants;
 
 /**
  * This class provides access to the EV3 Analog based sensor ports and other
@@ -13,8 +15,13 @@ import lejos.hardware.port.PortException;
  * @author Lawrie Griffiths
  *
  */
-public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, LegacySensorPort
+public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort
 {
+    //TODO: If we ever implement reading of pin 6 on the NXT or return color sensor data
+    // we must ensure that the correct reference value is used. This should be 3.3V
+    // Note that even with this the readings for the color sensor may be slightly off
+    // due to the supply voltage on the NXT being 4.5V v the EV3 5.0V. We may want
+    // to correct for this.
 	public RemoteNXTAnalogPort(NXTCommand nxtCommand) {
 		super(nxtCommand);
 	}
@@ -63,45 +70,6 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
 		return true;
 	}
 	
-    @Override
-    public boolean readBooleanValue()
-    {
-		try {
-			InputValues vals = nxtCommand.getInputValues(id);
-			return (vals.rawADValue<600);			
-		} catch (IOException e) {
-			throw new PortException(e);
-		}
-    }
-
-    @Override
-    public int readRawValue()
-    {
-		try {
-			InputValues vals = nxtCommand.getInputValues(id);
-			return vals.rawADValue;
-		} catch (IOException e) {
-			throw new PortException(e);
-		}
-    }
-
-    @Override
-    public int readValue()
-    {
-	    int rawValue = readRawValue();
-	    
-	    if (mode == MODE_BOOLEAN)
-	    {
-	    	return (rawValue < 600 ? 1 : 0);
-	    }
-	    
-	    if (mode == MODE_PCTFULLSCALE)
-	    {
-	    	return ((1023 - rawValue) * 100/ 1023);
-	    }
-	    
-	    return rawValue;
-    }
     
     /**
      * get the type of the port
@@ -113,6 +81,16 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
         if (port > PORTS || port < 0)
             return CONN_ERROR;
         return 0;
+    }
+
+    private int readRawValue()
+    {
+        try {
+            InputValues vals = nxtCommand.getInputValues(id);
+            return vals.rawADValue;
+        } catch (IOException e) {
+            throw new PortException(e);
+        }
     }
 
     /**
@@ -128,27 +106,17 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort, 
     }
 
 	@Override
-	public void activate() {
-		// TODO: How can we support this for a remote NXT?
-	}
-
-	@Override
-	public void passivate() {
-		// TODO: How can we support this for a remote NXT?	
-	}
-
-	@Override
-	public void getShorts(short[] vals, int offset, int length) {
+	public void getFloats(float[] vals, int offset, int length) {
 		throw new UnsupportedOperationException("Not supported for a remote NXT");
 	}
 
 	@Override
-	public int getPin6() {
-		throw new UnsupportedOperationException("Not supported for a remote NXT");
+	public float getPin6() {
+	    return (float)readRawValue()*EV3SensorConstants.ADC_REF/SensorConstants.NXT_ADC_RES;
 	}
 
 	@Override
-	public int getPin1() {
+	public float getPin1() {
 		throw new UnsupportedOperationException("Not supported for a remote NXT");
 	}
 }

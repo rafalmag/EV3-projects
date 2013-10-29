@@ -16,13 +16,12 @@ import lejos.robotics.*;
  */
 public class NXTColorSensor extends AnalogSensor implements SensorConstants, SensorMode, LampController, ColorIdentifier
 {
-
+    protected static final long SWITCH_DELAY = 10;
     protected static int[] colorMap =
     {
         -1, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED, Color.WHITE
     };
-    protected int type;
-    private short[] ADRaw = new short[5];
+    private float[] ADRaw = new float[5];
 
     private class ModeProvider implements SensorMode
     {
@@ -48,10 +47,13 @@ public class NXTColorSensor extends AnalogSensor implements SensorConstants, Sen
         @Override
         public void fetchSample(float[] sample, int offset)
         {
-            setType(type);
+            switchType(type, SWITCH_DELAY);
             readRaw();
+            // return normalized values
+            //TODO: Is this the correct way to normalize this output?
+            // Normalize to 3.3 the ref voltage on pin 6 on the NXT
             for(int i = 0; i < sampleSize; i++)
-                sample[offset+i] = ADRaw[startOffset+i];
+                sample[offset+i] = (float)ADRaw[startOffset+i]/3.3f;
         }
 
         @Override
@@ -89,19 +91,6 @@ public class NXTColorSensor extends AnalogSensor implements SensorConstants, Sen
         init();
     }
 
-    /**
-     * Change the type of the sensor
-     * @param type new sensor type.
-     */
-    protected void setType(int type)
-    {
-        if (type != this.type)
-        {
-            // Note we use type to allow this sensor driver to work with a remote NXT
-            port.setType(type);
-            this.type = type;
-        }
-    }
 
     /**
      * get a sample provider in color ID mode
@@ -164,12 +153,12 @@ public class NXTColorSensor extends AnalogSensor implements SensorConstants, Sen
     
     protected void readRaw()
     {
-        port.getShorts(ADRaw, 0, ADRaw.length-1);
+        port.getFloats(ADRaw, 0, ADRaw.length-1);
     }
 
     protected void readFull()
     {
-        port.getShorts(ADRaw, 0, ADRaw.length);
+        port.getFloats(ADRaw, 0, ADRaw.length);
     }
 
     public void setFloodlight(boolean floodlight)
@@ -180,7 +169,7 @@ public class NXTColorSensor extends AnalogSensor implements SensorConstants, Sen
 
     public int getFloodlight()
     {
-        switch(type)
+        switch(currentType)
         {
         case TYPE_COLORFULL:
             return Color.WHITE;
@@ -193,7 +182,7 @@ public class NXTColorSensor extends AnalogSensor implements SensorConstants, Sen
         case TYPE_COLORNONE:
             return Color.NONE;
         default:
-            throw new IllegalStateException("Unknown color type" + type);
+            throw new IllegalStateException("Unknown color type" + currentType);
         }
     }
 
@@ -207,19 +196,19 @@ public class NXTColorSensor extends AnalogSensor implements SensorConstants, Sen
         switch (color)
         {
             case Color.RED:
-                setType(NXTColorSensor.TYPE_COLORRED);
+                switchType(NXTColorSensor.TYPE_COLORRED, SWITCH_DELAY);
                 break;
             case Color.BLUE:
-                setType(NXTColorSensor.TYPE_COLORBLUE);
+                switchType(NXTColorSensor.TYPE_COLORBLUE, SWITCH_DELAY);
                 break;
             case Color.GREEN:
-                setType(NXTColorSensor.TYPE_COLORGREEN);
+                switchType(NXTColorSensor.TYPE_COLORGREEN, SWITCH_DELAY);
                 break;
             case Color.NONE:
-                setType(NXTColorSensor.TYPE_COLORNONE);
+                switchType(NXTColorSensor.TYPE_COLORNONE, SWITCH_DELAY);
                 break;
             case Color.WHITE:
-                setType(NXTColorSensor.TYPE_COLORFULL);
+                switchType(NXTColorSensor.TYPE_COLORFULL, SWITCH_DELAY);
                 break;
             default:
                 return false;
@@ -234,9 +223,9 @@ public class NXTColorSensor extends AnalogSensor implements SensorConstants, Sen
      */
     public int getColorID()
     {
-        setType(TYPE_COLORFULL);
+        switchType(TYPE_COLORFULL, SWITCH_DELAY);
         readFull();
-        return colorMap[ADRaw[BLANK_INDEX+1]];
+        return colorMap[(int)ADRaw[BLANK_INDEX+1]];
     }
 
     @Override

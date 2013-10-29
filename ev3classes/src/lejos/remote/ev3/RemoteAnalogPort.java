@@ -34,7 +34,7 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
 	}
 
 	@Override
-	public int getPin6() {
+	public float getPin6() {
 		try {
 			return rmi.getPin6();
 		} catch (RemoteException e) {
@@ -43,7 +43,7 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
 	}
 
 	@Override
-	public int getPin1() {
+	public float getPin1() {
 		try {
 			return rmi.getPin1();
 		} catch (RemoteException e) {
@@ -95,27 +95,12 @@ public class RemoteAnalogPort extends RemoteIOPort  implements AnalogPort {
         return true;
     }
     
-    @Override
-    public int readRawValue()
-    {
-    	return (getPin1() + 3)/4;
-    }
-
-	@Override
-	public boolean readBooleanValue() {
-		return getPin1() < ADC_RES/2;
-	}
-
-	@Override
-	public int readValue() {
-		return (getPin1() + 3)/4;
-	}
 
     @Override
-    public void getShorts(short[] vals, int offset, int length)
+    public void getFloats(float[] vals, int offset, int length)
     {
         try {
-            rmi.getShorts(vals, offset, length);
+            rmi.getFloats(vals, offset, length);
         } catch (RemoteException e) {
 			throw new PortException(e);
         }
