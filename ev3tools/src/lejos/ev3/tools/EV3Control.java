@@ -89,9 +89,9 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private static final Dimension innerInfoPanelSize = new Dimension(280, 70);
 	private static final Dimension tonePanelSize = new Dimension(300, 110);
 	private static final Dimension i2cPanelSize = new Dimension(480, 170);
-	private static final Dimension volumePanelSize = new Dimension(180,150);
-	private static final Dimension sleepPanelSize = new Dimension(180,150);
-	private static final Dimension defaultProgramPanelSize = new Dimension(250,150);
+	private static final Dimension volumePanelSize = new Dimension(200,250);
+	private static final Dimension sleepPanelSize = new Dimension(200,250);
+	private static final Dimension defaultProgramPanelSize = new Dimension(200,250);
 	
 	private static final int fileNameColumnWidth = 627;
 	
@@ -101,9 +101,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	
 	private final String[] motorNames = { "A", "B", "C", "D" };
 	
-	private final String[] volumeLevels = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+	private final String[] volumeLevels = {"0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"};
 	
-
+	private final String[] frequencyLevels = {"100", "200", "300", "400", "500", "600", "700", "800", "900", "1000", "1100",
+			                                  "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000"};
+	
+	private final String[] lengthLevels = {"100", "200", "300", "400", "500", "600", "700", "800", "900", "1000", "1100",
+                                           "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000"};
 	// GUI components
 	private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 	private Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -433,6 +437,18 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		clickDropdownPanel.add(keyClickVolumeLabel);
 		clickDropdownPanel.add(volumeList2);
 		volumePanel.add(clickDropdownPanel);
+		JPanel freqDropdownPanel = new JPanel();
+		JLabel keyClickFrequencyLabel = new JLabel("Key Click Frequency:");
+		final JComboBox<String> volumeList3 = new JComboBox<String>(frequencyLevels);
+		freqDropdownPanel.add(keyClickFrequencyLabel);
+		freqDropdownPanel.add(volumeList3);
+		volumePanel.add(freqDropdownPanel);
+		JPanel lenDropdownPanel = new JPanel();
+		JLabel keyClickLengthLabel = new JLabel("Key Click Length:");
+		final JComboBox<String> volumeList4 = new JComboBox<String>(lengthLevels);
+		lenDropdownPanel.add(keyClickLengthLabel);
+		lenDropdownPanel.add(volumeList4);
+		volumePanel.add(lenDropdownPanel);
 		volumePanel.setPreferredSize(volumePanelSize);
 		
 		if (menu != null) {
@@ -441,6 +457,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 				volumeList.setSelectedIndex(volume/10);
 				int keyClickVolume = Integer.parseInt(menu.getSetting(Button.VOL_SETTING));
 				volumeList2.setSelectedIndex(keyClickVolume/10);
+				int keyClickFrequency = Integer.parseInt(menu.getSetting(Button.FREQ_SETTING));
+				volumeList3.setSelectedIndex((keyClickFrequency-1)/100);
+				int keyClickLength = Integer.parseInt(menu.getSetting(Button.LEN_SETTING));
+				volumeList4.setSelectedIndex((keyClickLength-1)/100);
 			} catch(IOException e) {
 				showMessage("Failed to get volume settings");
 			}
@@ -451,6 +471,14 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		
 		setButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					menu.setSetting(Sound.VOL_SETTING, "" + (volumeList.getSelectedIndex() * 10));
+					menu.setSetting(Button.VOL_SETTING, "" + (volumeList2.getSelectedIndex() * 10));
+					menu.setSetting(Button.FREQ_SETTING, "" + ((volumeList3.getSelectedIndex()+1) * 100));
+					menu.setSetting(Button.LEN_SETTING, "" + ((volumeList4.getSelectedIndex()+1) * 100));
+				} catch (RemoteException e1) {
+					showMessage("Failed to set volume settings");
+				}
 			}
 		});
 	}
