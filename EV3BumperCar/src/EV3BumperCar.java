@@ -5,7 +5,7 @@ import lejos.hardware.motor.Motor;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.port.UARTPort;
 import lejos.hardware.sensor.EV3IRSensor;
-import lejos.hardware.sensor.TouchSensor;
+import lejos.hardware.sensor.NXTTouchSensor;
 import lejos.hardware.sensor.UltrasonicSensor;
 import lejos.internal.ev3.EV3UARTPort;
 import lejos.robotics.MirrorMotor;
