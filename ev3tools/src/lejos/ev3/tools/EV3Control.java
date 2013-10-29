@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -26,7 +25,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -36,7 +34,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
@@ -48,6 +45,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
+import javax.swing.table.AbstractTableModel;
 
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
@@ -75,14 +74,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	
     private static final int LCD_WIDTH = 178;
     private static final int LCD_HEIGHT = 128;
-    
-	private static final int RMI = 0;
-	private static final int RCONSOLE = 1;
 	
 	private static final String defaultProgramProperty = "lejos.default_program";
 	private static final String defaultProgramAutoRunProperty = "lejos.default_autoRun";
 	private static final String sleepTimeProperty = "lejos.sleep_time";
-	private static final String pinProperty = "lejos.bluetooth_pin";
 	
 	private static final Dimension frameSize = new Dimension(800, 620);
 	private static final Dimension filesAreaSize = new Dimension(780, 350);
@@ -160,6 +155,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JPanel controlPanel = new JPanel();
 	private JPanel dataPanel = new JPanel();
 	private JPanel otherPanel = new JPanel();
+	private JPanel wifiPanel = new JPanel();
+	private JPanel bluetoothPanel = new JPanel();
 	private JTextArea theConsoleLog = new JTextArea(16, 68);
 	private JTextArea theDataLog = new JTextArea(20, 68);
 	private JSlider[] sliders = new JSlider[4];
@@ -185,13 +182,11 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JButton formatButton = new JButton("Format");
 	private JButton setDefaultButton = new JButton("Set Default");
 	private JButton runSampleButton = new JButton("Run sample");
-	private JRadioButton rmiButton = new JRadioButton("RMI", true);
-	private JRadioButton rconsoleButton = new JRadioButton("RConsole");
 	private JFormattedTextField freq = new JFormattedTextField(new Integer(500));
 	private JFormattedTextField duration = new JFormattedTextField(new Integer(1000));
-	private JComboBox sensorList = new JComboBox(sensorPorts);
-	private JComboBox sensorList2 = new JComboBox(sensorPorts);
-	private JComboBox sensorTypeList = new JComboBox(sensorTypes);
+	private JComboBox<String> sensorList = new JComboBox<String>(sensorPorts);
+	private JComboBox<String> sensorList2 = new JComboBox<String>(sensorPorts);
+	private JComboBox<String> sensorTypeList = new JComboBox<String>(sensorTypes);
 	private JComboBox<String> sensorModeList;
 	private JFormattedTextField txData = new JFormattedTextField();
 	private JFormattedTextField rxDataLength = new JFormattedTextField(new Integer(1));
@@ -209,17 +204,12 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	
 	// Other instance data
 	private ExtendedFileModel fmPrograms, fmSamples;
-	private EV3Control control;
 	private int mv;
-	private int appProtocol = RMI;
 	private int rowLength = 8; // default
 	private int recordCount;;
 	private ConsoleViewComms cvc;
-	private ConsoleViewComms[] cvcs;
 	private LCDDisplay lcd;
 	private File directoryLastUsed;
-	private Socket sock;
-	private static final int PORT = 8001;
 	
 	private RMIMenu menu;
     private RemoteEV3 ev3;
@@ -253,8 +243,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			}
 		};
 		frame.addWindowListener(listener);
-
-		control = this;
+		cvc = new ConsoleViewComms(this,true);
 
 		// Search Button: search for EV3s
 		searchButton.addActionListener(new ActionListener() {
@@ -277,26 +266,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 				updateSensors();
 			}
 		});
-		
-		rmiButton.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				if (appProtocol == getAppProtocol()) return;
-				if (rmiButton.isSelected()) {
-					createRMITabs();
-					appProtocol = RMI;
-				}				
-			}		
-		});
-		
-		rconsoleButton.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				if (appProtocol == getAppProtocol()) return;
-				if (rconsoleButton.isSelected()) {
-					createConsoleTabs();
-					appProtocol = RCONSOLE;
-				}				
-			}		
-		});
 
 		// Create the panels
 		createEV3SelectionPanel();
@@ -306,6 +275,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		createControlPanel();
 		createMiscellaneousPanel();
 		createSettingsPanel();
+		createWirelessPanel();
 
 		// set the size of the files panel
 		programsFilesPanel.setPreferredSize(filesPanelSize);
@@ -433,11 +403,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		buttonPanel.add(searchButton);
 		buttonPanel.add(connectButton);
 		ev3ButtonPanel.add(buttonPanel);
-		ev3ButtonPanel.add(rmiButton);
-		ev3ButtonPanel.add(rconsoleButton);
-		ButtonGroup appProtocolButtonGroup = new ButtonGroup();
-		appProtocolButtonGroup.add(rmiButton);
-		appProtocolButtonGroup.add(rconsoleButton);
 		ev3ButtonPanel.setPreferredSize(ev3ButtonsPanelSize);
 		ev3Panel.add(ev3ButtonPanel, BorderLayout.EAST);
 	}
@@ -451,7 +416,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		consolePanel.add(new JScrollPane(theConsoleLog));
         lcd = new LCDDisplay();
         lcd.clear();
-        lcd.setMinimumSize(new Dimension(LCD_WIDTH*2, LCD_HEIGHT*2));
+        lcd.setMinimumSize(new Dimension(LCD_WIDTH, LCD_HEIGHT));
         lcd.setEnabled(true);
         lcd.setPreferredSize(lcd.getMinimumSize());
         consolePanel.add(lcd);
@@ -531,7 +496,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		sleepPanel.setBorder(etchedBorder);
 		JLabel menuSettings = new JLabel("Menu Settings");
 		JLabel sleepLabel = new JLabel("Menu sleep time:");
-		final JComboBox sleepList = new JComboBox(volumeLevels);
+		final JComboBox<String> sleepList = new JComboBox<String>(volumeLevels);
 		sleepPanel.add(menuSettings);
 		JPanel sleepDropdownPanel = new JPanel();
 		sleepDropdownPanel.add(sleepLabel);
@@ -682,6 +647,21 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		monitorPanel.add(rightPanel);
 		monitorPanel.add(monitorUpdateButton);
 	}
+	
+	public void createWirelessPanel() {
+		final String[] accessPoints = new String[0];
+	    TableModel dataModel = new AbstractTableModel() {
+			private static final long serialVersionUID = 1L;
+			public int getColumnCount() { return 1; }
+	        public int getRowCount() { return 0;}
+	        public Object getValueAt(int row, int col) { return accessPoints[row]; }
+	        public String getColumnName(int col) { return "Wireless Access Point"; }
+	  
+	    };
+		JTable wifiTable = new JTable(dataModel);
+		
+		wifiPanel.add(new JScrollPane(wifiTable));
+	}
 
 	/**
 	 *  Create the tabs for RMI
@@ -690,18 +670,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		tabbedPane.removeAll();
 		tabbedPane.addTab("Programs", programsFilesPanel);
 		tabbedPane.addTab("Samples", samplesFilesPanel);
-		tabbedPane.addTab("Settings", settingsPanel);
-		tabbedPane.addTab("Monitor", monitorPanel);
-		tabbedPane.addTab("Control", controlPanel);
-		tabbedPane.addTab("Miscellaneous", otherPanel);
-	}
-	
-	/**
-	 *  Create the tabs for RConsole
-	 */
-	private void createConsoleTabs() {
-		tabbedPane.removeAll();
 		tabbedPane.addTab("Console", consolePanel);
+		tabbedPane.addTab("Settings", settingsPanel);
+		tabbedPane.addTab("Sensors", monitorPanel);
+		tabbedPane.addTab("Motors", controlPanel);
+		tabbedPane.addTab("Wifi", wifiPanel);
+		tabbedPane.addTab("Bluetooth", bluetoothPanel);
+		tabbedPane.addTab("Tools", otherPanel);
 	}
 	
 	/**
@@ -913,7 +888,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			}
 			fmPrograms.fetchFiles();
 		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -955,7 +929,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			}
 			fmSamples.fetchFiles();
 		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -1317,6 +1290,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		for(int i=0;i<sensors.length;i++) {
 			if (sensors[i] != null) sensors[i].close();		
 		}
+		if (cvc != null) cvc.close();
 	}
 
 	/**
@@ -1324,16 +1298,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	private void updateConnectButton(boolean connected) {
 		connectButton.setText((connected ? "Disconnect" : "Connect"));
-	}
-	
-	/**
-	 * Get the Application protocol
-	 */
-	private int getAppProtocol() {
-		int appProtocol = 0;
-		if (rmiButton.isSelected())	appProtocol = RMI;
-		if (rconsoleButton.isSelected()) appProtocol = RCONSOLE;
-		return appProtocol;
 	}
 
 	/**
@@ -1409,19 +1373,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			try {
 				menu = (RMIMenu) Naming.lookup("//" + name + "/RemoteMenu");
 				ev3 = new RemoteEV3(name);
+				cvc.connectTo(name, name, 0, true);
 				showFiles();
 			} catch (RemoteException | MalformedURLException
 					| NotBoundException e) {
 				e.printStackTrace();
 			}
 		}	
-	}
-
-	/**
-	 * Connect to RConsole
-	 */
-	private void consoleConnect() {		
-		int row = ev3Table.getSelectedRow();
 	}
 	
 	/**
@@ -1740,17 +1698,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		if (c >= 'a' && c <= 'f') return c - 'a' + 10;
 		if (c >= 'A' && c <= 'F') return c - 'A' + 10;
 		return 0;
-	}
-	/** 
-	 * Send an i2c status request
-	 */
-	private void i2cStatus() {
-	}
-	
-	/**
-	 * Read i2c reply
-	 */
-	private void i2cReceive() {
 	}
 	
 	/**
