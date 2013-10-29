@@ -16,12 +16,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -52,8 +50,6 @@ import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.hardware.sensor.BaseSensor;
-import lejos.hardware.sensor.SensorMode;
 import lejos.remote.ev3.RMIMenu;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RemoteEV3;
@@ -101,39 +97,12 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	
 	private static final String title = "EV3 Control Center";
 
-	private static final String[] sensorTypes = { "No Sensor", "EV3 Touch",
-			"EV3 IR", "EV3 Color", "EV3 Ultrasonic", "EV3 Gyro",
-			"NXT Touch", "NXT Sound", "NXT Light", "NXT Color", "NXT Ultrasonic",
-			"HiTechnic Gyro", "HiTechnic Acceleration", "HiTechnic Color",
-			"HiTechnic Compass", "HiTechnic Barometric", "HiTechnic Angle",
-			"HiTechnic Magnetic","HiTechnic IRSeeker", "HiTechnic EOPD",
-			"Mindsensors Acceleration", "Mindsensors Compass", "Mindsensors Distance",
-			"Mindsensors LineLeader", "Mindsensors Pressure",
-			"Dexter IMU", "Dexter Pressure 250", "Dexter Pressure 500", "Dexter Thermal IR",
-			"Cruizcore Gyro", "RCX Temperature", "RCX Light"
-			};
-	
-	private static final String[] sensorClasses = { "", "EV3TouchSensor",
-		"EV3IRSensor", "EV3ColorSensor", "EV3UltrasonicSensor", "EV3GyroSensor",
-		"NXTTouchSensor", "NXTSoundSensor", "NXTLightSensor", "NXTColorSensor", "NXTUltrasonicSensor",
-		"HiTechnicGyro", "HiTechnicAccelerometer", "HiTechnicColorSensor",
-		"HiTechnicCompassSensor", "HiTechnicBarometer", "HiTechnicAngleSensor",
-		"HiTechnicMagneticSensor","HiTechnicIRSeekerv2", "HiTechnicEOPD",
-		"MindsensorsAccelerometer", "MindsensorsCompass", "MindsensorsDistanceSensor",
-		"MindsensorsLineLeader", "MindsensorsPressureSensor",
-		"DexterIMU", "DexterPressureSensor250", "DexterPressureSensor500", "DexterThermalIRSensor",
-		"CruizcoreGyro", "RCXThermometer", "RCXLightSensor"
-		};
-
 	private static final String[] sensorPorts = { "S1", "S2", "S3", "S4" };
-	
-	private String[] sensorModes = {};
 	
 	private final String[] motorNames = { "A", "B", "C", "D" };
 	
 	private final String[] volumeLevels = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 	
-	private BaseSensor[] sensors = new BaseSensor[4];
 
 	// GUI components
 	private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
@@ -185,9 +154,6 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JFormattedTextField freq = new JFormattedTextField(new Integer(500));
 	private JFormattedTextField duration = new JFormattedTextField(new Integer(1000));
 	private JComboBox<String> sensorList = new JComboBox<String>(sensorPorts);
-	private JComboBox<String> sensorList2 = new JComboBox<String>(sensorPorts);
-	private JComboBox<String> sensorTypeList = new JComboBox<String>(sensorTypes);
-	private JComboBox<String> sensorModeList;
 	private JFormattedTextField txData = new JFormattedTextField();
 	private JFormattedTextField rxDataLength = new JFormattedTextField(new Integer(1));
 	private JFormattedTextField address;
@@ -197,10 +163,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private JTextField newName = new JTextField(16);
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	private JLabel batteryValue = new JLabel("");
-	private JLabel s1Value = new JLabel("");
-	private JLabel s2Value = new JLabel("");
-	private JLabel s3Value = new JLabel("");
-	private JLabel s4Value = new JLabel("");
+	private SensorPanel s1Panel = new SensorPanel(0);
+	private SensorPanel s2Panel = new SensorPanel(1);
+	private SensorPanel s3Panel = new SensorPanel(2);
+	private SensorPanel s4Panel = new SensorPanel(3);
 	
 	// Other instance data
 	private ExtendedFileModel fmPrograms, fmSamples;
@@ -213,7 +179,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	
 	private RMIMenu menu;
     private RemoteEV3 ev3;
-    private RMIRegulatedMotor motor0, motor1, motor2;
+    private RMIRegulatedMotor motor0, motor1, motor2, motor3;
     
 	// Formatter
 	private static final NumberFormat FORMAT_FLOAT = NumberFormat.getNumberInstance();
@@ -585,62 +551,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		batteryPanel.add(batteryLabel);
 		batteryPanel.add(batteryValue);
 		leftPanel.add(batteryPanel);
-		JPanel setSensorPanel = new JPanel();
-		setSensorPanel.setBorder(etchedBorder);
-		setSensorPanel.setLayout(new BoxLayout(setSensorPanel, BoxLayout.Y_AXIS));
-		JLabel setSensorLabel = new JLabel("Set Sensor");
-		JPanel labelPanel = new JPanel();
-		labelPanel.add(setSensorLabel);
-		setSensorPanel.add(labelPanel);
-		JPanel portPanel = new JPanel();
-		JLabel portLabel = new JLabel("Port:");
-		portPanel.add(portLabel);
-		portPanel.add(sensorList2);
-		setSensorPanel.add(portPanel);
-		JPanel typePanel = new JPanel();
-		JLabel typeLabel = new JLabel("Name:");
-		typePanel.add(typeLabel);
-		typePanel.add(sensorTypeList);
-		JLabel modeLabel = new JLabel("Mode:");
-		typePanel.add(modeLabel);
-		setSensorPanel.add(typePanel);
-		sensorModeList = new JComboBox<String>(sensorModes);
-		typePanel.add(sensorModeList);
-		JButton setSensorButton = new JButton("Set Sensor");
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.add(setSensorButton);
-		setSensorPanel.add(buttonPanel);
-		leftPanel.add(setSensorPanel);
-		JLabel s1Label = new JLabel("S1:");
-		JPanel s1Panel = new JPanel();
-		s1Panel.setBorder(etchedBorder);
-		s1Panel.add(s1Label);
-		s1Panel.add(s1Value);
-		centerPanel.add(s1Panel);
-		JLabel s2Label = new JLabel("S2:");
-		JPanel s2Panel = new JPanel();
-		s2Panel.setBorder(etchedBorder);
-		s2Panel.add(s2Label);
-		s2Panel.add(s2Value);
-		centerPanel.add(s2Panel);
-		JLabel s3Label = new JLabel("S3:");
-		JPanel s3Panel = new JPanel();
-		s3Panel.setBorder(etchedBorder);
-		s3Panel.add(s3Label);
-		s3Panel.add(s3Value);
-		centerPanel.add(s3Panel);
-		JLabel s4Label = new JLabel("S4:");
-		JPanel s4Panel = new JPanel();
-		s4Panel.setBorder(etchedBorder);
-		s4Panel.add(s4Label);
-		s4Panel.add(s4Value);
-		centerPanel.add(s4Panel);
-		
-		setSensorButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setSensor();
-			}
-		});
+		centerPanel.add(this.s1Panel);
+		centerPanel.add(this.s2Panel);
+		rightPanel.add(this.s3Panel);
+		rightPanel.add(this.s4Panel);
 		
 		monitorPanel.add(leftPanel);
 		monitorPanel.add(centerPanel);
@@ -1220,37 +1134,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private void updateSensors() {
 		if (ev3 == null) return;
 		batteryValue.setText("" + mv);
-		for(int i=0;i<sensors.length;i++) {
-			if (sensors[i] != null) {
-				int selected = sensorModeList.getSelectedIndex();
-				SensorMode m = sensors[i].getMode(selected);
-				float[] sample = new float[m.sampleSize()];
-				m.fetchSample(sample, 0);
-				
-				StringBuilder sb = new StringBuilder();
-				DecimalFormat df= new DecimalFormat( "#,###,###,##0.00" );
-				
-				for(int j=0;j<m.sampleSize();j++) {
-					sb.append(df.format(sample[j]));
-					if (j<m.sampleSize()-1) sb.append(',');
-				}
-				
-				switch(i) {
-				case 0:
-					s1Value.setText(sb.toString());
-					break;
-				case 1:
-					s2Value.setText(sb.toString());
-					break;
-				case 2:
-					s3Value.setText(sb.toString());
-					break;
-				case 3:
-					s4Value.setText(sb.toString());
-					break;
-				}		
-			}
-		}
+		s1Panel.update();
+		s2Panel.update();
+		s3Panel.update();
+		s4Panel.update();
 	}
 
 	/**
@@ -1287,9 +1174,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Close all connections
 	 */
 	private void closeAll() {
-		for(int i=0;i<sensors.length;i++) {
-			if (sensors[i] != null) sensors[i].close();		
-		}
+		s1Panel.close();
+		s2Panel.close();
+		s3Panel.close();
+		s4Panel.close();
 		if (cvc != null) cvc.close();
 	}
 
@@ -1373,6 +1261,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			try {
 				menu = (RMIMenu) Naming.lookup("//" + name + "/RemoteMenu");
 				ev3 = new RemoteEV3(name);
+				s1Panel.setEV3(ev3);
+				s2Panel.setEV3(ev3);
+				s3Panel.setEV3(ev3);
+				s4Panel.setEV3(ev3);
 				cvc.connectTo(name, name, 0, true);
 				showFiles();
 			} catch (RemoteException | MalformedURLException
@@ -1532,64 +1424,24 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			if (selectors[1].isSelected()) {
 				motor1 = ev3.createRegulatedProvider("B");
 			    motor1.setSpeed(speed1);
-			    if (lim[1] !=0) motor0.rotateTo(lim[1]);
+			    if (lim[1] !=0) motor1.rotateTo(lim[1]);
 			    else if (speed1 > 0) motor1.forward(); else motor1.backward();
 			}
 			if (selectors[2].isSelected()) {
 				motor2 = ev3.createRegulatedProvider("C");
 			    motor2.setSpeed(speed2);
-			    if (lim[2] !=0) motor0.rotateTo(lim[2]);
+			    if (lim[2] !=0) motor2.rotateTo(lim[2]);
 			    else if (speed2 > 0) motor2.forward(); else motor2.backward();
+			}
+			if (selectors[3].isSelected()) {
+				motor3 = ev3.createRegulatedProvider("D");
+			    motor3.setSpeed(speed2);
+			    if (lim[2] !=0) motor3.rotateTo(lim[2]);
+			    else if (speed2 > 0) motor3.forward(); else motor3.backward();
 			}
 		} catch (IOException ioe) {
 			showMessage("IOException updating control");
 		}
-	}
-	
-	/**
-	 * Set the sensor type and mode
-	 */
-	private void setSensor() {
-		int selected = sensorTypeList.getSelectedIndex();
-		String className = "lejos.hardware.sensor." + sensorClasses[selected];
-		System.out.println("Sensor type is " + sensorTypes[selected]);
-		System.out.println("Sensor class is " + className);
-		
-		int portNumber = sensorList2.getSelectedIndex();
-		
-		String portName = sensorPorts[portNumber];
-		
-		System.out.println("Port is " + portName);
-		
-		Port p = ev3.getPort(portName);
-		
-		if (sensors[portNumber] != null) sensors[portNumber].close();
-		
-		try {
-			Class<?> c = Class.forName(className);
-			Class<?>[] params = new Class<?>[1];
-			params[0] = Port.class;
-			Constructor<?> con = c.getConstructor(params);
-			System.out.println("Created constructor");
-			Object[] args = new Object[1];
-			args[0] = p;
-			BaseSensor s = (BaseSensor) con.newInstance(args);
-			System .out.println("Created sensor class");
-			
-			sensorModeList.removeAllItems();
-			
-			for(String m: s.getAvailableModes()) {
-				sensorModeList.addItem(m);
-			}
-			
-			monitorPanel.revalidate();
-			sensors[portNumber] = s;		
-			
-		} catch (Exception e) {
-			System.err.println("Failed to create sensor class: " + e);
-			System.err.println("Cause: " + e.getCause());
-			e.getCause().printStackTrace();
-		}	
 	}
 	
 	/**
@@ -1609,6 +1461,21 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Reset the tachometer for a motor
 	 */
 	private void resetTacho(JButton b) {
+		RMIRegulatedMotor motor;
+		
+		if (ev3 == null) return;
+		
+		if (b == resetButtons[0]) motor = motor0;
+		if (b == resetButtons[1]) motor = motor1;
+		if (b == resetButtons[2]) motor = motor2;
+		if (b == resetButtons[3]) motor = motor3;
+		
+		
+		try {
+			// TODO: add tacho stuff to RMIRegulatedMotor
+		} catch (Exception ioe) {
+			showMessage("IO Exception resetting motor");
+		}
 	}
 	
 	/**
