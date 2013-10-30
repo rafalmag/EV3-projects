@@ -32,6 +32,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
@@ -187,6 +188,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
     
 	// Formatter
 	private static final NumberFormat FORMAT_FLOAT = NumberFormat.getNumberInstance();
+	
+	private String[] accessPoints = new String[0];
 
 	/**
 	 * Command line entry point
@@ -591,18 +594,61 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	}
 	
 	public void createWirelessPanel() {
-		final String[] accessPoints = new String[0];
 	    TableModel dataModel = new AbstractTableModel() {
 			private static final long serialVersionUID = 1L;
 			public int getColumnCount() { return 1; }
-	        public int getRowCount() { return 0;}
+	        public int getRowCount() { return accessPoints.length;}
 	        public Object getValueAt(int row, int col) { return accessPoints[row]; }
 	        public String getColumnName(int col) { return "Wireless Access Point"; }
 	  
 	    };
-		JTable wifiTable = new JTable(dataModel);
+		final JTable wifiTable = new JTable(dataModel);
 		
 		wifiPanel.add(new JScrollPane(wifiTable));
+		JButton scanButton = new JButton("Scan");
+		wifiPanel.add(scanButton);
+		JButton configButton = new JButton("Configure");
+		wifiPanel.add(configButton);
+		
+		scanButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (ev3 == null) return;
+					String[] aps = ev3.getWifi().getAccessPointNames();
+					for(String ap : aps) {
+						System.out.println(ap);
+					}
+					
+					accessPoints = aps;
+					wifiTable.revalidate();
+					
+				} catch (Exception ioe) {
+					showMessage("Failed to get list of Wifi access point");
+				}
+			}
+		});
+		
+		configButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int row= wifiTable.getSelectedRow();
+					
+					JPasswordField pf = new JPasswordField();
+					int okCxl = JOptionPane.showConfirmDialog(null, pf, "Enter Password", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+					if (okCxl == JOptionPane.OK_OPTION) {
+					  String password = new String(pf.getPassword());
+					  System.out.println("You entered: " + password);
+					  System.out.println("ssis is " + (String) wifiTable.getValueAt(row, 0));
+					  menu.configureWifi((String) wifiTable.getValueAt(row, 0), password);
+					}
+					
+					if (row < 0) showMessage("Please select an access point");
+				} catch (Exception ioe) {
+					showMessage("Failed to configure wifi");
+				}
+			}
+		});
 	}
 
 	/**

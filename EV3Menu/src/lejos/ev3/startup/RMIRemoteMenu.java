@@ -97,4 +97,9 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 		return menu.setName(name);
 	}
 
+	@Override
+	public void configureWifi(String ssid, String pwd) throws RemoteException {
+		WPASupplicant.writeConfiguration("wpa_supplicant.txt",  "wpa_supplicant.conf", ssid, pwd);	
+	}
+
 }

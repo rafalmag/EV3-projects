@@ -36,5 +36,7 @@ public interface RMIMenu extends Remote {
 	public String getName() throws RemoteException;
 	
 	public boolean setName(String name) throws RemoteException;
+	
+	public void configureWifi(String ssid, String pwd) throws RemoteException;
 
 }

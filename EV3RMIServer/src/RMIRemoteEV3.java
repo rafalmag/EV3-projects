@@ -10,6 +10,7 @@ import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RMISound;
 import lejos.remote.ev3.RMIUARTPort;
+import lejos.remote.ev3.RMIWifi;
 
 
 public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
@@ -61,6 +62,12 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 
 	@Override
 	public RMISound getSound() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RMIWifi getWifi() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
