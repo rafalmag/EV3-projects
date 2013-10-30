@@ -1,6 +1,10 @@
 package lejos.hardware;
 
-public class RemoteBTDevice {
+import java.io.Serializable;
+
+public class RemoteBTDevice implements Serializable {
+	
+	private static final long serialVersionUID = -1668354353670941450L;
 	private String name;
 	private byte[] address;
 	
