@@ -14,7 +14,7 @@ import lejos.utility.EndianTools;
 public class CruizcoreGyro extends I2CSensor implements SensorMode {
 
 	/*
-	 * Documentation can be obtained here: http://xgl.minfinity.com/Downloads/Downloads.html
+	 * Documentation can be obtained here: http://www.minfinity.com/Manual/CruizCore_XG1300L_User_Manual.pdf
 	 * The documentation and the conversion in the NXC sample code indicate,
 	 * that 16bit signed little endian values are returned.
 	 */
@@ -35,11 +35,10 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 
 	private static final byte RESET = 0x60;
 
-	private static final byte SELECT_2G = 0x61;
+	private static final byte SELECT_SCALE = 0x61;
 	
-	private static final byte SELECT_4G = 0x62;
-	
-	private static final byte SELECT_8G = 0x63;
+		
+	private float scale=1;
 	
 	/**
 	 * Instantiates a new Cruizcore Gyro sensor.
@@ -48,15 +47,21 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 	 */
     public CruizcoreGyro(I2CPort port) {
         super(port, GYRO_ADDRESS);
+        init();
     }
     
     public CruizcoreGyro(Port port) {
         super(port, GYRO_ADDRESS);
+        init();
     }
     
+    
     protected void init() {
+      setAccScale2G();
     	setModes(new SensorMode[]{ this, new RateMode(),  new AngleMode() });
     }
+    
+ 
 	
 	/**
 	 * Sets the acc scale.
@@ -68,7 +73,8 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 	 */
 	public void setAccScale(byte sf)
 	{
-		sendData(SELECT_2G+sf, (byte)0);
+		sendData(SELECT_SCALE + sf, (byte) 0);
+		scale=(float) (9.81 / 1000f * Math.pow(2, sf + 1) / 2);
 	}
 	
 	/**
@@ -76,7 +82,7 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 	 */
 	public void setAccScale2G()
 	{
-		sendData(SELECT_2G, (byte)0);
+	  setAccScale((byte) 0);
 	}	
 
 	/**
@@ -84,7 +90,7 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 	 */
 	public void setAccScale4G()
 	{
-		sendData(SELECT_4G, (byte)0);
+    setAccScale((byte) 1);
 	}	
 	
 	/**
@@ -92,7 +98,7 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 	 */
 	public void setAccScale8G()
 	{
-		sendData(SELECT_8G, (byte)0);
+    setAccScale((byte) 2);
 	}		
 	
 	/**
@@ -113,9 +119,9 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 	@Override
 	public void fetchSample(float[] sample, int offset) {
 		getData(ACCEL_X,inBuf,6);
-		sample[0+offset] = EndianTools.decodeShortLE(inBuf, 0);
-		sample[1+offset] = EndianTools.decodeShortLE(inBuf, 2);
-		sample[2+offset] = EndianTools.decodeShortLE(inBuf, 4);		
+		sample[0+offset] = EndianTools.decodeShortLE(inBuf, 2) * scale;
+		sample[1+offset] = EndianTools.decodeShortLE(inBuf, 0) * scale;
+		sample[2+offset] = - EndianTools.decodeShortLE(inBuf, 4) * scale;		
 	}
 	
 	@Override
@@ -162,7 +168,7 @@ public class CruizcoreGyro extends I2CSensor implements SensorMode {
 		@Override
 		public void fetchSample(float[] sample, int offset) {
 			getData(ANGLE,inBuf,2);
-			sample[offset] = 360 - EndianTools.decodeShortLE(inBuf, 0);		
+			sample[offset] = 360 - EndianTools.decodeShortLE(inBuf, 0)/100f;		
 		}
 
 		@Override
