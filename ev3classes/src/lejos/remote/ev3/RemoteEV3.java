@@ -79,4 +79,12 @@ public class RemoteEV3 implements EV3 {
 			throw new PortException(e);
 		}
 	}
+	
+	public RMIWifi getWifi() {
+		try {
+			return rmiEV3.getWifi();
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
+	}
 }
