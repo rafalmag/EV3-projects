@@ -15,7 +15,7 @@ public class RemoteBluetooth {
 		
 		System.out.println("Bluetooth scan ...");
 		for(RemoteBTDevice d: devices) {
-			System.out.println(d.getName());
+			System.out.println(d.getName() + "\t" + d.getAddress());
 		}
 
 	}
