@@ -639,13 +639,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 					if (okCxl == JOptionPane.OK_OPTION) {
 					  String password = new String(pf.getPassword());
 					  System.out.println("You entered: " + password);
-					  System.out.println("ssis is " + (String) wifiTable.getValueAt(row, 0));
+					  System.out.println("ssid is " + (String) wifiTable.getValueAt(row, 0));
 					  menu.configureWifi((String) wifiTable.getValueAt(row, 0), password);
 					}
 					
 					if (row < 0) showMessage("Please select an access point");
-				} catch (Exception ioe) {
-					showMessage("Failed to configure wifi");
+				} catch (Exception x) {
+					showMessage("Failed to configure wifi: " + x);
 				}
 			}
 		});

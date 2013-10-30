@@ -22,4 +22,6 @@ public interface RMIEV3 extends Remote {
 	public RMISound getSound() throws RemoteException;
 	
 	public RMIWifi getWifi() throws RemoteException;
+	
+	public RMIBluetooth getBluetooth() throws RemoteException;
 }

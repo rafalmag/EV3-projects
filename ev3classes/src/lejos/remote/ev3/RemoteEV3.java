@@ -87,4 +87,12 @@ public class RemoteEV3 implements EV3 {
 			throw new PortException(e);
 		}
 	}
+	
+	public RMIBluetooth getBluetooth() {
+		try {
+			return rmiEV3.getBluetooth();
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
+	}
 }

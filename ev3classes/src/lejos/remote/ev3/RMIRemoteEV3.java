@@ -64,4 +64,9 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	public RMIWifi getWifi() throws RemoteException {
 		return new RMIRemoteWifi();
 	}
+
+	@Override
+	public RMIBluetooth getBluetooth() throws RemoteException {
+		return new RMIRemoteBluetooth();
+	}
 }

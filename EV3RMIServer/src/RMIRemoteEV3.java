@@ -3,6 +3,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 import lejos.remote.ev3.RMIAnalogPort;
 import lejos.remote.ev3.RMIBattery;
+import lejos.remote.ev3.RMIBluetooth;
 import lejos.remote.ev3.RMIEV3;
 import lejos.remote.ev3.RMII2CPort;
 import lejos.remote.ev3.RMIMotorPort;
@@ -68,6 +69,12 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 
 	@Override
 	public RMIWifi getWifi() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RMIBluetooth getBluetooth() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
