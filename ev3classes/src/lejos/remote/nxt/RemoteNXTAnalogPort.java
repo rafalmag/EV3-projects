@@ -112,11 +112,11 @@ public class RemoteNXTAnalogPort extends RemoteNXTIOPort implements AnalogPort
 
 	@Override
 	public float getPin6() {
-	    return (float)readRawValue()*EV3SensorConstants.ADC_REF/SensorConstants.NXT_ADC_RES;
+        throw new UnsupportedOperationException("Not supported for a remote NXT");
 	}
 
 	@Override
 	public float getPin1() {
-		throw new UnsupportedOperationException("Not supported for a remote NXT");
+        return (float)readRawValue()*EV3SensorConstants.ADC_REF/SensorConstants.NXT_ADC_RES;
 	}
 }
