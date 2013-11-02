@@ -23,7 +23,6 @@ public class NXTLightSensor extends AnalogSensor implements LampController, Sens
         @Override
         public int sampleSize()
         {
-            // TODO Auto-generated method stub
             return 1;
         }
 
@@ -43,7 +42,7 @@ public class NXTLightSensor extends AnalogSensor implements LampController, Sens
 	}
     protected void init()
     {
-        setModes(new SensorMode[]{ getRedMode(), getAmbientMode() });        
+        setModes(new SensorMode[]{ this, new AmbientMode() });        
         setFloodlight(true);
     }
     
@@ -103,7 +102,7 @@ public class NXTLightSensor extends AnalogSensor implements LampController, Sens
 	
 	public SensorMode getAmbientMode()
 	{
-	    return new AmbientMode();
+	    return getMode(1);
 	}
 	
     @Override

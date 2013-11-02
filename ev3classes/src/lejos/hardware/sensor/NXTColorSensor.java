@@ -49,11 +49,8 @@ public class NXTColorSensor extends AnalogSensor implements SensorConstants, Sen
         {
             switchType(type, SWITCH_DELAY);
             readRaw();
-            // return normalized values
-            //TODO: Is this the correct way to normalize this output?
-            // Normalize to 3.3 the ref voltage on pin 6 on the NXT
             for(int i = 0; i < sampleSize; i++)
-                sample[offset+i] = (float)ADRaw[startOffset+i]/3.3f;
+                sample[offset+i] = (float)ADRaw[startOffset+i];
         }
 
         @Override

@@ -222,7 +222,7 @@ public class EV3AnalogPort extends EV3IOPort implements AnalogPort
             if (cnt > rawValues.length)
                 cnt = rawValues.length;
             for(int i = 0; i < cnt; i++)
-                vals[offset+i] = (float)rawValues[i]*ADC_REF/ADC_RES;
+                vals[offset+i] = (float)rawValues[i]/ADC_RES;
             offset += cnt;
             length -= cnt;
             if (length > 0)

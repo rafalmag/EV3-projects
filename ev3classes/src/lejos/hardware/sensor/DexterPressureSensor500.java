@@ -14,7 +14,6 @@ import lejos.hardware.port.Port;
  */
 public class DexterPressureSensor500 extends AnalogSensor implements SensorConstants, SensorMode {
 	/*
-	 * TODO: Can 1023 really be right? Should it be 1024?
 	 * 
 	 * Formula from DPRESS-driver.h:
 	 * vRef = 4.85
@@ -28,7 +27,7 @@ public class DexterPressureSensor500 extends AnalogSensor implements SensorConst
 	 * Optimized:
 	 * result = rawValue * DPRESS_MULT - DPRESS_OFFSET;
 	 */
-	private static final float DPRESS_MULT = (float)(1.0 / CAL2 / 1023);
+	private static final float DPRESS_MULT = (float)(1.0 / CAL2 );
 	private static final float DPRESS_OFFSET = (float)(CAL1 / CAL2);
 	
     public DexterPressureSensor500(AnalogPort port) {
@@ -61,7 +60,7 @@ public class DexterPressureSensor500 extends AnalogSensor implements SensorConst
 
 	@Override
 	public void fetchSample(float[] sample, int offset) {
-		sample[offset] = (NXTRawValue(port.getPin1()) * DPRESS_MULT - DPRESS_OFFSET) * 1000f; // in pascals
+		sample[offset] = (normalize(NXTRawValue(port.getPin1())) * DPRESS_MULT - DPRESS_OFFSET) * 1000f; // in pascals
 	}
 
 	@Override

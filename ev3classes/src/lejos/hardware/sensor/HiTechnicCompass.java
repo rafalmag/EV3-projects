@@ -76,7 +76,7 @@ public class HiTechnicCompass extends I2CSensor implements Calibrate, SensorMode
 	@Override
 	public void fetchSample(float[] sample, int offset) {
 		getData(0x42, buf, 2);
-		sample[offset] = ((buf[0] & 0xff)<< 1) + buf[1];
+		sample[offset] = 359-(((buf[0] & 0xff)<< 1) + buf[1]);
 	}
 	
 	@Override
