@@ -31,4 +31,8 @@ public class RemoteBTDevice implements Serializable {
 		}
 		return sb.toString();
 	}
+	
+	public void authenticate(String pin) {
+		
+	}
 }

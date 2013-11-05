@@ -6,10 +6,14 @@
     <property name="lejos.home"     value="/home/root/lejos"/>
     <property name="ev3.host"       value="192.168.0.9"/>
     <property name="jna.dir"        value="lib"/>
+    <property name="libdbus.dir"    value="../DBusJava/"/>
 
     <path id="libraries.path">    
         <fileset dir="${jna.dir}">
             <include name="jna-3.2.7.jar"/>
+        </fileset>
+    	<fileset dir="${libdbus.dir}">
+            <include name="*.jar"/>
         </fileset>
     </path>
 
