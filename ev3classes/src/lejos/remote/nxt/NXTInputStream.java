@@ -51,7 +51,10 @@ public class NXTInputStream extends InputStream {
 	   {
 		   bufSize = conn.read(buf, buf.length);
            if (bufSize < -1) throw new IOException();
-		   if (bufSize <= 0) return -1;
+		   if (bufSize <= 0) {
+			   System.out.println("End of file");
+			   return -1;
+		   }
 		   bufIdx = 0;
 	   }
        return buf[bufIdx++] & 0xFF;

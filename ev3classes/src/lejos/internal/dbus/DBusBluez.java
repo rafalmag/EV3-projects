@@ -60,13 +60,24 @@ public class DBusBluez {
     }
     
     public List<String> listAdapters() {
-        List<String> v = new ArrayList<String>();
+        List<String> a = new ArrayList<String>();
         Path[] adapters = dbusManager.ListAdapters();
         if (adapters != null) {
             for (int i = 0; i < adapters.length; i++) {
-                v.add(hciID(adapters[i].getPath()));
+                a.add(hciID(adapters[i].getPath()));
             }
         }
-        return v;
+        return a;
+    }
+    
+    public List<String> listDevices() {
+    	List<String> a = new ArrayList<String>();
+    	Path[] devices = adapter.ListDevices();
+    	for(Path device: devices) {
+    		String dev = device.getPath();
+    		int ind = dev.indexOf("dev_");
+    		if (ind >= 0) a.add(dev.substring(ind+4).replace('_', ':'));
+    	}
+    	return a;
     }
 }

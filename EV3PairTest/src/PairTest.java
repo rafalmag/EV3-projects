@@ -1,5 +1,7 @@
 
 
+import java.util.List;
+
 import lejos.internal.dbus.DBusBluez;
 
 public class PairTest {
@@ -11,6 +13,11 @@ public class PairTest {
 		}
 		try {
 			DBusBluez db = new DBusBluez();
+			List<String> devices = db.listDevices();
+			System.out.println("Known devices:\n");
+			for(String d: devices) {
+				System.out.println(d);
+			}
 			db.authenticateRemoteDevice(args[0], args[1]);
 			System.out.println("Paired the device");
 			System.exit(0);

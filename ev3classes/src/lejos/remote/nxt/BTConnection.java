@@ -2,6 +2,8 @@ package lejos.remote.nxt;
 
 import java.io.IOException;
 
+import com.sun.jna.LastErrorException;
+
 import lejos.internal.io.NativeSocket;
 
 public class BTConnection extends NXTConnection {
@@ -9,6 +11,7 @@ public class BTConnection extends NXTConnection {
 	int mode;
 	byte[] header = new byte[2];
 	byte[] buffer = new byte[256];
+	boolean eof = false;
 	
 	BTConnection(NativeSocket socket, int mode) {
 		this.socket = socket;
@@ -24,15 +27,27 @@ public class BTConnection extends NXTConnection {
 	// TODO : Need robust versions of read and write
 	@Override
 	public int read(byte[] buf, int length) {
-		System.out.println("Reading ...");
-		if (mode != NXTConnection.RAW) {
-			int len = socket.read(buffer, length);
-			System.out.println("Read " + len + " bytes");
-			if (len > 2) {
-				for(int i=0;i<len-2;i++) buf[i] = buffer[i+2];
-				return len-2;
-			} else return len;
-		} else return socket.read(buf, length);
+		if (eof) return -1;
+		try {
+			System.out.println("Reading ...");
+			if (mode != NXTConnection.RAW) {
+				int len = socket.read(buffer, length);
+				System.out.println("Read " + len + " bytes");
+				if (len > 2) {
+					for(int i=0;i<len-2;i++) buf[i] = buffer[i+2];
+					return len-2;
+				} else return len;
+			} else return socket.read(buf, length);
+		} catch (LastErrorException e) {
+			int errno = e.getErrorCode();
+			System.out.println("Error code is " + errno);
+			
+			if (errno == 104) {
+				eof = true;
+				return -1;
+			}
+			else return -2;
+		}
 	}
 
 	@Override
@@ -51,15 +66,27 @@ public class BTConnection extends NXTConnection {
 
 	@Override
 	public int read(byte[] buf, int length, boolean b) {
-		System.out.println("Reading  with wait = " + b);
-		if (mode != NXTConnection.RAW) {
-			int len = socket.read(buffer, length);
-			System.out.println("Read " + len + " bytes");
-			if (len > 2) {
-				for(int i=0;i<len-2;i++) buf[i] = buffer[i+2];
-				return len-2;
-			} else return len;
-		} else return socket.read(buf, length);
+		if (eof) return -1;
+		try {
+			System.out.println("Reading  with wait = " + b);
+			if (mode != NXTConnection.RAW) {
+				int len = socket.read(buffer, length);
+				System.out.println("Read " + len + " bytes");
+				if (len > 2) {
+					for(int i=0;i<len-2;i++) buf[i] = buffer[i+2];
+					return len-2;
+				} else return len;
+			} else return socket.read(buf, length);
+		} catch (LastErrorException e) {
+			int errno = e.getErrorCode();
+			System.out.println("Error code is " + errno);
+			
+			if (errno == -104) {
+				eof = true;
+				return -1;
+			}
+			else return -2;
+		}
 	}
 	
 }
