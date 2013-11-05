@@ -1,9 +1,9 @@
 package lejos.remote.nxt;
+
 import lejos.internal.io.NativeHCI;
 import lejos.internal.io.NativeSocket;
 
 import com.sun.jna.LastErrorException;
-
 
 public class BTConnector extends NXTCommConnector  {
 	NativeSocket socket = new NativeSocket(NativeHCI.AF_BLUETOOTH, NativeHCI.SOCK_STREAM, NativeHCI.BTPROTO_RFCOMM);
@@ -28,8 +28,14 @@ public class BTConnector extends NXTCommConnector  {
 
 	@Override
 	public NXTConnection waitForConnection(int timeout, int mode) {
-		// TODO Auto-generated method stub
-		return null;
+		NativeSocket.SockAddr sa = new NativeSocket.SockAddr();
+		
+		socket.bind(sa, sa.size());
+		
+		socket.listen(1);
+		
+		NativeSocket client = socket.accept();
+		return new BTConnection(client, mode);
 	}
 
 	@Override

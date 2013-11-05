@@ -5,9 +5,8 @@ import java.nio.ByteBuffer;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import com.sun.jna.ptr.IntByReference;
 
 public class NativeSocket {
 	
@@ -19,14 +18,7 @@ public class NativeSocket {
         public byte channel = 1;       
 	}
 	
-    static class Linux_C_lib_DirectMapping {
-        native public int fcntl(int fd, int cmd, int arg) throws LastErrorException;
-
-        native public int ioctl(int fd, int cmd, byte[] arg) throws LastErrorException;
-
-        native public int ioctl(int fd, int cmd, Pointer p) throws LastErrorException;
-        
-        native public int open(String path, int flags) throws LastErrorException;
+    static class Linux_C_lib_DirectMapping {     
 
         native public int close(int fd) throws LastErrorException;
 
@@ -34,16 +26,13 @@ public class NativeSocket {
 
         native public int read(int fd, Buffer buffer, int count) throws LastErrorException;
         
-        native public Pointer mmap(Pointer addr, NativeLong len, int prot, int flags, int fd,
-                NativeLong off) throws LastErrorException;
-        
         native public int socket(int domain, int type, int protocol) throws LastErrorException;
         
         native public int connect(int sockfd, SockAddr sockaddr, int addrlen) throws LastErrorException;
 
         native public int bind(int sockfd, SockAddr sockaddr, int addrlen) throws LastErrorException;
         
-        native public int accept(int sockfd, SockAddr rem_addr, Pointer opt) throws LastErrorException;
+        native public int accept(int sockfd, SockAddr rem_addr, IntByReference opt) throws LastErrorException;
         
         native public int listen(int sockfd, int channel) throws LastErrorException;
 
@@ -63,6 +52,10 @@ public class NativeSocket {
     public NativeSocket(int domain, int type, int protocol) throws LastErrorException {
     	socket = clib.socket(domain, type, protocol);
     	System.out.println("Socket is " + socket);
+    }
+    
+    public NativeSocket(int socket) {
+    	this.socket = socket;
     }
     
     public void connect(SockAddr sockaddr, int addrlen) throws LastErrorException {
@@ -96,5 +89,16 @@ public class NativeSocket {
     
     public void bind(SockAddr sockaddr, int addrlen) throws LastErrorException {
     	clib.bind(socket, sockaddr, addrlen);
-    }  
+    }
+    
+    public void listen(int channel) throws LastErrorException {
+    	clib.listen(socket, channel);
+    } 
+    
+    public NativeSocket accept() throws LastErrorException {
+    	SockAddr rem = new SockAddr();
+    	int opt = rem.size();
+    	int client = clib.accept(socket, rem, new IntByReference(opt) );
+    	return new NativeSocket(client);
+    } 
 }
