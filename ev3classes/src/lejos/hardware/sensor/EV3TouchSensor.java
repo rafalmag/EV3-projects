@@ -2,6 +2,7 @@ package lejos.hardware.sensor;
 
 import lejos.hardware.port.AnalogPort;
 import lejos.hardware.port.Port;
+import lejos.hardware.sensor.NXTSoundSensor.DBMode;
 import lejos.robotics.Touch;
 
 /**
@@ -15,11 +16,17 @@ public class EV3TouchSensor extends AnalogSensor implements SensorMode
     public EV3TouchSensor(AnalogPort port)
     {
         super(port);
+        init();
     }
 
     public EV3TouchSensor(Port port)
     {
         super(port);
+        init();
+    }
+    
+    protected void init() {
+      setModes(new SensorMode[]{ this }); 
     }
 
     public SensorMode getTouchMode()

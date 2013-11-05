@@ -81,7 +81,7 @@ public class MindsensorsCompass extends I2CSensor implements Calibrate, SensorMo
 		getData(0x42, buf, 1);
 		
 		// TODO: Could use integer mode for higher resolution
-		sample[offset] = (((buf[0] & 0xFF)) * 360f) / 256f;
+		sample[offset]=(255-(buf[0] & 0xFF))*359f/255f;
 	}
 	
 

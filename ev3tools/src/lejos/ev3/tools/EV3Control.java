@@ -21,6 +21,8 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
+import java.util.Collection;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -48,6 +50,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.AbstractTableModel;
 
 import lejos.hardware.Button;
+import lejos.hardware.RemoteBTDevice;
 import lejos.hardware.Sound;
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
@@ -190,6 +193,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private static final NumberFormat FORMAT_FLOAT = NumberFormat.getNumberInstance();
 	
 	private String[] accessPoints = new String[0];
+	private RemoteBTDevice[] bluetoothDevices = new RemoteBTDevice[0];
 
 	/**
 	 * Command line entry point
@@ -249,6 +253,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		createMiscellaneousPanel();
 		createSettingsPanel();
 		createWirelessPanel();
+		createBluetoothPanel();
 
 		// set the size of the files panel
 		programsFilesPanel.setPreferredSize(filesPanelSize);
@@ -647,6 +652,50 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 				} catch (Exception x) {
 					showMessage("Failed to configure wifi: " + x);
 				}
+			}
+		});
+	}
+	
+	public void createBluetoothPanel() {
+	    TableModel dataModel = new AbstractTableModel() {
+			private static final long serialVersionUID = 1L;
+			public int getColumnCount() { return 2; }
+	        public int getRowCount() { return bluetoothDevices.length;}
+	        public Object getValueAt(int row, int col) { return (col == 0 ?  bluetoothDevices[row].getName() : bluetoothDevices[row].getAddress()); }
+	        public String getColumnName(int col) { return (col == 0 ? "Name" : "Address"); }
+	  
+	    };
+		final JTable bluetoothTable = new JTable(dataModel);
+		
+		bluetoothPanel.add(new JScrollPane(bluetoothTable));
+		JButton searchButton = new JButton("Search");
+		bluetoothPanel.add(searchButton);
+		JButton pairButton = new JButton("Pair");
+		bluetoothPanel.add(pairButton);
+		
+		searchButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (ev3 == null) return;
+					Collection<RemoteBTDevice> devs = ev3.getBluetooth().search();
+					for(RemoteBTDevice dev : devs) {
+						System.out.println(dev.getName() + "\t" + dev.getAddress());
+					}
+					
+					bluetoothDevices = devs.toArray(new RemoteBTDevice[devs.size()]);
+					bluetoothTable.revalidate();
+					
+				} catch (Exception ioe) {
+					showMessage("Failed to get list of Wifi access point");
+				}
+			}
+		});
+		
+		pairButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int row= bluetoothTable.getSelectedRow();
+				if (row < 0) showMessage("Please select a device from the table");
+				else showMessage("Pair not yet implemented");
 			}
 		});
 	}

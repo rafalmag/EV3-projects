@@ -76,7 +76,7 @@ public class MindsensorsAccelerometer extends I2CSensor implements SensorMode {
 		getData(BASE_ACCEL, buf, 0, 6);
 		sample[offset+0] = EndianTools.decodeShortLE(buf, OFF_X_ACCEL) * TO_SI;
 		sample[offset+1] = EndianTools.decodeShortLE(buf, OFF_Y_ACCEL) * TO_SI;
-		sample[offset+2] = EndianTools.decodeShortLE(buf, OFF_Z_ACCEL) * TO_SI;
+		sample[offset+2] = -EndianTools.decodeShortLE(buf, OFF_Z_ACCEL) * TO_SI;
 	}
 	
 

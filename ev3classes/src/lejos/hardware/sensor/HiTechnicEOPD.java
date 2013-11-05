@@ -8,16 +8,18 @@ import lejos.hardware.port.Port;
  * This sensor is used to detect objects and small changes in distance to a target.
  *  Unlike the LEGO light sensor it is not affected by other light sources.
  *  
- *  See http://www.hitechnic.com/cgi-bin/commerce.cgi?preadd=action&key=NEO1048
+ *  <A href="http://www.hitechnic.com/cgi-bin/commerce.cgi?preadd=action&key=NEO1048">Description of the sensor</A>. <br>
+ *  
  * 
  * @author Michael Smith <mdsmitty@gmail.com>
  * 
  */
 public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, SensorMode {
 
+
+
     protected static final long SWITCH_DELAY = 10;
     /**
-     * By default the sensor is short range.
      * @param port NXT sensor port 1-4
      */
     public HiTechnicEOPD (AnalogPort port){
@@ -26,7 +28,6 @@ public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, Sens
     }
     
     /**
-     * By default the sensor is short range.
      * @param port NXT sensor port 1-4
      */
     public HiTechnicEOPD (Port port){
@@ -35,34 +36,29 @@ public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, Sens
     }
 		
     protected void init() {
-    	setModes(new SensorMode[]{ this });
-    	port.setTypeAndMode(TYPE_LIGHT_INACTIVE, MODE_RAW);
+    	setModes(new SensorMode[]{ this, new ShortDistanceMode() });
     }
     
-	// TODO: Should we hae these set methods, or two sample modes?
 	
 	/**
-	 * Changes the sensor to short range mode.
-	 *
+	 * Return a sample provider for long range distance value. <br>
+	 * The output of the sensor is corrected using square root and normilized to a range of 0 to 1.
+	 * 
 	 */
-	public void setModeShort(){
-	    switchType(TYPE_LIGHT_INACTIVE, SWITCH_DELAY);
-	}
-	
-	/**
-	 * Changes the port to long range mode.
-	 *
-	 */
-	public void setModeLong(){
-        switchType(TYPE_LIGHT_ACTIVE, SWITCH_DELAY);
-	}
-	
-	/**
-	 * Return a sample provider for processed distance value.
-	 */
-	public SensorMode getDistanceMode() {
+	public SensorMode getLongDistanceMode() {
 		return this;
 	}
+
+  /**
+   * Return a sample provider for long range distance value. <br>
+   * This provider is used for measuring distance for white objects at short range. <br>
+   * The output of the sensor is corrected using square root and normilized to a range of 0 to 1.
+   */
+	 public SensorMode getShortDistanceMode() {
+	    return getMode(1);
+	  }
+
+	
 	
 	@Override
 	public int sampleSize() {
@@ -70,13 +66,33 @@ public class HiTechnicEOPD extends AnalogSensor implements SensorConstants, Sens
 	}
 	
 	@Override
-	// TODO: What units is this in? Should we just return the raw value?
 	public void fetchSample(float[] sample, int offset) {
-		sample[offset] = (float) Math.sqrt((1023-NXTRawValue(port.getPin1()))*10);
+    switchType(TYPE_LIGHT_INACTIVE, SWITCH_DELAY);
+    sample[offset] = (float) Math.sqrt((normalize(port.getPin1())));
 	}
 
 	@Override
 	public String getName() {
-		return "Distance";
+		return "Long distance";
 	}
+
+  public class ShortDistanceMode implements SensorMode {
+
+  @Override
+  public int sampleSize() {
+    return 1;
+  }
+
+  @Override
+  public void fetchSample(float[] sample, int offset) {
+    switchType(TYPE_LIGHT_ACTIVE, SWITCH_DELAY);
+    sample[offset] = (float) Math.sqrt((normalize(port.getPin1())));
+  }
+
+  @Override
+  public String getName() {
+    return "Short distance";
+  }
+
+}
 }

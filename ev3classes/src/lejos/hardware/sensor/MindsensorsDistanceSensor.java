@@ -20,11 +20,13 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SensorMode {
 	//Registers
 	private final static int COMMAND = 0x41;
 	private final static int DIST_DATA_LSB = 0x42;
-
+	public static final int VOLT_DATA_LSB = 0x44;
+  
 	//Commands
 	private final static byte DE_ENERGIZED = 0x44;
 	private final static byte ENERGIZED = 0x45;
-	
+
+  
 	/**
 	 *
 	 * @param port NXT sensor port 1-4
@@ -64,7 +66,7 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SensorMode {
     }
     
     protected void init() {
-    	setModes(new SensorMode[]{ this });
+    	setModes(new SensorMode[]{ this, new VoltageMode() });
     	powerOn();
     }
 
@@ -92,6 +94,14 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SensorMode {
 		return this;
 	}
 	
+  /**
+   * Returns a sample provider in voltage mode.
+   */
+  public SensorMode getVoltageMode() {
+    return getMode(1);
+  }
+
+	
 	@Override
 	public int sampleSize() {
 		return 1;
@@ -100,11 +110,36 @@ public class MindsensorsDistanceSensor extends I2CSensor implements SensorMode {
 	@Override
 	public void fetchSample(float[] sample, int offset) {
 		getData(DIST_DATA_LSB, buf, 2);
-		sample[offset] = (float) EndianTools.decodeIntLE(buf, 0) / 100f;		
+		sample[offset] = (float) EndianTools.decodeShortLE(buf, 0) / 100f;	
+	}
+	
+	private void dump() {
+	  System.out.print(buf.length+": ");
+	  for (int i=0;i<buf.length;i++) System.out.println(buf[i]);
 	}
 
 	@Override
 	public String getName() {
 		return "Distance";
+	}
+	
+	private class VoltageMode implements SensorMode {
+
+    @Override
+    public int sampleSize() {
+      return 1;
+    }
+
+    @Override
+    public void fetchSample(float[] sample, int offset) {
+      getData(VOLT_DATA_LSB, buf, 2);
+      sample[offset] = (float) EndianTools.decodeShortLE(buf, 0) / 1000f;  
+    }
+
+    @Override
+    public String getName() {
+      return "Voltage";
+    }
+	  
 	}
 }
