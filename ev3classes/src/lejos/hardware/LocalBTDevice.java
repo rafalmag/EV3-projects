@@ -1,15 +1,18 @@
 package lejos.hardware;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Set;
+
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import com.sun.jna.LastErrorException;
 
+import lejos.internal.dbus.DBusBluez;
 import lejos.internal.io.NativeHCI;
 
 public class LocalBTDevice {
@@ -17,12 +20,16 @@ public class LocalBTDevice {
 	private HashMap<String,String> knownDevices = new HashMap<String,String>();
 	private Properties props = new Properties();
 	private FileReader fr;
+	private String userHome = System.getProperty( "user.home" );
+	private String cacheFile = userHome + "/nxj.cache";
+	private DBusBluez db; 
 	
 	public LocalBTDevice() {
 		try {
-			fr = new FileReader("/home/root/lejos/nxj.cache");
+			db = new DBusBluez();
+			fr = new FileReader(cacheFile);
 			props.load(fr);
-		    Enumeration<String> e = (Enumeration<String>) props.propertyNames();
+		    Enumeration<?> e = (Enumeration<?>) props.propertyNames();
 
 		    while (e.hasMoreElements()) {
 		      String key = (String) e.nextElement();
@@ -32,14 +39,20 @@ public class LocalBTDevice {
 		    }
 		} catch (IOException e) {
 			System.out.println("Failed to load nxj.cache: " + e);
+		} catch (DBusException e1) {
+			System.err.println("Failed to create DBusJava: " + e1);
 		}
 	}
+	
 	public Collection<RemoteBTDevice> search() throws IOException {
 		try {
 			Collection<RemoteBTDevice> results = hci.hciInquiry();
 			for(RemoteBTDevice d: results) {
+				System.out.println("Found " + d.getName());
 				knownDevices.put(d.getName(), d.getAddress());
+				props.setProperty("NXT_" + d.getAddress(), d.getName());
 			}
+			saveKnownDevices();
 			return results;
 		} catch (LastErrorException e) {
 			throw(new IOException(e.getMessage()));
@@ -81,8 +94,31 @@ public class LocalBTDevice {
 		return hci.hciGetDeviceInfo();
 	}
 	
-	private void saveKnownDevices() {
-		Set<String> keys = knownDevices.keySet();
+	private void saveKnownDevices() {	
+		try {
+			props.store(new FileWriter(cacheFile), null);
+		} catch (IOException e) {
+			System.err.println("Failed to save properties file: " + e);
+		}
 		
+	}
+	
+	public static byte[] getBDAddr(String addr) {
+		byte[] bdaddr = new byte[6];
+		
+		for(int i=0;i<addr.length();i += 3) {
+			byte b = Byte.parseByte(addr.substring(i,i+2), 16);
+			bdaddr[5 - (i/3)] = b;
+		}
+		
+		return bdaddr;
+	}
+	
+	public void authenticate(String deviceAddress, String pin) {
+		try {
+			db.authenticateRemoteDevice(deviceAddress, pin);
+		} catch (DBusException e) {
+			System.err.println("Failed to authenticate remote device: " + e);
+		}
 	}
 }

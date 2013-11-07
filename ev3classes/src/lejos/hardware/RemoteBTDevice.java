@@ -7,10 +7,12 @@ public class RemoteBTDevice implements Serializable {
 	private static final long serialVersionUID = -1668354353670941450L;
 	private String name;
 	private byte[] address;
+	private byte[] cod;
 	
-	public RemoteBTDevice(String name, byte[] address) {
+	public RemoteBTDevice(String name, byte[] address, byte[] cod) {
 		this.name = name;
 		this.address = address;
+		this.cod = cod;
 	}
 	
 	public String getName() {
@@ -19,6 +21,10 @@ public class RemoteBTDevice implements Serializable {
 	
 	public byte[] getDeviceAddress() {
 		return address;
+	}
+	
+	public byte[] getDeviceClass() {
+		return cod;
 	}
 	
 	public String getAddress() {

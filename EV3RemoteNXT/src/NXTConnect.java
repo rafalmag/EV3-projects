@@ -7,12 +7,17 @@ import lejos.remote.nxt.NXTConnection;
 
 
 public class NXTConnect {
-	private static final String NXT = "00:16:53:40:51:36";
+	//private static final String NXT = "00:16:53:12:92:AA";
+	private static final String NXT = "NXT2";
 
 	public static void main(String[] args) throws Exception {
 		NXTCommConnector connector = Bluetooth.getNXTCommConnector();	
 		System.out.println("Connecting to " + NXT);
 		NXTConnection connection = connector.connect(NXT, NXTConnection.PACKET);
+		if (connection == null) {
+			System.err.println("Failed to connect");
+			return;
+		}
 		System.out.println("Connected");
 		
 		DataInputStream input = connection.openDataInputStream();
