@@ -34,7 +34,12 @@ public class DLights {
 			dLights[i] = new LED(port, address[i]);
 	}
 
-	/**
+	public DLights(Port port) {
+    for (int i = 0; i < 5; i++)
+      dLights[i] = new LED(port, address[i]);
+  }
+
+  /**
 	 * Returns the I2C driver for a single dLight.
 	 * <p>
 	 * Nb. For ordinary use there is no need to use the I2C driver for a single

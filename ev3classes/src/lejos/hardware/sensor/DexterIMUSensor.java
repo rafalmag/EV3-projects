@@ -18,12 +18,11 @@ import lejos.utility.EndianTools;
 public class DexterIMUSensor extends BaseSensor implements SensorModes {
   // TODO: Make it work for the EV3
   // TODO: Add support for sensor configuration
-  
-  // I2C Addresses for the gyro and acceleration chips with the default values
-  protected int          Accel_I2C_address = 0x3A;
-  protected int          Gyro_I2C_address  = 0xD2;
 
-  
+  // I2C Addresses for the gyro and acceleration chips with the default values
+  protected int Accel_I2C_address = 0x3A;
+  protected int Gyro_I2C_address  = 0xD2;
+
   public DexterIMUSensor(I2CPort port) {
     DexterIMUGyroSensor gyro = new DexterIMUGyroSensor(port);
     setModes(new SensorMode[] { gyro.getMode(0), new DexterIMUAccelerationSensor(port), gyro.getMode(1) });
