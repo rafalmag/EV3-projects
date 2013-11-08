@@ -23,7 +23,6 @@ public class GraphicListMenu extends GraphicMenu {
 	@Override
 	protected void display(int selectedIndex, int animateDirection, int tick)
 	{
-		//LCD.asyncRefreshWait();
 		if(_title != null) {
 			System.out.println("Displaying title " + _title + " on line " + (_topRow - 1));
 			LCD.drawString(_title, 0, _topRow - 1);
@@ -34,7 +33,6 @@ public class GraphicListMenu extends GraphicMenu {
 			LCD.drawString(BLANK, 0, i);
 			int idx = i - _topRow + _topIndex;
 			if (idx >= 0 && idx < _length){
-				//LCD.bitBlt(_icons[idx], 7, 8, 0, 0, 6, 8*i, 7, 8, LCD.ROP_COPY);
 				LCD.drawChar(idx == selectedIndex ? SEL_CHAR : ' ', 0, i);
 				LCD.drawString(_items[idx], 3, i);
 			}
@@ -46,9 +44,6 @@ public class GraphicListMenu extends GraphicMenu {
 		LCD.bitBlt(null, 30, 100, 0, 0, 0, 16, 30, 100, LCD.ROP_CLEAR);
 	}
 	
-	//@Override
-	//protected int getIconSize(){return 7;}// Returns the icon size (In Bytes)
-	
 	@Override
-	protected boolean get2IconMode(){return true;}// Wrap With 2 Icons
+	protected boolean get2IconMode(){return true;} // Wrap With 2 Icons
 }

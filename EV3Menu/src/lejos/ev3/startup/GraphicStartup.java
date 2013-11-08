@@ -210,7 +210,6 @@ public class GraphicStartup implements Menu {
     {
         int selection = 0;
         GraphicMenu menu = new GraphicMenu(null,null,4);
-        menu.setParentIcon(ICBlue);
         boolean visible = false;
         do
         {
@@ -377,9 +376,7 @@ public class GraphicStartup implements Menu {
             //icons[i] = getDeviceIcon(btrd.getDeviceClass());
         }
         GraphicListMenu searchMenu = new GraphicListMenu(names, icons);
-        searchMenu.setParentIcon(ICSearch);
         GraphicMenu subMenu = new GraphicMenu(new String[]{"Pair"}, new String[]{ICYes},4);
-        subMenu.setParentIcon(ICSearch);
         int selected = 0;
         do
         {
@@ -448,9 +445,7 @@ public class GraphicStartup implements Menu {
         }
 
         GraphicListMenu deviceMenu = new GraphicListMenu(names, icons);
-        deviceMenu.setParentIcon(ICNXT);
         GraphicMenu subMenu = new GraphicMenu(new String[] {"Remove"},new String[]{ICDelete},4);
-        subMenu.setParentIcon(ICNXT);
         int selected = 0;
         do
         {
@@ -505,7 +500,6 @@ public class GraphicStartup implements Menu {
         String[] iconData = {ICFormat,ICSleep,ICAutoRun,ICDefault};
         boolean rechargeable = false;
         GraphicMenu menu = new GraphicMenu(menuData,iconData,4);
-        menu.setParentIcon(ICNXT);
         int selection = 0;
         do {
             newScreen("System");
@@ -807,7 +801,6 @@ public class GraphicStartup implements Menu {
         LCD.drawString("Size:", 0, 2);
         LCD.drawString(Long.toString(file.length()), 5, 2);
         GraphicMenu menu = new GraphicMenu(items,icons,3,fileName,1);
-        menu.setParentIcon(ICFiles);
         int selection = getSelection(menu, 0);
         if (selection >= 0)
         {

@@ -12,15 +12,12 @@ public class TuneThread extends Thread
 	@Override
 	public void run()
 	{
-		Utils.fadeIn();
 		this.waitState(1);
 		playTune();
 		// Tell others, that tune is complete
 		this.setState(2);
         // Wait for init to complete
         this.waitState(3);
-        // Fade in
-        Utils.fadeIn();
 	}
 	
 	/**

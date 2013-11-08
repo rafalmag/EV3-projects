@@ -2,7 +2,6 @@ package lejos.ev3.startup;
 import javax.microedition.lcdui.Graphics;
 
 import lejos.hardware.LCD;
-import lejos.utility.Delay;
 
 public class Utils
 {
@@ -61,39 +60,9 @@ public class Utils
 				.append(version & 0xFF).toString();
 	}
 
-	/**
-	 * Make the LCD display fade into view.
-	 */
-	public static void fadeIn()
-	{
-	    for(int i = Config.MIN_CONTRAST; i < Config.MAX_CONTRAST; )
-	    {
-	        Delay.msDelay(5);
-	        LCD.setContrast(++i);
-	    }
-	}
-
-	/**
-	 * Make the LCD display fade out of view.
-	 */
-	public static void fadeOut()
-	{
-	    for(int i = Config.MAX_CONTRAST; i > Config.MIN_CONTRAST; )
-	    {
-	        Delay.msDelay(5);
-	        LCD.setContrast(--i);
-	    }
-	}
-
 	public static void drawRect(int x, int y, int width, int height)
 	{
 		g.drawRect(x, y, width, height);
-	}
-	
-	private static void setPixel(byte[] buf, int x, int y)
-	{
-		x += (y >> 3) * LCD.SCREEN_WIDTH;
-	    buf[x] |= 1 << (y & 0x7);
 	}
 
 	/**
