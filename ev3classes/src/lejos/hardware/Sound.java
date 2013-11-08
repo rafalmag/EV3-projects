@@ -159,7 +159,7 @@ public class Sound
      */
     static void playFreq(int aFrequency, int aDuration, int aVolume)
     {
-        System.out.println("Volume " + aVolume);
+        //System.out.println("Volume " + aVolume);
         byte[] cmd = new byte[6];
         cmd[0] = OP_TONE;
         cmd[1] = (byte) aVolume;
@@ -406,7 +406,7 @@ public class Sound
         int step = 9000 / segLen;
         int vol = 1000;
         int oldVol = 0;
-System.out.println("Start playing");
+        //System.out.println("Start playing");
         // We do not really have fine grained enough timing so try and keep
         // things aligned as closely as possible to a tick by waiting here
         // before we start for the next tick.

@@ -16,7 +16,7 @@ public class SocketOutputStream extends OutputStream {
 	
    public void write(byte[] b, int off, int len) throws IOException
    {
-	  System.out.println("Writing len = " + len + " " + b[0]);
+	  //System.out.println("Writing len = " + len + " " + b[0]);
       sock.send(b, len);
    }
    

@@ -14,7 +14,7 @@ public class SocketInputStream extends InputStream {
 	@Override
 	public int read() throws IOException {
 		int count = sock.recv(buf, 1);
-		System.out.println("Read" + count + " " + buf[0] + " " + ((char) buf[0]));
+		//System.out.println("Read" + count + " " + buf[0] + " " + ((char) buf[0]));
 		return buf[0] & 0xFF;
 	}
 	
@@ -29,7 +29,7 @@ public class SocketInputStream extends InputStream {
 	      if (0 == count) return -1;
 	      else if (-1 == count) return 0;
 	      else {
-	    	  System.out.println("Received " + count + " "  + b[0] + ((char) b[0]));
+	    	  //System.out.println("Received " + count + " "  + b[0] + ((char) b[0]));
 	    	  return count;
 	      }
 	   }

@@ -27,13 +27,13 @@ public class NativeDomainSocket {
         public byte[] addr = new byte[108];
        
         public SockAddr() {
-        	System.out.println("Socket address created");
+        	//System.out.println("Socket address created");
         }
         
         public SockAddr(String name, boolean abs) {
-        	System.out.println("Socket address created with address = " + addr + ", abstract = " + abs);
+        	//System.out.println("Socket address created with address = " + addr + ", abstract = " + abs);
         	System.arraycopy(name.getBytes(), 0, addr, 0, name.length());
-        	System.out.println("Array copied");
+        	//System.out.println("Array copied");
         }
 	}
 	
@@ -87,15 +87,15 @@ public class NativeDomainSocket {
     
     
     public NativeDomainSocket() throws LastErrorException {
-    	System.out.println("Domain Socket created");
+    	//System.out.println("Domain Socket created");
     	socket = clib.socket(AF_UNIX, SOCK_STREAM, 0);
-    	System.out.println("Socket is " + socket);
+    	//System.out.println("Socket is " + socket);
     }
     
     public NativeDomainSocket(SockAddr addr, boolean ab) throws LastErrorException {
-    	System.out.println("Domain Socket created , abstract = " + false);
+    	//System.out.println("Domain Socket created , abstract = " + false);
     	socket = clib.socket(AF_UNIX, SOCK_STREAM, 0);
-    	System.out.println("Socket is " + socket);
+    	//System.out.println("Socket is " + socket);
     }
     
     public NativeDomainSocket(SockAddr addr) throws LastErrorException {
@@ -103,7 +103,7 @@ public class NativeDomainSocket {
     }
     
     public void connect(SockAddr addr) throws LastErrorException {
-    	System.out.println("Connect called with address " + addr);
+    	//System.out.println("Connect called with address " + addr);
     	clib.connect(socket, addr, addr.size());
     	is = new SocketInputStream(this);
     	os = new SocketOutputStream(this);
@@ -152,7 +152,7 @@ public class NativeDomainSocket {
     
     public void sendCredentialByte(byte data) throws IOException
     {
-    	System.out.println("Send Credential byte " + data);
+    	//System.out.println("Send Credential byte " + data);
     	byte[] b = new byte[1];
     	send(b,1);
     	
@@ -166,23 +166,23 @@ public class NativeDomainSocket {
     
     public int getPeerUID()
     {
-       System.out.println("Get Peer UID");
+       //System.out.println("Get Peer UID");
        return 0;
     }
     
     public void setPassCred(boolean enable) throws IOException
     {
-    	System.out.println("set Pass Cred, enable = " + enable);
+    	//System.out.println("set Pass Cred, enable = " + enable);
     }
     
     public void setBlocking(boolean enable)
     {
-    	System.out.println("Set nlocking");
+    	//System.out.println("Set Blocking");
     }
     
     public void setSoTimeout(int timeout)
     {
-    	System.out.println("Set timeout " + timeout);
+    	//System.out.println("Set timeout " + timeout);
     }
     
     public InputStream getInputStream()
