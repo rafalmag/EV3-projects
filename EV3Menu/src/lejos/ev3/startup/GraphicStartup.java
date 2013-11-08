@@ -3,18 +3,13 @@ package lejos.ev3.startup;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -36,6 +31,7 @@ import lejos.hardware.Sound;
 import lejos.hardware.Wifi;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.internal.io.Settings;
+import lejos.internal.io.SystemSettings;
 import lejos.remote.ev3.Menu;
 import lejos.remote.ev3.RMIRemoteEV3;
 
@@ -84,13 +80,12 @@ public class GraphicStartup implements Menu {
     private BatteryIndicator indiBA = new BatteryIndicator();
     private RConsole rcons = new RConsole();
     
-    private GraphicMenu curMenu;
+    //private GraphicMenu curMenu;
     private int timeout = 0;
-    private boolean btPowerOn = true;
     private boolean btVisibility;
     private static String version = "Unknown";
     private static String hostname;
-    private List<String> ips = getIPAddresses();
+    private static List<String> ips = getIPAddresses();
     LocalBTDevice bt = Bluetooth.getLocalDevice();
     
     /**
@@ -220,52 +215,38 @@ public class GraphicStartup implements Menu {
         do
         {
             newScreen("Bluetooth");
-            LCD.drawString("Power", 0, 1);
-            LCD.drawString(btPowerOn ? "on" : "off", 11, 1);
             visible = bt.getVisibility();
             System.out.println("Visibility is " + visible);
-            if (btPowerOn)
-            {
-                LCD.drawString("Visibility", 0, 2);
-                LCD.drawString(visible ? "on" : "off", 11, 2);
-                menu.setItems(new String[]
-                        {
-                            "Power off", "Search/Pair", "Devices", "Visibility", "Change PIN"
-                        },
-                        new String[]{ICPower,ICSearch,
-                		ICNXT,ICVisibility,ICPIN});
-            }
-            else
-                menu.setItems(new String[]
-                        {
-                            "Power on"
-                        },new String[] {ICPower});
+
+            LCD.drawString("Visibility", 0, 2);
+            LCD.drawString(visible ? "on" : "off", 11, 2);
+            menu.setItems(new String[]
+                    {
+                        "Search/Pair", "Devices", "Visibility", "Change PIN"
+                    },
+                    new String[]{ICSearch,ICNXT,ICVisibility,ICPIN});
             selection = getSelection(menu,selection);
             switch (selection)
             {
                 case 0:
-                    bluetoothPower(!btPowerOn);
-                    break;
-                case 1:
                     bluetoothSearch();
                     break;
-                case 2:
+                case 1:
                     bluetoothDevices();
                     break;
-                case 3:
+                case 2:
                 	visible = !visible;
                     btVisibility = visible;
                     System.out.println("Setting visibility to " + btVisibility);
 					try {
 						bt.setVisibility(btVisibility);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.err.println("Failed to set visibility: " + e);
 					}
                     //updateBTIcon();
                     ind.updateNow();
                     break;
-                case 4:
+                case 3:
                     bluetoothChangePIN();
                     break;
             }
@@ -297,7 +278,7 @@ public class GraphicStartup implements Menu {
             if (curDigit >= digits)
             	return true;
             
-            Utils.drawRect(curDigit * 12 + 3, 30, 10, 10);
+            Utils.drawRect(curDigit * 20 + 3, 60, 20, 20);
 
             int ret = getButtonPress();
             switch (ret)
@@ -338,7 +319,7 @@ public class GraphicStartup implements Menu {
      */
     private void bluetoothChangePIN()
     {
-        /*// 1. Retrieve PIN from System properties
+        // 1. Retrieve PIN from System properties
         String pinStr = SystemSettings.getStringSetting(pinProperty, "1234");
         int len = pinStr.length();
         byte[] pin = new byte[len];
@@ -353,8 +334,8 @@ public class GraphicStartup implements Menu {
             for (int i = 0; i < pin.length; i++)
                 sb.append((char) pin[i]);
             Settings.setProperty(pinProperty, sb.toString());
-            //Bluetooth.setPin(pin);
-        }*/
+            // TODO: Restart agent to set the pin
+        }
     }
     
     /**
@@ -375,13 +356,11 @@ public class GraphicStartup implements Menu {
 	        try {
 				devList = (ArrayList<RemoteBTDevice>) bt.search();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return;
 			}
         }
 	    finally
 	    {
-	    	//indiBT.decCount();
 	    }
         if (devList == null || devList.size() <= 0)
         {
@@ -417,27 +396,25 @@ public class GraphicStartup implements Menu {
                 LCD.drawString(btrd.getAddress(), 0, 3);
                 int subSelection = getSelection(subMenu, 0);
                 if (subSelection == 0){
-                    /*newScreen("Pairing");
-                    Bluetooth.addDevice(btrd);
+                    newScreen("Pairing");
+                    //Bluetooth.addDevice(btrd);
                     // !! Assuming 4 length
                     byte[] pin = { '0', '0', '0', '0' };
-                    if (!enterNumber("PIN for " + btrd.getFriendlyName(false), pin, pin.length))
+                    if (!enterNumber("PIN for " + btrd.getName(), pin, pin.length))
                     	break;
                     LCD.drawString("Please wait...", 0, 6);
-                    BTConnection connection = Bluetooth.connect(btrd.getDeviceAddr(), 0, pin);
-                    // Indicate Success or failure:
-                    if (connection != null)
-                    {
+                    try {
+                    	Bluetooth.getLocalDevice().authenticate(btrd.getAddress(), new String(pin));
+                    	// Indicate Success or failure:
                         LCD.drawString("Paired!      ", 0, 6);
-                        connection.close();
-                    }
-                    else
+                    } catch (Exception e)
                     {
+                    	System.err.println("Failed to pair:" + e);
                         LCD.drawString("UNSUCCESSFUL  ", 0, 6);
-                        Bluetooth.removeDevice(btrd);
+                        //Bluetooth.removeDevice(btrd);
                     }
                     LCD.drawString("Press any key", 0, 7);
-                    getButtonPress();*/
+                    getButtonPress();
                 }
             }
         } while (selected >= 0);
@@ -448,8 +425,12 @@ public class GraphicStartup implements Menu {
      */
     private void bluetoothDevices()
     {
-    	/*
-        ArrayList<RemoteDevice> devList = Bluetooth.getKnownDevicesList();
+        List<RemoteBTDevice> devList;
+		try {
+			devList = (List<RemoteBTDevice>) Bluetooth.getLocalDevice().search();
+		} catch (IOException e) {
+			return;
+		}
         if (devList.size() <= 0)
         {
             msg("No known devices");
@@ -459,16 +440,15 @@ public class GraphicStartup implements Menu {
         newScreen("Devices");
         String[] names = new String[devList.size()];
         String[] icons = new String[devList.size()];
-        for (int i = 0; i < devList.size(); i++)
+        int i=0;
+        for (RemoteBTDevice btrd: devList)
         {
-            RemoteDevice btrd = devList.get(i);
-            names[i] = btrd.getFriendlyName(false);
-            icons[i] = getDeviceIcon(btrd.getDeviceClass());
+            names[i] = btrd.getName();
+            i++;
         }
 
         GraphicListMenu deviceMenu = new GraphicListMenu(names, icons);
         deviceMenu.setParentIcon(ICNXT);
-        //TextMenu subMenu = new TextMenu(new String[] {"Remove"}, 6);
         GraphicMenu subMenu = new GraphicMenu(new String[] {"Remove"},new String[]{ICDelete},4);
         subMenu.setParentIcon(ICNXT);
         int selected = 0;
@@ -479,68 +459,20 @@ public class GraphicStartup implements Menu {
             if (selected >= 0)
             {
                 newScreen();
-                RemoteDevice btrd = devList.get(selected);
-                int devclass = btrd.getDeviceClass();
-                LCD.bitBlt(
-                    	Utils.stringToBytes8(getDeviceIcon(devclass))
-                    	, 7, 7, 0, 0, 2, 16, 7, 7, LCD.ROP_COPY);
-                LCD.drawString(btrd.getFriendlyName(false), 2, 2);
-                LCD.drawString(btrd.getBluetoothAddress(), 0, 3);
+                RemoteBTDevice btrd = devList.get(selected);
+                byte[] devclass = btrd.getDeviceClass();
+                LCD.drawString(btrd.getName(), 2, 2);
+                LCD.drawString(btrd.getAddress(), 0, 3);
                 // TODO device class is overwritten by menu
                 // LCD.drawString("0x"+Integer.toHexString(devclass), 0, 4);
                 int subSelection = getSelection(subMenu, 0);
                 if (subSelection == 0)
                 {
-                    Bluetooth.removeDevice(btrd);
+                    //Bluetooth.removeDevice(btrd);
                     break;
                 }
             }
-        } while (selected >= 0);*/
-    }
-
-    /**
-     * Allow the user to turn Bluetooth power on/off
-     * @param on New power setting
-     */
-    private void bluetoothPower(boolean on)
-    {
-        newScreen();
-        
-        LCD.drawString("Powering " + (on ? "on" : "off") +" ...", 0, 2);
-        
-        //indiBT.incCount();
-        try
-        {
-        	btPowerOn = setBluetoothPower(on);
-        }
-        finally
-        {
-        	//indiBT.decCount();
-        }
-        //updateBTIcon();
-        ind.updateNow();
-    }
-
-    
-    /**
-     * Turn Bluetooth power on/off.
-     * Record this new setting in the status bytes held by the Bluetooth module.
-     * @param powerOn
-     * @return The new power state.
-     */
-    static boolean setBluetoothPower(boolean powerOn)
-    {
-        // Set the state of the Bluetooth power to be powerOn. Also record the
-        // current state of this in the BT status bytes.                                                      
-        // If power is not on we need it on to check things
-        //if (!Bluetooth.getPower())
-        //    Bluetooth.setPower(true);
-        // First update the status bytes if needed
-        //int status = Bluetooth.getStatus();
-        //if (powerOn != (status == 0))
-        //    Bluetooth.setStatus((powerOn ? 0 : 1));
-        //Bluetooth.setPower(powerOn);
-        return powerOn;
+        } while (selected >= 0);
     }
     
     /**
@@ -676,18 +608,6 @@ public class GraphicStartup implements Menu {
     	}
     	return null;
     }
-    
-    /**
-     * Play the leJOS startup tune.
-     */
-    static void playTune()
-    {
-        int[] freq = { 523, 784, 659 };
-        for (int i = 0; i < 3; i++) {
-            Sound.playTone(freq[i], 300);
-            Sound.pause(300);
-        }
-    }
 
     /**
      * Display the sound menu.
@@ -779,7 +699,6 @@ public class GraphicStartup implements Menu {
         LCD.drawString(version, 6, 2);
         LCD.drawString("Menu:", 0, 3);
         LCD.drawString(Utils.versionToString(Config.VERSION),6, 3);
-        List<String> ips = getIPAddresses();
         getButtonPress();
     }
     
@@ -799,35 +718,7 @@ public class GraphicStartup implements Menu {
      *  Start the threads
      */
     private void start()
-    {
-        //bt.start();
-        //usb.start();
-    	
-    	// Start the RMI server
-        String lastIp = null;
-        for (String ip: ips) {
-        	lastIp = ip;
-        }
-        System.out.println("Setting java.rmi.server.hostname to " + lastIp);
-        System.setProperty("java.rmi.server.hostname", "192.168.0.9");
-        
-        try { //special exception handler for registry creation
-            LocateRegistry.createRegistry(1099); 
-            System.out.println("java RMI registry created.");
-        } catch (RemoteException e) {
-            //do nothing, error means registry already exists
-            System.out.println("java RMI registry already exists.");
-        }
-        
-        try {
-			RMIRemoteEV3 ev3 = new RMIRemoteEV3();
-			Naming.rebind("//localhost/RemoteEV3", ev3);
-			RMIRemoteMenu menu = new RMIRemoteMenu(this);
-			Naming.rebind("//localhost/RemoteMenu", menu);
-		} catch (RemoteException | MalformedURLException e) {
-			e.printStackTrace();
-		}
-        
+    {       
     	ind.start();
     	rcons.start();
     }
@@ -853,9 +744,33 @@ public class GraphicStartup implements Menu {
          */            
         @Override
         public void run()
-        {
-            //setAddress();            
-        	menu = new GraphicStartup();    	
+        {         
+        	menu = new GraphicStartup(); 
+        	
+        	// Start the RMI server
+            String lastIp = null;
+            for (String ip: ips) {
+            	lastIp = ip;
+            }
+            System.out.println("Setting java.rmi.server.hostname to " + lastIp);
+            System.setProperty("java.rmi.server.hostname", "192.168.0.9");
+            
+            try { //special exception handler for registry creation
+                LocateRegistry.createRegistry(1099); 
+                System.out.println("java RMI registry created.");
+            } catch (RemoteException e) {
+                //do nothing, error means registry already exists
+                System.out.println("java RMI registry already exists.");
+            }
+            
+            try {
+    			RMIRemoteEV3 ev3 = new RMIRemoteEV3();
+    			Naming.rebind("//localhost/RemoteEV3", ev3);
+    			RMIRemoteMenu remoteMenu = new RMIRemoteMenu(menu);
+    			Naming.rebind("//localhost/RemoteMenu", remoteMenu);
+    		} catch (RemoteException | MalformedURLException e) {
+    			e.printStackTrace();
+    		}
         }
     }
 	
@@ -957,8 +872,6 @@ public class GraphicStartup implements Menu {
             System.out.println("Waiting for process to die");;
             p.waitFor();
             System.out.println("Program finished");
-            //echoIn.close();
-            //echoErr.close();
         	LCD.setAutoRefresh(true);
         	LCD.clearDisplay();
         	LCD.refresh();
@@ -967,47 +880,7 @@ public class GraphicStartup implements Menu {
             err.printStackTrace();
           } 	
     }
-    
-    static class EchoThread extends Thread {
-    	BufferedReader in;
-    	PrintStream out;
-    	
-    	public EchoThread(BufferedReader in, PrintStream out) {
-    		super();
-    		this.in= in;
-    		this.out = out;
-    	}
-    	
-    	public void close() {
-    		try {
-    			System.out.println("Closing echo stream");
-				if (in != null) in.close();
-			} catch (IOException e) {
-				System.err.println("Close of echo stream failed");
-			}
-    		in = null;
-    	}
-    	
-		@Override
-		public void run()
-		{
-			while(in != null) {
-				try {
-					String line = in.readLine();
-					if (line == null) {
-						close();
-						break;
-					} else {
-						out.println(line);
-					}
-				} catch (IOException e) {
-					System.err.println("Echo stream Exception: " + e);
-					close();
-				}
-			}
-		}
-    }
-    
+   
     /**
      * Display the files in the file system.
      * Allow the user to choose a file for further operations.
@@ -1136,9 +1009,7 @@ public class GraphicStartup implements Menu {
      * @return Selected item or < 0 for escape etc.
      */
     private int getSelection(GraphicMenu menu, int cur)
-    {
-    	this.setCurMenu(menu);
-    	
+    { 	
         int selection;
         // If the menu is interrupted by another thread, redisplay
         do {
@@ -1147,8 +1018,6 @@ public class GraphicStartup implements Menu {
         
         if (selection == -3)
             shutdown();
-        
-    	this.setCurMenu(menu);
     	
         return selection;
     }
@@ -1164,63 +1033,6 @@ public class GraphicStartup implements Menu {
         LCD.refresh();
     }
     
-    /**
-     * Set the current menu
-     */
-    synchronized void setCurMenu(GraphicMenu menu)
-    {
-    	this.curMenu = menu;
-    }
-    
-    /**
-     * Thread to play the tune
-     */
-	static class TuneThread extends Thread
-	{
-        int stState = 0;
-    	
-		@Override
-		public void run()
-		{
-			Utils.fadeIn();
-			this.waitState(1);
-			playTune();
-			// Tell others, that tune is complete
-			this.setState(2);
-            // Wait for init to complete
-            this.waitState(3);
-            // Fade in
-            Utils.fadeIn();
-		}
-		
-		/**
-		 * Set the current state
-		 */
-        public synchronized void setState(int s)
-        {
-        	this.stState = s;
-        	this.notifyAll();
-        }
-        
-        /**
-         * Wait for a specific state
-         */
-        public synchronized void waitState(int s)
-        {
-        	while (this.stState < s)
-        	{
-        		try
-        		{
-        			this.wait();
-        		}
-        		catch (InterruptedException e)
-        		{
-        			// nothing
-        		}
-        	}
-        }
-	}
-	
     /**
      * Manage the top line of the display.
      * The top line of the display shows battery state, menu titles, and I/O
@@ -1242,16 +1054,12 @@ public class GraphicStartup implements Menu {
 	    		while (true)
 	    		{
 	    			long time = System.currentTimeMillis();
-	    			//int x = (USB.usbStatus() & USB.USB_CONFIGURED) != 0 ? Config.ICON_USB_X : Config.ICON_DISABLE_X;
-	    			//indiUSB.setIconX(x);
 	    			
 	    			byte[] buf = LCD.getDisplay();
 	    			// clear not necessary, pixels are always overwritten
 	    			for (int i=0; i<LCD.SCREEN_WIDTH; i++)
 	    				buf[i] = 0;	    			
 	    			indiBA.draw(time, buf);
-	    			//indiUSB.draw(time, buf);
-	    			//indiBT.draw(time, buf);
 	    			LCD.asyncRefresh();
     			
     				// wait until next tick
@@ -1307,83 +1115,7 @@ public class GraphicStartup implements Menu {
         }
         return result;
     } 
-    
-    class RConsole extends Thread
-    {
-        
-        static final int MODE_SWITCH = 0xff;
-        static final int MODE_LCD = 0x0;
-        
-        static final int RCONSOLE_PORT = 8001;    
-        ServerSocket ss = null;
-        Socket conn = null;
-        PrintStream origOut = System.out, origErr = System.err;
-        
-		public RConsole()
-    	{
-    		super();
-            setDaemon(true);
-    	}
-		
-		public boolean isConnected() {
-			return (conn != null && conn.isConnected());
-		}
-    
-        /**
-         * Main console I/O thread.
-         */
-        @Override
-        public void run()
-        {      
-        	// Create a server socket
-        	try {
-				ss = new ServerSocket(RCONSOLE_PORT);
-				System.out.println("Server socket created");
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				return;
-			}
-        	
-        	// Loop accepting remote console connections
-        	while (true) {
-	            try {
-	            	System.out.println("Waiting for a connection");
-            		conn = ss.accept();
-            		conn.setSoTimeout(2000);
-            		SynchronizedOutputStream os = new SynchronizedOutputStream(conn.getOutputStream());
-            		BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            		System.setOut(new PrintStream(os));
-            		System.setErr(new PrintStream(os));
-            		System.out.println("Output redirected");
-	                
-	                // Loop waiting for commands
-	                while (true)
-	                {
-	                    try {
-	                    	String line = input.readLine(); 
-	                    	if (line == null) break;
-	                    } catch (SocketTimeoutException e) {
-                            //os.write(MODE_SWITCH);
-                            //os.write(MODE_LCD);
-                            os.writeLCD(LCD.getHWDisplay());
-                            //os.flush();
-	                    }                
-	                }
-	                os.close();
-	                input.close();
-	                conn.close();
-	                System.setOut(origOut);
-	                System.setErr(origErr);
-	                System.out.println("System output set back to original");
-	            }
-	            catch(IOException e)
-	            {
-	            	System.err.println("Error accepting connection " + e);
-	            }
-        	}
-        }
-    }
-
+ 
 	@Override
 	public int runProgram(String programName) {
     	ind.suspend();
@@ -1467,8 +1199,7 @@ public class GraphicStartup implements Menu {
     	}
         int selection = 0;
         
-        do {
-            
+        do {           
             int len = names.length;
             if (len == 0)
             {
@@ -1546,7 +1277,7 @@ public class GraphicStartup implements Menu {
 
 	@Override
 	public boolean setName(String name) {
-		// TODO Auto-generated method stub
+		// TODO How to set name?
 		return false;
 	}
 }

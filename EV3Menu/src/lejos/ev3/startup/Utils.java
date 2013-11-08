@@ -1,13 +1,14 @@
 package lejos.ev3.startup;
-
-import java.io.File;
-import java.io.IOException;
+import javax.microedition.lcdui.Graphics;
 
 import lejos.hardware.LCD;
 import lejos.utility.Delay;
 
 public class Utils
 {
+	
+	static Graphics g = new Graphics();
+	
 	public static byte[] stringToBytes8(String str)
 	{
 		int len = str.length();
@@ -86,23 +87,9 @@ public class Utils
 
 	public static void drawRect(int x, int y, int width, int height)
 	{
-		byte[] buf = LCD.getDisplay();    	
-		for (int i=0; i<=width; i++)
-		{
-			Utils.setPixel(buf, x+i, y);
-			Utils.setPixel(buf, x+i, y+height);
-		}
-		for (int j=1; j<height; j++)
-		{
-			Utils.setPixel(buf, x, y+j);
-			Utils.setPixel(buf, x+width, y+j);
-		}
+		g.drawRect(x, y, width, height);
 	}
-
-	public static void defragFilesystem()
-	{
-	}
-
+	
 	private static void setPixel(byte[] buf, int x, int y)
 	{
 		x += (y >> 3) * LCD.SCREEN_WIDTH;
