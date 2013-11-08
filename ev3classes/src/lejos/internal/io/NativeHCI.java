@@ -105,15 +105,16 @@ public class NativeHCI {
 		for(int i=0;i<numRsp;i++) {			
 			byte[] name = new byte[248];		
 			byte[] bdaddr =  ii.getByteArray(i*INQUIRY_INFO_SIZE, 6);
+			byte[] cod =  ii.getByteArray(i*INQUIRY_INFO_SIZE + 9, 3);
 			StringBuilder nameBuilder = new StringBuilder();
 			
 			blue.hci_read_remote_name(socket, bdaddr, name.length, ByteBuffer.wrap(name), 0);
 			
-			for(int j=0;i<name.length && name[j] != 0;j++) {
+			for(int j=0;j<name.length && name[j] != 0;j++) {
 				nameBuilder.append((char) name[j]);
 			}
 			
-			remoteDevices.add(new RemoteBTDevice(nameBuilder.toString(),bdaddr));
+			remoteDevices.add(new RemoteBTDevice(nameBuilder.toString(),bdaddr, cod));
 		}
 		return remoteDevices;
 	}
@@ -132,6 +133,18 @@ public class NativeHCI {
 	public boolean hcigetVisible() {
 		blue.hci_devinfo(deviceId, deviceInfo);
 		return (deviceInfo.flags & PISCAN) == PISCAN;
+	}
+	
+	public String getRemoteName(String addr) {
+		byte[] bdaddr = new byte[6];
+		byte[] name = new byte[248];
+		blue.hci_read_remote_name(socket, bdaddr, name.length, ByteBuffer.wrap(name), 0);
+		StringBuilder nameBuilder = new StringBuilder();
+		for(int j=0;j<name.length && name[j] != 0;j++) {
+			nameBuilder.append((char) name[j]);
+		}
+		
+		return nameBuilder.toString();
 	}
 
 }
