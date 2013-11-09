@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.rmi.Naming;
@@ -86,7 +85,8 @@ public class GraphicStartup implements Menu {
     private static String version = "Unknown";
     private static String hostname;
     private static List<String> ips = getIPAddresses();
-    LocalBTDevice bt = Bluetooth.getLocalDevice();
+    private static LocalBTDevice bt;
+	private static GraphicStartup menu = new GraphicStartup();
     
     /**
      * Main method
@@ -118,31 +118,89 @@ public class GraphicStartup implements Menu {
     	}
         
         TuneThread tuneThread = new TuneThread();
-        
-        //Fade in
         tuneThread.start();
         
-        // Tell thread to play tune
-        tuneThread.setState(1);
+        System.out.println("Getting IP addresses");
+        ips = getIPAddresses();
         
-        // Start the RMI registry
-        
+        // Start the RMI registry 
         InitThread initThread = new InitThread();
         initThread.start();
-        initThread.join();
+   
+        System.out.println("Starting background threads");
+        menu.start();  
         
-        initThread.menu.start();
+        System.out.println("Starting the menu");
+        menu.mainMenu();
         
-        tuneThread.setState(3);
-        
-        Broadcast.broadcast(hostname);
-        
-        initThread.menu.mainMenu();
-        
-        System.out.println("Menu finished");
-        
+        System.out.println("Menu finished");    
         System.exit(0);
 	}
+	
+	
+	/**
+	 * Start-up thread
+	 */
+    static class InitThread extends Thread
+    {
+        /**
+         * Create the Bluetooth local device and connect to DBus
+         * 
+         * Start the RMI server
+         * 
+         * Broadcast device availability
+         */            
+        @Override
+        public void run()
+        {               
+        	// Create the Bluetooth local device and connect to DBus
+            System.out.println("Creating bluetooth local device");
+            bt = Bluetooth.getLocalDevice();
+            
+        	// Start the RMI server
+            System.out.println("Starting RMI");
+            
+            // Use last IP address, which will be Wifi, it it exists
+            String lastIp = null;
+            for (String ip: ips) {
+            	lastIp = ip;
+            }
+            
+            System.out.println("Setting java.rmi.server.hostname to " + lastIp);
+            System.setProperty("java.rmi.server.hostname", "192.168.0.9");
+            
+            try { //special exception handler for registry creation
+                LocateRegistry.createRegistry(1099); 
+                System.out.println("java RMI registry created.");
+            } catch (RemoteException e) {
+                //do nothing, error means registry already exists
+                System.out.println("java RMI registry already exists.");
+            }
+            
+            try {
+    			RMIRemoteEV3 ev3 = new RMIRemoteEV3();
+    			Naming.rebind("//localhost/RemoteEV3", ev3);
+    			RMIRemoteMenu remoteMenu = new RMIRemoteMenu(menu);
+    			Naming.rebind("//localhost/RemoteMenu", remoteMenu);
+    		} catch (Exception e) {
+    			System.err.println("RMI failed to start: " + e);
+    		}
+            
+            // Broadcast availabiility of device
+            Broadcast.broadcast(hostname);
+            
+            System.out.println("Initialisation complete");
+        }
+    }
+    
+    /**
+     *  Start the background threads
+     */
+    private void start()
+    {       
+    	ind.start();
+    	rcons.start();
+    }
 	
 	/**
      * Display the main system menu.
@@ -199,7 +257,7 @@ public class GraphicStartup implements Menu {
             }
         } while (true);
         
-        // Shit down the EV3
+        // Shut down the EV3
         shutdown();
     }
     
@@ -208,6 +266,12 @@ public class GraphicStartup implements Menu {
      */
     private void bluetoothMenu()
     {
+    	// Check if BT initialisation is complete
+        if (bt == null) {
+        	msg("BT not started");
+        	return;
+        }
+        
         int selection = 0;
         GraphicMenu menu = new GraphicMenu(null,null,4);
         boolean visible = false;
@@ -706,66 +770,6 @@ public class GraphicStartup implements Menu {
         int value = Button.waitForAnyPress(timeout*60000);
         if (value == 0) shutdown();
         return value;
-    }
-
-    /**
-     *  Start the threads
-     */
-    private void start()
-    {       
-    	ind.start();
-    	rcons.start();
-    }
-	
-    /**
-     *  Constructor
-     */
-	public GraphicStartup() {
-	}
-	
-	/**
-	 * Start-up thread
-	 */
-    static class InitThread extends Thread
-    {
-    	GraphicStartup menu;
-    	
-        /**
-         * Startup the menu system.
-         * Play the greeting tune.
-         * Run the default program if auto-run is requested.
-         * Initialize I/O etc.
-         */            
-        @Override
-        public void run()
-        {         
-        	menu = new GraphicStartup(); 
-        	
-        	// Start the RMI server
-            String lastIp = null;
-            for (String ip: ips) {
-            	lastIp = ip;
-            }
-            System.out.println("Setting java.rmi.server.hostname to " + lastIp);
-            System.setProperty("java.rmi.server.hostname", "192.168.0.9");
-            
-            try { //special exception handler for registry creation
-                LocateRegistry.createRegistry(1099); 
-                System.out.println("java RMI registry created.");
-            } catch (RemoteException e) {
-                //do nothing, error means registry already exists
-                System.out.println("java RMI registry already exists.");
-            }
-            
-            try {
-    			RMIRemoteEV3 ev3 = new RMIRemoteEV3();
-    			Naming.rebind("//localhost/RemoteEV3", ev3);
-    			RMIRemoteMenu remoteMenu = new RMIRemoteMenu(menu);
-    			Naming.rebind("//localhost/RemoteMenu", remoteMenu);
-    		} catch (RemoteException | MalformedURLException e) {
-    			e.printStackTrace();
-    		}
-        }
     }
 	
     /**
