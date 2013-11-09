@@ -1,5 +1,6 @@
 package lejos.ev3.startup;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -423,6 +424,26 @@ public class NtpMessage
 		return date + fractionSting;
 	}
 	
+	/**
+	 * Returns a timestamp (number of seconds since 00:00 1-Jan-1900) as a
+	 * formatted date/time string. 
+	 */
+	public static String timestampToDate(double timestamp)
+	{
+		if(timestamp==0) return "0";
+		
+		// timestamp is relative to 1900, utc is used by Java and is relative
+		// to 1970 
+		double utc = timestamp - (2208988800.0);
+		
+		// milliseconds
+		long ms = (long) (utc * 1000.0);
+		
+		// date/time
+		String date = new SimpleDateFormat("MMddHHmmyyyy.ss").format(new Date(ms));
+		
+		return date;
+	}
 	
 	
 	/**

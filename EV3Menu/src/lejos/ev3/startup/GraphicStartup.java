@@ -189,6 +189,15 @@ public class GraphicStartup implements Menu {
             // Broadcast availabiility of device
             Broadcast.broadcast(hostname);
             
+            // Set the date
+            try {
+				String dt = SntpClient.getDate("1.uk.pool.ntp.org");
+				System.out.println("Date and time is " + dt);
+				Runtime.getRuntime().exec("date -s " + dt);
+			} catch (IOException e) {
+				System.err.println("Failed to get time from ntp: " + e);
+			}
+            
             System.out.println("Initialisation complete");
         }
     }

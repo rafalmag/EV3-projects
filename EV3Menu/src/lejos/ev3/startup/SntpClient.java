@@ -35,20 +35,8 @@ import java.text.DecimalFormat;
  */
 public class SntpClient
 {
-	public static void main(String[] args) throws IOException
+	public static String getDate(String serverName) throws IOException
 	{
-		String serverName;
-		
-		// Process command-line args
-		if(args.length==1)
-		{
-			serverName = args[0];
-		}
-		else
-		{
-			printUsage();
-			return;
-		}
 		
 		// Send request
 		DatagramSocket socket = new DatagramSocket();
@@ -101,30 +89,7 @@ public class SntpClient
 			new DecimalFormat("0.00").format(localClockOffset*1000) + " ms");
 		
 		socket.close();
-	}
-	
-	
-	
-	/**
-	 * Prints usage
-	 */
-	static void printUsage()
-	{
-		System.out.println(
-			"NtpClient - an NTP client for Java.\n" +
-			"\n" +
-			"This program connects to an NTP server and prints the response to the console.\n" +
-			"\n" +
-			"\n" +
-			"Usage: java NtpClient server\n" +
-			"\n" +
-			"\n" +
-			"This program is copyright (c) Adam Buckley 2004 and distributed under the terms\n" +
-			"of the GNU General Public License.  This program is distributed in the hope\n" +
-			"that it will be useful, but WITHOUT ANY WARRANTY; without even the implied\n" +
-			"warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU\n" +
-			"General Public License available at http://www.gnu.org/licenses/gpl.html for\n" +
-			"more details.");
-					
+		
+		return NtpMessage.timestampToDate(msg.receiveTimestamp);
 	}
 }
