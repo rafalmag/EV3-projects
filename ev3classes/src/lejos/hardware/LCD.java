@@ -984,8 +984,8 @@ public class LCD extends Thread
             	byte b = convertBack(hwBuffer[row*LCD_MEM_WIDTH +  56 + j]);
             	pixels |= (b << j*3);
             }
+            buffer[row*((SCREEN_WIDTH+7)/8)+21] = (byte) (pixels);
             buffer[row*((SCREEN_WIDTH+7)/8)+22] = (byte) (pixels >> 8);
-            buffer[row*((SCREEN_WIDTH+7)/8)+23] = (byte) (pixels);
         }
     	return buffer;
     }
