@@ -40,7 +40,7 @@ public class GraphicMenu extends TextMenu {
 	/*
 	 * The y coordinates where the 
 	 */
-	private int yArea = 80;
+	private int yArea;
 	
 	/*
 	 * Icon Database
@@ -229,9 +229,8 @@ public class GraphicMenu extends TextMenu {
 		LCD.asyncRefresh();
 	}
 	
-	public void clearArea(){
-		// TODO: Do this a better way
-		LCD.bitBlt(null, 178, 60, 0, 0, 0, yArea, 178, 60, LCD.ROP_CLEAR);
+	public void clearArea() {
+		LCD.bitBlt(null, 178, 64, 0, 0, 0, yArea, 178, 64, LCD.ROP_CLEAR);
 	}
 	
 	/**

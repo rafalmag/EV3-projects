@@ -149,6 +149,8 @@ public class GraphicStartup implements Menu {
          * Start the RMI server
          * 
          * Broadcast device availability
+         * 
+         * Get the time from a name server
          */            
         @Override
         public void run()
@@ -259,8 +261,6 @@ public class GraphicStartup implements Menu {
             }
             
             if (selection < 0)  {
-            	LCD.bitBlt(null, 0, 0, 0, 0, 0, 64, 178, 64, LCD.ROP_CLEAR);
-            	LCD.refresh();
             	if (getYesNo("  Shut down EV3 ?", false) == 1)
             		break;
             }
@@ -653,7 +653,7 @@ public class GraphicStartup implements Menu {
      */
     private int getYesNo(String prompt, boolean yes)
     {
-    	//newScreen();
+    	LCD.bitBlt(null, 178, 64, 0, 0, 0, 64, 178, 64, LCD.ROP_CLEAR);
         GraphicMenu menu = new GraphicMenu(new String[]{"No", "Yes"},new String[]{ICNo,ICYes},5,prompt,4);
         return getSelection(menu, yes ? 1 : 0);
     }
@@ -1212,7 +1212,7 @@ public class GraphicStartup implements Menu {
                 msg("No Access Points found");
                 return;
             }
-            newScreen("Access Points");
+            newScreen("Access Pts");
 
             menu.setItems(names,null);
             selection = getSelection(menu, selection);
