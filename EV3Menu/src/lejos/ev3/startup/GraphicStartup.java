@@ -45,6 +45,7 @@ public class GraphicStartup implements Menu {
     static final String defaultProgramAutoRunProperty = "lejos.default_autoRun";
     static final String sleepTimeProperty = "lejos.sleep_time";
     static final String pinProperty = "lejos.bluetooth_pin";
+    static final String ntpProperty = "lejos.ntp_host";
 	
     static final String ICMProgram = "\u00fc\u00ff\u00ff\u003f\u00fc\u00ff\u00ff\u003f\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0003\u00c0\u0003\u0000\u0003\u00c0\u0003\u00c0\u0000\u00c0\u0003\u00c0\u0000\u00c0\u0003\u00c0\u000c\u00c0\u0003\u00c0\u000c\u00c0\u0003\u0030\u000c\u00c0\u0003\u0030\u000c\u00c0\u0003\u0030\u0003\u00c0\u0003\u0030\u0003\u00c0\u0003\u00c0\u0000\u00c0\u0003\u00c0\u0000\u00c0\u0003\u00ff\u00cf\u00c3\u0003\u00ff\u00cf\u00c3\u0003\u0000\u0000\u00c3\u0003\u0000\u0000\u00c3\u0003\u00fc\u00f3\u00c0\u0003\u00fc\u00f3\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u00c3\u00ff\u003f\u00c0\u00c3\u00ff\u003f\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u00fc\u00ff\u00ff\u003f\u00fc\u00ff\u00ff\u003f";
     static final String ICMSound = "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00c0\u0000\u0003\u0000\u00c0\u0000\u0003\u0000\u00f0\u0030\u000c\u0000\u00f0\u0030\u000c\u0000\u00cc\u00c0\u0030\u0000\u00cc\u00c0\u0030\u0000\u00c3\u000c\u0033\u0000\u00c3\u000c\u0033\u00fc\u00c3\u0030\u0033\u00fc\u00c3\u0030\u0033\u000c\u00c3\u0030\u0033\u000c\u00c3\u0030\u0033\u000c\u00c3\u0030\u0033\u000c\u00c3\u0030\u0033\u003c\u00c3\u0030\u0033\u003c\u00c3\u0030\u0033\u00cc\u00cf\u0030\u0033\u00cc\u00cf\u0030\u0033\u00fc\u00f3\u0030\u0033\u00fc\u00f3\u0030\u0033\u0000\u00cf\u000c\u0033\u0000\u00cf\u000c\u0033\u0000\u00fc\u00c0\u0030\u0000\u00fc\u00c0\u0030\u0000\u00f0\u0030\u000c\u0000\u00f0\u0030\u000c\u0000\u00c0\u0000\u0003\u0000\u00c0\u0000\u0003\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000";
@@ -190,12 +191,12 @@ public class GraphicStartup implements Menu {
     			System.err.println("RMI failed to start: " + e);
     		}
             
-            // Broadcast availabiility of device
+            // Broadcast availability of device
             Broadcast.broadcast(hostname);
             
             // Set the date
             try {
-				String dt = SntpClient.getDate("1.uk.pool.ntp.org");
+				String dt = SntpClient.getDate(Settings.getProperty(ntpProperty, "1.uk.pool.ntp.org"));
 				System.out.println("Date and time is " + dt);
 				Runtime.getRuntime().exec("date -s " + dt);
 			} catch (IOException e) {
@@ -571,8 +572,8 @@ public class GraphicStartup implements Menu {
      */
     private void systemMenu()
     {
-        String[] menuData = {"Delete all", "", "Auto Run", "Unset default"};
-        String[] iconData = {ICFormat,ICSleep,ICAutoRun,ICDefault};
+        String[] menuData = {"Delete all", "", "Auto Run", "NTP host", "Suspend menu", "Unset default"};
+        String[] iconData = {ICFormat,ICSleep,ICAutoRun,ICDefault,ICDefault,ICDefault};
         boolean rechargeable = false;
         GraphicMenu menu = new GraphicMenu(menuData,iconData,4);
         int selection = 0;
@@ -590,8 +591,8 @@ public class GraphicStartup implements Menu {
             menuData[1] = "Sleep time: " + (timeout == 0 ? "off" : String.valueOf(timeout));
             File f = getDefaultProgram();
             if (f == null){
-            	menuData[3] = null;
-            	iconData[3] = null;
+            	menuData[5] = null;
+            	iconData[5] = null;
             }
             menu.setItems(menuData,iconData);
             selection = getSelection(menu, selection);
@@ -608,15 +609,40 @@ public class GraphicStartup implements Menu {
                     }
                     break;
                 case 1:
-                    timeout++;
-                    if (timeout > maxSleepTime)
-                        timeout = 0;
+                	System.out.println("Timeout = " + timeout);
+                	System.out.println("Max sleep time = " + maxSleepTime);
+                    //timeout++;
+                    if (timeout > maxSleepTime) timeout = 0;
                     Settings.setProperty(sleepTimeProperty, String.valueOf(timeout));
                     break;
                 case 2:
                     systemAutoRun();
                     break;
                 case 3:
+                	String host = new Keyboard().getString();
+                	
+                	if(host != null) {
+                		Settings.setProperty(ntpProperty, host);
+                	}
+                	break;
+                case 4:
+                	ind.suspend();
+                	LCD.clearDisplay();
+                	LCD.refresh();
+                	LCD.setAutoRefresh(false);
+                	System.out.println("Menu suspended");
+                    while(true) {
+                        int b = Button.readButtons(); 
+                        if (b == 6) break;
+                        Delay.msDelay(200);
+                    }
+                  	LCD.setAutoRefresh(true);
+                  	LCD.clearDisplay();
+                  	LCD.refresh();            	
+                	ind.resume();
+                	System.out.println("Menu resumed");
+                	break;
+                case 5:
                     Settings.setProperty(defaultProgramProperty, "");
                     Settings.setProperty(defaultProgramAutoRunProperty, "");
                     selection = 0;
@@ -627,7 +653,7 @@ public class GraphicStartup implements Menu {
     
     /**
      * Present details of the default program
-     * Allow the user to specifiy run on system start etc.
+     * Allow the user to specify run on system start etc.
      */
     private void systemAutoRun()
     {
@@ -1230,13 +1256,24 @@ public class GraphicStartup implements Menu {
 
             menu.setItems(names,null);
             selection = getSelection(menu, selection);
-            if (selection >0) {
+            if (selection >= 0) {
             	System.out.println("Access point is " + names[selection]);
             	Keyboard k = new Keyboard();
             	String pwd = k.getString();
-            	System.out.println("Password is " + pwd);
-            	WPASupplicant.writeConfiguration("wpa_supplicant.txt",  "wpa_supplicant.conf",  names[selection], pwd);
-            	selection = -1;
+            	if (pwd != null) {
+                   	System.out.println("Password is " + pwd);
+                	WPASupplicant.writeConfiguration("wpa_supplicant.txt",  "wpa_supplicant.conf",  names[selection], pwd);
+                	try {
+						Process p = Runtime.getRuntime().exec("/home/root/lejos/bin/startwlan");
+						int status = p.waitFor();
+						System.out.println("startwlan returned " + status);
+						// Get IP addresses again
+						ips = getIPAddresses();
+					} catch (IOException | InterruptedException e) {
+						System.err.println("Failed to execute startwlan: " + e);
+					}
+            	}
+             	selection = -1;
             }
         } while (selection >= 0);		
 	}
