@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -23,6 +24,7 @@ import lejos.ev3.startup.Config;
 import lejos.hardware.Bluetooth;
 import lejos.hardware.Button;
 import lejos.hardware.LCD;
+import lejos.hardware.LCDOutputStream;
 import lejos.hardware.LocalBTDevice;
 import lejos.hardware.LocalWifiDevice;
 import lejos.hardware.RemoteBTDevice;
@@ -795,8 +797,8 @@ public class GraphicStartup implements Menu {
         if (ext.equals("jar"))
         {
         	selectionAdd = 0;
-            items = new String[]{"Execute program", "Debug program", "Set as Default", "Delete file"}; 
-            icons = new String[]{ICProgram,ICProgram,ICDefault,ICDelete};
+            items = new String[]{"Execute program", "LCD Debug", "Debug program", "Set as Default", "Delete file"}; 
+            icons = new String[]{ICProgram,ICProgram,ICProgram,ICDefault,ICDelete};
         }
         else if (ext.equals("wav"))
         {
@@ -826,19 +828,31 @@ public class GraphicStartup implements Menu {
 	            	ind.resume();
 	                break;
 	            case 1:
+	            	System.out.println("Running with System output to LCD: " + file.getPath());
+	            	PrintStream origOut = System.out, origErr = System.err;
+	            	PrintStream lcdOut = new PrintStream(new LCDOutputStream());
+	            	ind.suspend();
+	            	System.setOut(lcdOut);
+	            	System.setErr(lcdOut);
+	            	exec(JAVA_RUN_JAR + file.getPath());
+	            	System.setOut(origOut);
+	            	System.setOut(origErr);
+	            	ind.resume();
+	                break;
+	            case 2:
 	            	System.out.println("Debugging program: " + file.getPath());
 	            	ind.suspend();
 	            	exec(JAVA_DEBUG_JAR + file.getPath());
 	            	ind.resume();
 	                break;
-	            case 2:
+	            case 3:
 	            	Settings.setProperty(defaultProgramProperty, file.getPath());
 	            	break;
 	            case 10:
 	            	System.out.println("Playing " + file.getPath());
 	                Sound.playSample(file);
 	                break;
-	            case 3:
+	            case 4:
 	            case 11:
 	            case 20:
 	                file.delete();

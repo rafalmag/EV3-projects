@@ -43,6 +43,7 @@ public class LCDOutputStream extends OutputStream {
 	}
 
 	private void incLine() {
+		LCD.refresh();
 		if (line < LCD.DISPLAY_CHAR_DEPTH - 1)
 			line++;
 		else
