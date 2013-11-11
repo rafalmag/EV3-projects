@@ -461,16 +461,16 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		
 		if (menu != null) {
 			try {
-				int volume = Integer.parseInt(menu.getSetting(Sound.VOL_SETTING));
+				int volume = Integer.parseInt(getSetting(Sound.VOL_SETTING, "50"));
 				volumeList.setSelectedIndex(volume/10);
-				int keyClickVolume = Integer.parseInt(menu.getSetting(Button.VOL_SETTING));
+				int keyClickVolume = Integer.parseInt(getSetting(Button.VOL_SETTING,"20"));
 				volumeList2.setSelectedIndex(keyClickVolume/10);
-				int keyClickFrequency = Integer.parseInt(menu.getSetting(Button.FREQ_SETTING));
+				int keyClickFrequency = Integer.parseInt(getSetting(Button.FREQ_SETTING,"1000"));
 				volumeList3.setSelectedIndex((keyClickFrequency-1)/100);
-				int keyClickLength = Integer.parseInt(menu.getSetting(Button.LEN_SETTING));
+				int keyClickLength = Integer.parseInt(getSetting(Button.LEN_SETTING,"50"));
 				volumeList4.setSelectedIndex((keyClickLength-1)/100);
 			} catch(Exception e) {
-				showMessage("Failed to get volume settings");
+				showMessage("Failed to get volume settings: " + e);
 			}
 		}
 		
@@ -510,10 +510,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		
 		if (menu != null) {
 			try {
-				int sleep = Integer.parseInt(menu.getSetting(sleepTimeProperty));
+				int sleep = Integer.parseInt(getSetting(sleepTimeProperty,"0"));
 				if (sleep >= 0 && sleep <= 10) sleepList.setSelectedIndex(sleep);
 			} catch(Exception e) {
-				showMessage("Failed to get sleep timer setting");
+				showMessage("Failed to get sleep timer setting: " + e);
 			}
 		}
 		
@@ -1756,5 +1756,11 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
     public void updateLCD(byte[] buffer)
     {
     	lcd.update(buffer);
+    }
+    
+    private String getSetting(String key, String defaultValue) throws RemoteException {
+    	String val = menu.getSetting(key);
+    	if (val == null) return defaultValue;
+    	else return val;
     }
 }
