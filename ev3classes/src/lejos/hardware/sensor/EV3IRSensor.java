@@ -3,6 +3,7 @@ package lejos.hardware.sensor;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.UARTPort;
 import lejos.robotics.RangeFinder;
+import lejos.robotics.SampleProvider;
 
 /**
  * Basic sensor driver for the Lego EV3 Infra Red sensor.<br>
@@ -11,7 +12,7 @@ import lejos.robotics.RangeFinder;
  * @author andy
  *
  */
-public class EV3IRSensor extends UARTSensor implements RangeFinder
+public class EV3IRSensor extends UARTSensor implements SensorMode
 {
     protected final static int IR_PROX = 0;
     protected final static int IR_SEEK = 1;
@@ -20,39 +21,109 @@ public class EV3IRSensor extends UARTSensor implements RangeFinder
     protected final static int SWITCH_DELAY = 250;
     
     public final static int IR_CHANNELS = 4;
+    private static final float toSI = 1;
     
     protected byte [] remoteVals = new byte[IR_CHANNELS];
+    
 
+
+    @Override
+    public int sampleSize() 
+    {
+        return 1;
+    }
+
+    @Override
+    public void fetchSample(float[] sample, int offset) 
+    {
+        switchMode(IR_PROX, SWITCH_DELAY);
+        sample[offset] = ((int)port.getByte() & 0xff) * toSI;
+    }
+
+    @Override
+    public String getName() 
+    {
+        return "Distance";
+    }
+
+    private class SeekMode implements SensorMode 
+    {
+        private static final float toSI = 1;
+        byte []seekVals = new byte[8];
+
+        @Override
+        public int sampleSize() 
+        {
+            return 8;
+        }
+
+        @Override
+        public void fetchSample(float[] sample, int offset) 
+        {
+              switchMode(IR_SEEK, SWITCH_DELAY);
+              port.getBytes(seekVals, 0, seekVals.length);
+              for(int i = 0; i < seekVals.length; i += 2)
+              {
+                  sample[offset++] = seekVals[i];
+                  sample[offset++] = (int)seekVals[i+1] & 0xff;
+              }
+        }
+
+        @Override
+        public String getName() 
+        {
+            return "Seek";
+        }
+
+    }
+
+    protected void init()
+    {
+        setModes(new SensorMode[] {this, new SeekMode()});
+    }
+    
     public EV3IRSensor(UARTPort port)
     {
         super(port, IR_PROX);
+        init();
     }
     
     public EV3IRSensor(Port port)
     {
         super(port, IR_PROX);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public float getRange()
-    {
-        switchMode(IR_PROX, SWITCH_DELAY);
-        return (int)port.getByte() & 0xff;
+        init();
     }
 
     /**
-     * {@inheritDoc}
+     * return a sample provider for the IR sensor operating in distance mode.
+     * TODO: Add better doc of the actual values
+     * @return the sample provider
      */
-    @Override
-    public float[] getRanges()
+    public SensorMode getDistanceMode()
     {
-        float [] result = new float[1];
-        result[0] = getRange();
-        return result;
+        return getMode(0);
     }
+
+    /**
+     * return a sample provider for the IR sensor operating in seek mode
+     * The provider returns the bearing and distance to one or more IR beacons.
+     * Up to four
+     * beacons (on different channels 0-3) can be detected. Each beacon has an
+     * associated two byte value (so the beacon on channel 0 will have values
+     * in locations 0 and 1 in the array. The first location contains the relative
+     * bearing to the beacon, the second the distance.<br>
+     * The bearing values range from -12 to +12 (with values increasing clockwise
+     * when looking from behind the sensor. A bearing of 0 indicates the beacon is
+     * directly in front of the sensor. Distance values (0-100) are in cm and if no
+     * beacon is detected a bearing of 0 and a distance of 255 is returned.
+     * TODO: add better doc of the actual values.
+     * @return the sample provider
+     */
+    public SensorMode getSeekMode()
+    {
+        return getMode(1);
+    }
+    
 
     /**
      * Return the current remote command from the specified channel. Remote commands
@@ -93,24 +164,5 @@ public class EV3IRSensor extends UARTSensor implements RangeFinder
         port.getBytes(cmds, offset, len);
     }
 
-    /**
-     * return the bearing and distance to one or more IR beacons. Up to four
-     * beacons (on different channels 0-3) can be detected. Each beacon has an
-     * associated two byte value (so the beacon on channel 0 will have values
-     * in locations 0 and 1 in the array. The first location contains the relative
-     * bearing to the beacon, the second the distance.<br>
-     * The bearing values range from -12 to +12 (with values increasing clockwise
-     * when looking from behind the sensor. A bearing of 0 indicates the beacon is
-     * directly in front of the sensor. Distance values (0-100) are in cm and if no
-     * beacon is detected a bearing of 0 and a distance of -128(255) is returned.
-     * @param bearings
-     * @param offset
-     * @param len
-     */
-    public void getBearings(byte[] bearings, int offset, int len)
-    {
-        switchMode(IR_SEEK, SWITCH_DELAY);
-        port.getBytes(bearings, offset, len);
-    }
 
 }

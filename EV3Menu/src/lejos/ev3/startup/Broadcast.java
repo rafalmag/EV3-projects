@@ -8,9 +8,8 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 
-public class Broadcast{
+public class Broadcast {
 	
-
 public static final int port = 3000;
 
 	public static void broadcast(String message) {
@@ -61,5 +60,4 @@ public static final int port = 3000;
 			  System.err.println("Exception opening socket : " + ex);
 		}
 	}
-
 }

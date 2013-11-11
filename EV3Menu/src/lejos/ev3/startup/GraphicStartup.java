@@ -6,8 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.rmi.Naming;
@@ -24,6 +24,7 @@ import lejos.ev3.startup.Config;
 import lejos.hardware.Bluetooth;
 import lejos.hardware.Button;
 import lejos.hardware.LCD;
+import lejos.hardware.LCDOutputStream;
 import lejos.hardware.LocalBTDevice;
 import lejos.hardware.LocalWifiDevice;
 import lejos.hardware.RemoteBTDevice;
@@ -44,6 +45,7 @@ public class GraphicStartup implements Menu {
     static final String defaultProgramAutoRunProperty = "lejos.default_autoRun";
     static final String sleepTimeProperty = "lejos.sleep_time";
     static final String pinProperty = "lejos.bluetooth_pin";
+    static final String ntpProperty = "lejos.ntp_host";
 	
     static final String ICMProgram = "\u00fc\u00ff\u00ff\u003f\u00fc\u00ff\u00ff\u003f\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0003\u00c0\u0003\u0000\u0003\u00c0\u0003\u00c0\u0000\u00c0\u0003\u00c0\u0000\u00c0\u0003\u00c0\u000c\u00c0\u0003\u00c0\u000c\u00c0\u0003\u0030\u000c\u00c0\u0003\u0030\u000c\u00c0\u0003\u0030\u0003\u00c0\u0003\u0030\u0003\u00c0\u0003\u00c0\u0000\u00c0\u0003\u00c0\u0000\u00c0\u0003\u00ff\u00cf\u00c3\u0003\u00ff\u00cf\u00c3\u0003\u0000\u0000\u00c3\u0003\u0000\u0000\u00c3\u0003\u00fc\u00f3\u00c0\u0003\u00fc\u00f3\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u00c3\u00ff\u003f\u00c0\u00c3\u00ff\u003f\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u0003\u0000\u0000\u00c0\u00fc\u00ff\u00ff\u003f\u00fc\u00ff\u00ff\u003f";
     static final String ICMSound = "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00c0\u0000\u0003\u0000\u00c0\u0000\u0003\u0000\u00f0\u0030\u000c\u0000\u00f0\u0030\u000c\u0000\u00cc\u00c0\u0030\u0000\u00cc\u00c0\u0030\u0000\u00c3\u000c\u0033\u0000\u00c3\u000c\u0033\u00fc\u00c3\u0030\u0033\u00fc\u00c3\u0030\u0033\u000c\u00c3\u0030\u0033\u000c\u00c3\u0030\u0033\u000c\u00c3\u0030\u0033\u000c\u00c3\u0030\u0033\u003c\u00c3\u0030\u0033\u003c\u00c3\u0030\u0033\u00cc\u00cf\u0030\u0033\u00cc\u00cf\u0030\u0033\u00fc\u00f3\u0030\u0033\u00fc\u00f3\u0030\u0033\u0000\u00cf\u000c\u0033\u0000\u00cf\u000c\u0033\u0000\u00fc\u00c0\u0030\u0000\u00fc\u00c0\u0030\u0000\u00f0\u0030\u000c\u0000\u00f0\u0030\u000c\u0000\u00c0\u0000\u0003\u0000\u00c0\u0000\u0003\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000";
@@ -86,7 +88,8 @@ public class GraphicStartup implements Menu {
     private static String version = "Unknown";
     private static String hostname;
     private static List<String> ips = getIPAddresses();
-    LocalBTDevice bt = Bluetooth.getLocalDevice();
+    private static LocalBTDevice bt;
+	private static GraphicStartup menu = new GraphicStartup();
     
     /**
      * Main method
@@ -118,31 +121,100 @@ public class GraphicStartup implements Menu {
     	}
         
         TuneThread tuneThread = new TuneThread();
-        
-        //Fade in
         tuneThread.start();
         
-        // Tell thread to play tune
-        tuneThread.setState(1);
+        System.out.println("Getting IP addresses");
+        ips = getIPAddresses();
         
-        // Start the RMI registry
-        
+        // Start the RMI registry 
         InitThread initThread = new InitThread();
         initThread.start();
-        initThread.join();
+   
+        System.out.println("Starting background threads");
+        menu.start();  
         
-        initThread.menu.start();
+        System.out.println("Starting the menu");
+        menu.mainMenu();
         
-        tuneThread.setState(3);
-        
-        Broadcast.broadcast(hostname);
-        
-        initThread.menu.mainMenu();
-        
-        System.out.println("Menu finished");
-        
+        System.out.println("Menu finished");    
         System.exit(0);
 	}
+	
+	
+	/**
+	 * Start-up thread
+	 */
+    static class InitThread extends Thread
+    {
+        /**
+         * Create the Bluetooth local device and connect to DBus
+         * 
+         * Start the RMI server
+         * 
+         * Broadcast device availability
+         * 
+         * Get the time from a name server
+         */            
+        @Override
+        public void run()
+        {               
+        	// Create the Bluetooth local device and connect to DBus
+            System.out.println("Creating bluetooth local device");
+            bt = Bluetooth.getLocalDevice();
+            
+        	// Start the RMI server
+            System.out.println("Starting RMI");
+            
+            // Use last IP address, which will be Wifi, it it exists
+            String lastIp = null;
+            for (String ip: ips) {
+            	lastIp = ip;
+            }
+            
+            System.out.println("Setting java.rmi.server.hostname to " + lastIp);
+            System.setProperty("java.rmi.server.hostname", "192.168.0.9");
+            
+            try { //special exception handler for registry creation
+                LocateRegistry.createRegistry(1099); 
+                System.out.println("java RMI registry created.");
+            } catch (RemoteException e) {
+                //do nothing, error means registry already exists
+                System.out.println("java RMI registry already exists.");
+            }
+            
+            try {
+    			RMIRemoteEV3 ev3 = new RMIRemoteEV3();
+    			Naming.rebind("//localhost/RemoteEV3", ev3);
+    			RMIRemoteMenu remoteMenu = new RMIRemoteMenu(menu);
+    			Naming.rebind("//localhost/RemoteMenu", remoteMenu);
+    		} catch (Exception e) {
+    			System.err.println("RMI failed to start: " + e);
+    		}
+            
+            // Broadcast availability of device
+            Broadcast.broadcast(hostname);
+            
+            // Set the date
+            try {
+				String dt = SntpClient.getDate(Settings.getProperty(ntpProperty, "1.uk.pool.ntp.org"));
+				System.out.println("Date and time is " + dt);
+				Runtime.getRuntime().exec("date -s " + dt);
+			} catch (IOException e) {
+				System.err.println("Failed to get time from ntp: " + e);
+			}
+            
+            System.out.println("Initialisation complete");
+        }
+    }
+    
+    /**
+     *  Start the background threads
+     */
+    private void start()
+    {       
+    	ind.start();
+    	rcons.start();
+    }
 	
 	/**
      * Display the main system menu.
@@ -192,14 +264,12 @@ public class GraphicStartup implements Menu {
             }
             
             if (selection < 0)  {
-            	LCD.bitBlt(null, 0, 0, 0, 0, 0, 64, 178, 64, LCD.ROP_CLEAR);
-            	LCD.refresh();
             	if (getYesNo("  Shut down EV3 ?", false) == 1)
             		break;
             }
         } while (true);
         
-        // Shit down the EV3
+        // Shut down the EV3
         shutdown();
     }
     
@@ -208,9 +278,14 @@ public class GraphicStartup implements Menu {
      */
     private void bluetoothMenu()
     {
+    	// Check if BT initialisation is complete
+        if (bt == null) {
+        	msg("BT not started");
+        	return;
+        }
+        
         int selection = 0;
         GraphicMenu menu = new GraphicMenu(null,null,4);
-        menu.setParentIcon(ICBlue);
         boolean visible = false;
         do
         {
@@ -377,9 +452,7 @@ public class GraphicStartup implements Menu {
             //icons[i] = getDeviceIcon(btrd.getDeviceClass());
         }
         GraphicListMenu searchMenu = new GraphicListMenu(names, icons);
-        searchMenu.setParentIcon(ICSearch);
         GraphicMenu subMenu = new GraphicMenu(new String[]{"Pair"}, new String[]{ICYes},4);
-        subMenu.setParentIcon(ICSearch);
         int selected = 0;
         do
         {
@@ -448,9 +521,7 @@ public class GraphicStartup implements Menu {
         }
 
         GraphicListMenu deviceMenu = new GraphicListMenu(names, icons);
-        deviceMenu.setParentIcon(ICNXT);
         GraphicMenu subMenu = new GraphicMenu(new String[] {"Remove"},new String[]{ICDelete},4);
-        subMenu.setParentIcon(ICNXT);
         int selected = 0;
         do
         {
@@ -501,11 +572,10 @@ public class GraphicStartup implements Menu {
      */
     private void systemMenu()
     {
-        String[] menuData = {"Delete all", "", "Auto Run", "Unset default"};
-        String[] iconData = {ICFormat,ICSleep,ICAutoRun,ICDefault};
+        String[] menuData = {"Delete all", "", "Auto Run", "NTP host", "Suspend menu", "Unset default"};
+        String[] iconData = {ICFormat,ICSleep,ICAutoRun,ICDefault,ICDefault,ICDefault};
         boolean rechargeable = false;
         GraphicMenu menu = new GraphicMenu(menuData,iconData,4);
-        menu.setParentIcon(ICNXT);
         int selection = 0;
         do {
             newScreen("System");
@@ -521,8 +591,8 @@ public class GraphicStartup implements Menu {
             menuData[1] = "Sleep time: " + (timeout == 0 ? "off" : String.valueOf(timeout));
             File f = getDefaultProgram();
             if (f == null){
-            	menuData[3] = null;
-            	iconData[3] = null;
+            	menuData[5] = null;
+            	iconData[5] = null;
             }
             menu.setItems(menuData,iconData);
             selection = getSelection(menu, selection);
@@ -539,15 +609,40 @@ public class GraphicStartup implements Menu {
                     }
                     break;
                 case 1:
-                    timeout++;
-                    if (timeout > maxSleepTime)
-                        timeout = 0;
+                	System.out.println("Timeout = " + timeout);
+                	System.out.println("Max sleep time = " + maxSleepTime);
+                    //timeout++;
+                    if (timeout > maxSleepTime) timeout = 0;
                     Settings.setProperty(sleepTimeProperty, String.valueOf(timeout));
                     break;
                 case 2:
                     systemAutoRun();
                     break;
                 case 3:
+                	String host = new Keyboard().getString();
+                	
+                	if(host != null) {
+                		Settings.setProperty(ntpProperty, host);
+                	}
+                	break;
+                case 4:
+                	ind.suspend();
+                	LCD.clearDisplay();
+                	LCD.refresh();
+                	LCD.setAutoRefresh(false);
+                	System.out.println("Menu suspended");
+                    while(true) {
+                        int b = Button.readButtons(); 
+                        if (b == 6) break;
+                        Delay.msDelay(200);
+                    }
+                  	LCD.setAutoRefresh(true);
+                  	LCD.clearDisplay();
+                  	LCD.refresh();            	
+                	ind.resume();
+                	System.out.println("Menu resumed");
+                	break;
+                case 5:
                     Settings.setProperty(defaultProgramProperty, "");
                     Settings.setProperty(defaultProgramAutoRunProperty, "");
                     selection = 0;
@@ -558,7 +653,7 @@ public class GraphicStartup implements Menu {
     
     /**
      * Present details of the default program
-     * Allow the user to specifiy run on system start etc.
+     * Allow the user to specify run on system start etc.
      */
     private void systemAutoRun()
     {
@@ -586,7 +681,7 @@ public class GraphicStartup implements Menu {
      */
     private int getYesNo(String prompt, boolean yes)
     {
-    	//newScreen();
+    	LCD.bitBlt(null, 178, 64, 0, 0, 0, 64, 178, 64, LCD.ROP_CLEAR);
         GraphicMenu menu = new GraphicMenu(new String[]{"No", "Yes"},new String[]{ICNo,ICYes},5,prompt,4);
         return getSelection(menu, yes ? 1 : 0);
     }
@@ -713,66 +808,6 @@ public class GraphicStartup implements Menu {
         if (value == 0) shutdown();
         return value;
     }
-
-    /**
-     *  Start the threads
-     */
-    private void start()
-    {       
-    	ind.start();
-    	rcons.start();
-    }
-	
-    /**
-     *  Constructor
-     */
-	public GraphicStartup() {
-	}
-	
-	/**
-	 * Start-up thread
-	 */
-    static class InitThread extends Thread
-    {
-    	GraphicStartup menu;
-    	
-        /**
-         * Startup the menu system.
-         * Play the greeting tune.
-         * Run the default program if auto-run is requested.
-         * Initialize I/O etc.
-         */            
-        @Override
-        public void run()
-        {         
-        	menu = new GraphicStartup(); 
-        	
-        	// Start the RMI server
-            String lastIp = null;
-            for (String ip: ips) {
-            	lastIp = ip;
-            }
-            System.out.println("Setting java.rmi.server.hostname to " + lastIp);
-            System.setProperty("java.rmi.server.hostname", "192.168.0.9");
-            
-            try { //special exception handler for registry creation
-                LocateRegistry.createRegistry(1099); 
-                System.out.println("java RMI registry created.");
-            } catch (RemoteException e) {
-                //do nothing, error means registry already exists
-                System.out.println("java RMI registry already exists.");
-            }
-            
-            try {
-    			RMIRemoteEV3 ev3 = new RMIRemoteEV3();
-    			Naming.rebind("//localhost/RemoteEV3", ev3);
-    			RMIRemoteMenu remoteMenu = new RMIRemoteMenu(menu);
-    			Naming.rebind("//localhost/RemoteMenu", remoteMenu);
-    		} catch (RemoteException | MalformedURLException e) {
-    			e.printStackTrace();
-    		}
-        }
-    }
 	
     /**
      * Present the menu for a single file.
@@ -788,8 +823,8 @@ public class GraphicStartup implements Menu {
         if (ext.equals("jar"))
         {
         	selectionAdd = 0;
-            items = new String[]{"Execute program", "Debug program", "Set as Default", "Delete file"}; 
-            icons = new String[]{ICProgram,ICProgram,ICDefault,ICDelete};
+            items = new String[]{"Execute program", "LCD Debug", "Debug program", "Set as Default", "Delete file"}; 
+            icons = new String[]{ICProgram,ICProgram,ICProgram,ICDefault,ICDelete};
         }
         else if (ext.equals("wav"))
         {
@@ -807,7 +842,6 @@ public class GraphicStartup implements Menu {
         LCD.drawString("Size:", 0, 2);
         LCD.drawString(Long.toString(file.length()), 5, 2);
         GraphicMenu menu = new GraphicMenu(items,icons,3,fileName,1);
-        menu.setParentIcon(ICFiles);
         int selection = getSelection(menu, 0);
         if (selection >= 0)
         {
@@ -820,19 +854,31 @@ public class GraphicStartup implements Menu {
 	            	ind.resume();
 	                break;
 	            case 1:
+	            	System.out.println("Running with System output to LCD: " + file.getPath());
+	            	PrintStream origOut = System.out, origErr = System.err;
+	            	PrintStream lcdOut = new PrintStream(new LCDOutputStream());
+	            	ind.suspend();
+	            	System.setOut(lcdOut);
+	            	System.setErr(lcdOut);
+	            	exec(JAVA_RUN_JAR + file.getPath());
+	            	System.setOut(origOut);
+	            	System.setOut(origErr);
+	            	ind.resume();
+	                break;
+	            case 2:
 	            	System.out.println("Debugging program: " + file.getPath());
 	            	ind.suspend();
 	            	exec(JAVA_DEBUG_JAR + file.getPath());
 	            	ind.resume();
 	                break;
-	            case 2:
+	            case 3:
 	            	Settings.setProperty(defaultProgramProperty, file.getPath());
 	            	break;
 	            case 10:
 	            	System.out.println("Playing " + file.getPath());
 	                Sound.playSample(file);
 	                break;
-	            case 3:
+	            case 4:
 	            case 11:
 	            case 20:
 	                file.delete();
@@ -1206,17 +1252,28 @@ public class GraphicStartup implements Menu {
                 msg("No Access Points found");
                 return;
             }
-            newScreen("Access Points");
+            newScreen("Access Pts");
 
             menu.setItems(names,null);
             selection = getSelection(menu, selection);
-            if (selection >0) {
+            if (selection >= 0) {
             	System.out.println("Access point is " + names[selection]);
             	Keyboard k = new Keyboard();
             	String pwd = k.getString();
-            	System.out.println("Password is " + pwd);
-            	WPASupplicant.writeConfiguration("wpa_supplicant.txt",  "wpa_supplicant.conf",  names[selection], pwd);
-            	selection = -1;
+            	if (pwd != null) {
+                   	System.out.println("Password is " + pwd);
+                	WPASupplicant.writeConfiguration("wpa_supplicant.txt",  "wpa_supplicant.conf",  names[selection], pwd);
+                	try {
+						Process p = Runtime.getRuntime().exec("/home/root/lejos/bin/startwlan");
+						int status = p.waitFor();
+						System.out.println("startwlan returned " + status);
+						// Get IP addresses again
+						ips = getIPAddresses();
+					} catch (IOException | InterruptedException e) {
+						System.err.println("Failed to execute startwlan: " + e);
+					}
+            	}
+             	selection = -1;
             }
         } while (selection >= 0);		
 	}

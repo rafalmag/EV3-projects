@@ -15,6 +15,10 @@ public class EV3UltrasonicSensor extends UARTSensor {
   private static final int DISABLED    = 3;
   private static final int SWITCHDELAY = 200;
 
+  protected void init()
+  {
+    setModes(new SensorMode[] { new DistanceMode(), new ListenMode() });      
+  }
   /**
    * Create the Ultrasonic sensor class.
    * 
@@ -22,7 +26,7 @@ public class EV3UltrasonicSensor extends UARTSensor {
    */
   public EV3UltrasonicSensor(Port port) {
     super(port, 0);
-    setModes(new SensorMode[] { new DistanceMode(), new ListenMode() });
+    init();
   }
 
   /**
@@ -32,6 +36,7 @@ public class EV3UltrasonicSensor extends UARTSensor {
    */
   public EV3UltrasonicSensor(UARTPort port) {
     super(port, 0);
+    init();
   }
 
   public SampleProvider getListenMode() {

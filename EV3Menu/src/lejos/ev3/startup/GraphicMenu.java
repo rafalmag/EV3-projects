@@ -1,6 +1,5 @@
 package lejos.ev3.startup;
 
-
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
@@ -24,7 +23,7 @@ import lejos.utility.TextMenu;
  * Modified by Lawrie griffiths for the EV3
  *
  */
-public class GraphicMenu extends TextMenu{
+public class GraphicMenu extends TextMenu {
 	private static final byte X_AREA = 0; // x of Menu Area
 	private static final byte X_WIDTH = 35; // Distance between icon IDs on x axis
 	private static final byte Y_WIDTH = 8; // " on y axis
@@ -34,8 +33,6 @@ public class GraphicMenu extends TextMenu{
 	private static final int INTERVAL = 16; // Time between animation frames in milliseconds (1000ms per 1s)
 	private static final int TICKCOUNT = 10; // Number of animation frames used
 	
-	protected byte[] _parent = null;
-	
 	/*
 	 * Line where the menu item label is displayed.
 	 */
@@ -43,7 +40,7 @@ public class GraphicMenu extends TextMenu{
 	/*
 	 * The y coordinates where the 
 	 */
-	private int yArea = 80;
+	private int yArea;
 	
 	/*
 	 * Icon Database
@@ -107,10 +104,9 @@ public class GraphicMenu extends TextMenu{
 		if (selectedIndex < 0)
 			selectedIndex = 0;
 		
-//		if (_length<_size) _size = _length;
 		_quit = false;
 		resetTimeout();
-//		LCD.clear();
+
 		if (_topIndex > selectedIndex)
 			_topIndex = selectedIndex;
 		if (_topIndex > _length - _height)
@@ -150,28 +146,23 @@ public class GraphicMenu extends TextMenu{
 				else if(selectedIndex >= _topIndex + _height){
 					_topIndex = selectedIndex - _height + 1;
 				}
-				//else{
 				dir = -1;
-				//}
+
 			}
 			if(button == Button.ID_LEFT && (!(_length <= 2 && selectedIndex < _length-1) || get2IconMode()))//scroll backward
 			{
 				selectedIndex --;
 				// check for index out of bounds
 				if(selectedIndex < 0)
-				{
-					
+				{			
 					selectedIndex  = _length - 1;
-
-					//selectedIndex++;
 					_topIndex = _length - _height;
 				}
 				else if(selectedIndex < _topIndex){
 					_topIndex = selectedIndex;
 				}
-				//else{
-					dir = 1;
-				//}
+				dir = 1;
+
 			}
 			if (_length > 1)
 			animate(temp,selectedIndex,dir);
@@ -205,12 +196,6 @@ public class GraphicMenu extends TextMenu{
 		if(_title != null)
 			LCD.drawString(_title, 0, _titleLine);
 		clearArea();
-		/*if(_parent != null) {
-			System.out.println("Displaying parent image");
-			Image img = new Image(32,32,_parent);
-			g.drawRegion(img, X_AREA+X_OFFSET+(2*X_WIDTH), yArea+Y_OFFSET+18, 32, 32, 0,0,0,0);
-			//LCD.bitBlt(_parent, 16, 16, 0, 0, X_AREA+X_OFFSET+(2*X_WIDTH),yArea+Y_OFFSET+18, 16, 16, LCD.ROP_COPY);
-		}*/
 		//Prepare Index Locations
 		int length = _length;
 		int[] index = new int[5];
@@ -219,23 +204,19 @@ public class GraphicMenu extends TextMenu{
 			index[i] = (selectedIndex + (i-2)) % length;
             if (index[i] < 0) index[i] += length;
         }
-		//boolean wrap = (length>=5);
-		//Clear Icon Area
-		//if (((index[0] < 0) && wrap) || index[0] >= 0) // Left Most Icon
-		//if (index[0] >= 0)
+
 		if (length > 4)
 			drawIconAtTick(_iconImages[((index[0]<0)?length+index[0]:index[0])],0,0+animateDirection,tick);
-		//if (((index[1] < 0) && wrap) || index[1] >= 0) // Left Icon
-		//if (index[1] >= 0)
+
 		if (length > 1 && !(length == 2 && index[1] == (length-1)))
 			drawIconAtTick(_iconImages[((index[1]<0)?length+index[1]:index[1])],1,1+animateDirection,tick);
+
 		//Middle Icon
-			drawIconAtTick(_iconImages[index[2]],2,2+animateDirection,tick);
-		//if (((index[3] >= length) && wrap) || index[3] < length) // Rightd Icon
-		//if (index[3] < length)
+		drawIconAtTick(_iconImages[index[2]],2,2+animateDirection,tick);
+
 		if (length > 1 && !(length == 2 && index[3] == 0))
 			drawIconAtTick(_iconImages[((index[3]>=length)?index[3]-length:index[3])],3,3+animateDirection,tick);
-		//if (((index[4] >= length) && wrap) || index[4] < length) // Right Most Icon
+
 		if (length > 3)
 			drawIconAtTick(_iconImages[((index[4]>=length)?index[4]-length:index[4])],4,4+animateDirection,tick);
 		// Draw Label
@@ -248,9 +229,8 @@ public class GraphicMenu extends TextMenu{
 		LCD.asyncRefresh();
 	}
 	
-	public void clearArea(){
-		// TODO: Do this a better way
-		LCD.bitBlt(null, 178, 60, 0, 0, 0, yArea, 178, 60, LCD.ROP_CLEAR);
+	public void clearArea() {
+		LCD.bitBlt(null, 178, 64, 0, 0, 0, yArea, 178, 64, LCD.ROP_CLEAR);
 	}
 	
 	/**
@@ -270,18 +250,8 @@ public class GraphicMenu extends TextMenu{
 		int ix = (int) (((sx-fx)/10.0)*tick);
 		int iy = (int) (((sy-fy)/10.0)*tick);
 		// Paint Icon
-		//LCD.bitBlt(icon, 16,16, 0,0, fx+ix,fy+iy, 16,16, LCD.ROP_COPY);
 		g.drawRegion(iconImage, 0, 0, 32, 32, 0,fx+ix,fy+iy,0);
 	}
-
-	public void setParentIcon(String str) {
-		if (str == null)
-			_parent = null;
-		else
-			_parent = Utils.stringToBytes8(str);
-	}
-	
-	//protected int getIconSize(){return 32;}// Returns the icon size (In Bytes)
 	
 	protected boolean get2IconMode(){return false;}// Do Not Wrap With 2 Icons
 }

@@ -229,7 +229,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			}
 		});
 
-		// Connect Button: connect to selected EV£
+		// Connect Button: connect to selected EVï¿½
 		connectButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				connect();
@@ -469,7 +469,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 				volumeList3.setSelectedIndex((keyClickFrequency-1)/100);
 				int keyClickLength = Integer.parseInt(menu.getSetting(Button.LEN_SETTING));
 				volumeList4.setSelectedIndex((keyClickLength-1)/100);
-			} catch(IOException e) {
+			} catch(Exception e) {
 				showMessage("Failed to get volume settings");
 			}
 		}
@@ -542,7 +542,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			try {
 				String defProg = menu.getSetting(defaultProgramProperty);
 				defaultProgram.setText(defProg);
-				if (defProg.length() > 0) {
+				if (defProg != null && defProg.length() > 0) {
 					JPanel autoRunPanel = new JPanel();
 					JLabel autoRunLabel = new JLabel("Auto Run:");
 					autoRunPanel.add(autoRunLabel);

@@ -73,8 +73,10 @@ class IRSensor extends Thread
     {
         while (true)
         {
+            float [] sample = new float[ir.sampleSize()];
             control = ir.getRemoteCommand(0);
-            distance = (int)ir.getRange();
+            ir.fetchSample(sample, 0);
+            distance = (int)sample[0];
             System.out.println("Control: " + control + " Distance: " + distance);
             
         }

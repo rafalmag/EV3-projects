@@ -65,10 +65,7 @@ public class RConsole extends Thread
                     	String line = input.readLine(); 
                     	if (line == null) break;
                     } catch (SocketTimeoutException e) {
-                        //os.write(MODE_SWITCH);
-                        //os.write(MODE_LCD);
                         os.writeLCD(LCD.getHWDisplay());
-                        //os.flush();
                     }                
                 }
                 os.close();

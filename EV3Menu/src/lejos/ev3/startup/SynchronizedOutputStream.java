@@ -17,14 +17,12 @@ public class SynchronizedOutputStream extends OutputStream {
 	
 	@Override
 	public synchronized void write(byte[] b, int off, int len)  throws IOException {
-		//System.err.println("Writing " + len + " bytes with offset");
 		os.write(b, off, len);
 		os.flush();
 	}
 	
 	@Override
 	public synchronized void write(byte[] b)  throws IOException {
-		//System.err.println("Writing " + b.length + " bytes");
 		os.write(b);
 	}
 	
@@ -39,12 +37,9 @@ public class SynchronizedOutputStream extends OutputStream {
 	}
 	
 	public synchronized void writeLCD(byte[] b) throws IOException {
-		//System.err.println("Writing LCD screen " + b.length + " bytes");
 		os.write((int) 255);
 		os.write((int) 0);
 		os.write(b);
 		os.flush();
-		//System.err.println("LCD finished");
 	}
-
 }

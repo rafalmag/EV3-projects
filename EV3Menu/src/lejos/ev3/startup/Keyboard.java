@@ -1,6 +1,7 @@
 package lejos.ev3.startup;
 import lejos.hardware.Button;
 import lejos.hardware.LCD;
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 
 public class Keyboard {
@@ -13,7 +14,7 @@ public class Keyboard {
 			          "qwertyuiop[]{}    ", 
 			          "asdfghjkl         ", 
 			          "zxcvbnm<>|\\`¬     ", 
-			          "U l 0 x D         "};
+			          "U l x D           "};
 	
 	String[] upper = {"0123456789-=_+    ", 
 	                  ".,@:;?/()*!\"£$%^&#", 
@@ -69,7 +70,10 @@ public class Keyboard {
 						display();
 						break;
 					case 'x':
-						sb.deleteCharAt(sb.length()-1);
+						if (sb.length() > 0) {
+							sb.deleteCharAt(sb.length()-1);
+							LCD.drawString(" ", sb.length(), 7);
+						} else Sound.buzz();
 						break;
 					case 'D':
 						return sb.toString();
@@ -80,7 +84,9 @@ public class Keyboard {
 			}
 			
 			displayCursor(true);
-			LCD.drawString(sb.toString(), 0, 7);
+			String s = sb.toString();
+			if (s.length() > 18) s = s.substring(s.length() - 18, s.length());
+			LCD.drawString(s, 0, 7);
 		}
 	}
 	

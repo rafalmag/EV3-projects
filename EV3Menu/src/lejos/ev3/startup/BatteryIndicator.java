@@ -18,12 +18,6 @@ public class BatteryIndicator
     
 	private static final int HISTORY_SIZE = 2000 / Config.ANIM_DELAY;
 	private static final int WINDOW_TOLERANCE = 10;
-	
-    private static final byte BATTERY_TOKEN_FULL = 0x3F;
-    private static final byte BATTERY_TOKEN_EMPTY = 0x21;
-    private static final byte BATTERY_TOKEN_NOB = 0x0C;
-    
-    private static final int BATTERY_REAL_WIDTH = Config.ICON_BATTERY_WIDTH -3;
     
     private int levelMin;
     private int levelOk;
@@ -37,7 +31,6 @@ public class BatteryIndicator
 	
 	private byte[] title;
 	private byte[] default_title;
-	private long title_time;
 	private String titleString;
 	
 	private boolean rechargeable = false;
@@ -73,7 +66,6 @@ public class BatteryIndicator
     	if (this.title == o)
     	{
     		this.title = b;
-    		this.title_time = System.currentTimeMillis();
     	}
     }
     
@@ -81,7 +73,6 @@ public class BatteryIndicator
     {
     	titleString = title;
    		this.title = (title == null) ? default_title : Utils.textToBytes(title);
-		this.title_time = System.currentTimeMillis();
     }
     
     private int getLevel()
@@ -120,53 +111,13 @@ public class BatteryIndicator
         if (titleString == null) titleString = "";
         
         LCD.drawString(titleString, 8 - (titleString.length()/2), 0);
-        /*
-        
-        int len = this.title.length;
-        int x1, x2;
-        if (len <= Config.TEXT_WIDTH)
-        {
-        	x1 = 0;
-        	x2 = (Config.TEXT_WIDTH - len) / 2;
-        	
-        	for (int i=0; i<x2; i++)
-        		buf[Config.TEXT_POS + i]=0;
-        	for (int i=x2+len; i<Config.TEXT_WIDTH; i++)
-        		buf[Config.TEXT_POS + i]=0;
-        }
-        else
-        {
-        	int max = len - Config.TEXT_WIDTH;
-        	int max2 = max + 2 * Config.TEXT_SCROLL_PAUSE;
-        	x1 = (int)((time - title_time) / Config.TEXT_SCROLL_DELAY % (2 * max2 + 2));
-        	if (x1 > max2)
-        		x1 = 2 * max2 + 1 - x1;
-        	x1 -= Config.TEXT_SCROLL_PAUSE;
-        	if (x1 > max)
-        		x1 = max;
-        	if (x1 < 0)
-        		x1 = 0;
-        	x2 = 0;
-        	len = Config.TEXT_WIDTH;
-        }   
-        
-        System.arraycopy(this.title, x1, buf, Config.TEXT_POS + x2, len);
-        */
+
         if (isOk || (time % (2*Config.ICON_BATTERY_BLINK)) < Config.ICON_BATTERY_BLINK)
         {
             LCD.drawInt((level - level % 1000) / 1000, 0, 0);
             LCD.drawString(".", 1, 0);
             LCD.drawInt((level % 1000) / 100, 2, 0);
-        	/*int width = (level - levelMin) * BATTERY_REAL_WIDTH / (levelHigh - levelMin);
 
-        	int p = Config.ICON_BATTERY_POS;
-        	buf[p++] = BATTERY_TOKEN_FULL;
-        	for (int i=0; i<width; i++)
-        		buf[p++] = BATTERY_TOKEN_FULL;
-        	for (int i=width; i<BATTERY_REAL_WIDTH; i++)
-        		buf[p++] = BATTERY_TOKEN_EMPTY;
-        	buf[p++] = BATTERY_TOKEN_FULL;
-        	buf[p] = BATTERY_TOKEN_NOB;*/
         }
     }
 }
