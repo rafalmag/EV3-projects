@@ -12,7 +12,7 @@ import lejos.robotics.SampleProvider;
  */
 public class LowPassFilter extends AbstractFilter{
 	float[] smoothed;
-	long lastTime;
+	long lastTime=0;
 	float timeConstant;
 
 	/**
@@ -25,7 +25,6 @@ public class LowPassFilter extends AbstractFilter{
 	public LowPassFilter(SampleProvider source, float timeConstant) {
 		super(source);
 		smoothed=new float[sampleSize];
-		lastTime=System.currentTimeMillis();
 		this.timeConstant=timeConstant;
 	}
 
@@ -35,7 +34,7 @@ public class LowPassFilter extends AbstractFilter{
 	 */
 	public void fetchSample(float[] dst, int off) {
 		super.fetchSample(dst,off); 
-		if (lastTime==0) {
+		if (lastTime==0 || timeConstant==0) {
 			for (int axis=0;axis<sampleSize;axis++) {
 				smoothed[axis]=(dst[off+axis]);
 				lastTime=System.currentTimeMillis();

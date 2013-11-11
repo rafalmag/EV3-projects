@@ -218,10 +218,18 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
    * each fetched sample. From this updated offset and scale parameters are
    * calculated.
    */
+  @Override
   public void startCalibration() {
-    reset();
     super.startCalibration();
+    reset();
   }
+  
+  @Override
+  public void stopCalibration() {
+    super.stopCalibration();
+  }
+  
+  
 
   /**
    * Stores the calibration parameters, offset and/or scale depending on current
@@ -263,7 +271,7 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
       if (calibrating) {
         if (upperBound[i] != lowerBound[i])
           scale[i] = (max[i] - min[i]) / (upperBound[i] - lowerBound[i]);
-        offset[i] = min[i] - scale[i] * lowerBound[i];
+        offset[i] = (sum[i] / numberOfSamplesInCalibration) - (upperBound[i] - lowerBound[i]);
       }
       else {
         dst[i + off] = (dst[i + off] - offset[i]);

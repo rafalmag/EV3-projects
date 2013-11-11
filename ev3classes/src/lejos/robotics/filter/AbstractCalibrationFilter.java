@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import lejos.robotics.Calibrate;
 import lejos.robotics.SampleProvider;
 
-public abstract class AbstractCalibrationFilter extends AbstractFilter {
+public abstract class AbstractCalibrationFilter extends AbstractFilter implements Calibrate{
   public class CalibrationFileException extends RuntimeException {
 
 
@@ -27,20 +28,24 @@ public abstract class AbstractCalibrationFilter extends AbstractFilter {
   protected LowPassFilter          lowPassFilter      = null;
   protected float[]                min;
   protected float[]                max;
+  protected float[]                sum;
   protected boolean                calibrating = false;
   
   private final static String DIRECTORY = "/home/root/sensorCalibration/";
   private final static String EXT       = ".cal";
   private final Properties    props     = new Properties();
+  
+  protected int numberOfSamplesInCalibration;
+  private float timeConstant=0;
 
   
 
 
   public AbstractCalibrationFilter(SampleProvider source) {
     super(source);
-    lowPassFilter = new LowPassFilter(source, 0);
     min=new float[sampleSize];
     max=new float[sampleSize];
+    sum=new float[sampleSize];
   }
   
   
@@ -55,11 +60,13 @@ public abstract class AbstractCalibrationFilter extends AbstractFilter {
     }
     else {
       lowPassFilter.fetchSample(dst, off);
+      numberOfSamplesInCalibration++;
       for (int i = 0; i < sampleSize; i++) {
         if (min[i] > dst[i + off])
           min[i] = dst[i + off];
         if (max[i] < dst[i + off])
           max[i] = dst[i + off];
+        sum[i]+=dst[i+off];
       }
     }
   }
@@ -72,7 +79,7 @@ public abstract class AbstractCalibrationFilter extends AbstractFilter {
    * between 0 and 1
    */
   public void setTimeConstant(float timeConstant) {
-    lowPassFilter.setTimeConstant(timeConstant);
+    this.timeConstant=timeConstant;
   }
   
   /**
@@ -81,10 +88,13 @@ public abstract class AbstractCalibrationFilter extends AbstractFilter {
    * each fetched sample. From this calibration parameters can be calculated.
    */
   public void startCalibration() {
+    lowPassFilter = new LowPassFilter(source, timeConstant);
     calibrating = true;
+    numberOfSamplesInCalibration=0;
     for (int i = 0; i < sampleSize; i++) {
-      min[i] = Float.POSITIVE_INFINITY;
-      max[i] = Float.NEGATIVE_INFINITY;
+      min[i] = Float.MAX_VALUE;
+      max[i] = Float.MIN_VALUE;
+      sum[i]=0;
     }
   }
 
