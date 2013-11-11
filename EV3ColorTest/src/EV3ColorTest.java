@@ -3,16 +3,13 @@ import lejos.hardware.Button;
 import lejos.hardware.LCD;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
-import lejos.hardware.port.SensorPort;
-import lejos.hardware.port.UARTPort;
+import lejos.hardware.sensor.HiTechnicColorSensor;
 import lejos.hardware.sensor.NXTColorSensor;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.NXTLightSensor;
 import lejos.hardware.sensor.SensorMode;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.Color;
-import lejos.robotics.RegulatedMotor;
-import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
 public class EV3ColorTest {
@@ -35,6 +32,8 @@ public class EV3ColorTest {
                 return new NXTColorSensor(p);
             case 2:
                 return new EV3ColorSensor(p);
+            case 3:
+            	return new HiTechnicColorSensor(p);
             }
             return null;
         }
@@ -46,7 +45,7 @@ public class EV3ColorTest {
             String ports[] = {"Port 1", "Port 2", "Port 3", "Port 4"};
             TextMenu portMenu = new TextMenu(ports, 1, "Sensor port");
             // TODO: Work out the sensor type automatically
-            String sensors[] = {"NXT Light", "NXT Color", "EV3 Color"};
+            String sensors[] = {"NXT Light", "NXT Color", "EV3 Color", "HiTechnic Color"};
             TextMenu sensorMenu = new TextMenu(sensors, 1, "Sensor type");
             int colors[] = {Color.WHITE, Color.RED, Color.GREEN, Color.BLUE, Color.WHITE, Color.NONE};
             String colorNames[] = {"None", "Red", "Green", "Blue", "Yellow",
