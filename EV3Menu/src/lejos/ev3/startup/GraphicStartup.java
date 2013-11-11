@@ -31,6 +31,9 @@ import lejos.hardware.RemoteBTDevice;
 import lejos.hardware.Sound;
 import lejos.hardware.Wifi;
 import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.port.MotorPort;
+import lejos.hardware.port.Port;
+import lejos.hardware.port.TachoMotorPort;
 import lejos.internal.io.Settings;
 import lejos.internal.io.SystemSettings;
 import lejos.remote.ev3.Menu;
@@ -890,7 +893,7 @@ public class GraphicStartup implements Menu {
     /**
      * Execute a program and display its output to System.out and error stream to System.err
      */
-    static void exec(String program) {
+    private static void exec(String program) {
         try {
         	LCD.clearDisplay();
         	LCD.refresh();
@@ -909,7 +912,9 @@ public class GraphicStartup implements Menu {
               int b = Button.readButtons(); 
               if (b == 6) {
             	  System.out.println("Killing the process");
-            	  p.destroy();           
+            	  p.destroy(); 
+            	  // reset motors after program is aborted
+            	  resetMotors();
                   break;
               }
               if (!echoIn.isAlive() && !echoErr.isAlive()) break;           
@@ -1276,6 +1281,20 @@ public class GraphicStartup implements Menu {
              	selection = -1;
             }
         } while (selection >= 0);		
+	}
+	
+	/**
+	 * Reset all motors to zero power and float state
+	 * and reset tacho counts
+	 */
+	public static void resetMotors() {
+		for(String portName: new String[]{"A","B","C","D"}) {
+			Port p = LocalEV3.get().getPort(portName);
+			TachoMotorPort mp = p.open(TachoMotorPort.class);
+			mp.controlMotor(0, TachoMotorPort.FLOAT);
+			mp.resetTachoCount();
+			mp.close();
+		}
 	}
 
 	@Override
