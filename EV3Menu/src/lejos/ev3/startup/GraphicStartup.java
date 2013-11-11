@@ -635,7 +635,7 @@ public class GraphicStartup implements Menu {
                 	LCD.setAutoRefresh(false);
                 	System.out.println("Menu suspended");
                     while(true) {
-                        int b = Button.readButtons(); 
+                        int b = Button.getButtons(); 
                         if (b == 6) break;
                         Delay.msDelay(200);
                     }
@@ -909,7 +909,7 @@ public class GraphicStartup implements Menu {
             echoErr.start();
             
             while(true) {
-              int b = Button.readButtons(); 
+              int b = Button.getButtons(); 
               if (b == 6) {
             	  System.out.println("Killing the process");
             	  p.destroy(); 

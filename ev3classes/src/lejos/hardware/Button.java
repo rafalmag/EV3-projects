@@ -314,7 +314,7 @@ public class Button implements ListenerCaller
       return state;
   }
 	/**
-	 * <i>Low-level API</i> that reads status of buttons.
+	 * <i>Low-level API</i> that reads status of buttons. 
 	 * 
 	 * @return An integer with possibly some bits set: {@link #ID_ENTER} (ENTER
 	 *         button pressed) {@link #ID_LEFT} (LEFT button pressed),
@@ -322,7 +322,7 @@ public class Button implements ListenerCaller
 	 *         (ESCAPE button pressed). If all buttons are released, this method
 	 *         returns 0.
 	 */
-	private static int getButtons()
+	public static int getButtons()
 	{
 	    // read buttons and de-bounce them
 	    int state1, state2 = 0;
