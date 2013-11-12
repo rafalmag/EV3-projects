@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetAddress;
@@ -31,7 +32,6 @@ import lejos.hardware.RemoteBTDevice;
 import lejos.hardware.Sound;
 import lejos.hardware.Wifi;
 import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.TachoMotorPort;
 import lejos.internal.io.Settings;
@@ -83,6 +83,7 @@ public class GraphicStartup implements Menu {
 
     private IndicatorThread ind = new IndicatorThread();
     private BatteryIndicator indiBA = new BatteryIndicator();
+    private PipeReader pipeReader = new PipeReader();
     private RConsole rcons = new RConsole();
     
     //private GraphicMenu curMenu;
@@ -217,6 +218,7 @@ public class GraphicStartup implements Menu {
     {       
     	ind.start();
     	rcons.start();
+    	pipeReader.start();
     }
 	
 	/**
@@ -1082,6 +1084,42 @@ public class GraphicStartup implements Menu {
     	exec("init 0");
         LCD.drawString("  Shutting down", 0, 6);
         LCD.refresh();
+    }
+    
+    class PipeReader extends Thread {
+    	
+    	@Override
+		public synchronized void run()
+    	{
+    		try {
+				InputStream is = new FileInputStream("/home/root/lejos/bin/utils/menufifo");
+				
+	    		while(true) {
+	    			int c = is.read();
+	    			if (c < 0) {
+	    				Delay.msDelay(200);
+	    			} else {
+	    				System.out.println("Read from fifo: " + c + " " + ((char) c));
+	    				
+	    				if (c == 's') {
+	                    	ind.suspend();
+	                    	LCD.clearDisplay();
+	                    	LCD.refresh();
+	                    	LCD.setAutoRefresh(false);
+	                    	System.out.println("Menu suspended");
+	    				} else if (c == 'r') {
+	                    	LCD.setAutoRefresh(true);
+	                    	ind.resume();
+	                    	System.out.println("Menu resumed");
+	    				}
+	    			}
+	    		}
+	    		
+			} catch (IOException e) {
+				System.err.println("Failed to read from fifo: " + e);
+				return;
+			}
+    	}	
     }
     
     /**
