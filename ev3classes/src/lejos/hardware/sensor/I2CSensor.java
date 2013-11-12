@@ -67,12 +67,12 @@ public class I2CSensor extends BaseSensor implements SensorConstants {
 	public I2CSensor(Port port, int address, int type)
 	{
         this(port.open(I2CPort.class), address);
+        if (!this.port.setType(type))
+        {
+            this.port.close();
+            throw new IllegalArgumentException("Invalid sensor mode");            
+        }
         releaseOnClose(this.port);
-		// Set the EV3 pins up.
-		if (type == TYPE_LOWSPEED_9V)
-		    this.port.setPinMode(EV3SensorConstants.CMD_SET | EV3SensorConstants.CMD_PIN1);
-		else
-            this.port.setPinMode(EV3SensorConstants.CMD_SET);
 	}
 	
     public I2CSensor(Port port)

@@ -10,7 +10,7 @@ import lejos.utility.Delay;
  * @author andy
  *
  */
-public class AnalogSensor extends BaseSensor
+public class AnalogSensor extends BaseSensor implements SensorConstants
 {
     protected AnalogPort port;
     protected int currentType = -1;
@@ -20,11 +20,23 @@ public class AnalogSensor extends BaseSensor
         this.port = p;
     }
     
-    public AnalogSensor(Port p)
+    public AnalogSensor(Port p, int type, int mode)
     {
         this(p.open(AnalogPort.class));
+        if (!port.setTypeAndMode(type, mode))
+        {
+            port.close();
+            throw new IllegalArgumentException("Invalid sensor mode");                
+        }
         releaseOnClose(this.port);
     }
+
+    public AnalogSensor(Port p)
+    {
+        this(p, TYPE_CUSTOM, MODE_RAW);
+    }
+
+    
  
     /**
      * Helper method. Take a voltage and return it as a normalized value in the
@@ -70,7 +82,8 @@ public class AnalogSensor extends BaseSensor
     {
         if (currentType != newType)
         {
-            port.setType(newType);
+            if (!port.setType(newType))
+                throw new IllegalArgumentException("Invalid sensor mode");                
             currentType = newType;
             Delay.msDelay(switchDelay);
         }

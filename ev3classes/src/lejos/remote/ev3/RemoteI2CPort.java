@@ -48,9 +48,9 @@ public class RemoteI2CPort extends RemoteIOPort implements I2CPort {
 	}
 	
 	@Override
-	public void setPinMode(int mode) {
+	public boolean setType(int type) {
 		try {
-			rmi.setPinMode(mode);
+			return rmi.setType(type);
 		} catch (RemoteException e) {
 			throw new PortException(e);
 		}
