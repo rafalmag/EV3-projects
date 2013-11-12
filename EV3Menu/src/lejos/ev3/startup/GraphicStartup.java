@@ -81,10 +81,12 @@ public class GraphicStartup implements Menu {
     static final int defaultSleepTime = 2;
     static final int maxSleepTime = 10;
 
+    // Threads
     private IndicatorThread ind = new IndicatorThread();
     private BatteryIndicator indiBA = new BatteryIndicator();
     private PipeReader pipeReader = new PipeReader();
     private RConsole rcons = new RConsole();
+    private BroadcastThread broadcast = new BroadcastThread();
     
     //private GraphicMenu curMenu;
     private int timeout = 0;
@@ -219,6 +221,7 @@ public class GraphicStartup implements Menu {
     	ind.start();
     	rcons.start();
     	pipeReader.start();
+    	broadcast.start();
     }
 	
 	/**
@@ -1120,6 +1123,18 @@ public class GraphicStartup implements Menu {
 				return;
 			}
     	}	
+    }
+    
+    class BroadcastThread extends Thread {
+    	
+    	@Override
+		public synchronized void run()
+    	{
+    		while(true) {
+    			Broadcast.broadcast(hostname);
+    			Delay.msDelay(1000);
+    		}
+    	}
     }
     
     /**
