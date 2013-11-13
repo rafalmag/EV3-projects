@@ -48,11 +48,6 @@ public class EV3I2CPort extends EV3IOPort implements I2CPort
       public byte[] WrData = new byte[IIC_DATA_LENGTH];
       public byte RdLng;
       public byte[] RdData = new byte[IIC_DATA_LENGTH];
-      
-      public IICDATA()
-      {
-          this.setAlignType(Structure.ALIGN_NONE);
-      }
     };
     protected IICDATA iicdata = new IICDATA();
     
@@ -67,6 +62,8 @@ public class EV3I2CPort extends EV3IOPort implements I2CPort
     public static final int HIGH_SPEED = 8;
     /** Maximum read/write request length */
     public static final int MAX_IO = IIC_DATA_LENGTH;
+    
+    protected EV3DeviceManager ldm = EV3DeviceManager.getLocalDeviceManager();
 
     protected boolean getChanged()
     {
@@ -90,15 +87,23 @@ public class EV3I2CPort extends EV3IOPort implements I2CPort
     
     protected boolean initSensor()
     {
-        // Set pin configuration and power for standard i2c sensor.
-        setPinMode(CMD_FLOAT);
+        //setPinMode(CMD_FLOAT);
         reset();
         Delay.msDelay(100);
+        iicChanged.put(port, (byte)0);
         setOperatingMode(TYPE_IIC_UNKNOWN, 255);
+        System.out.println("Status " + getStatus() + " changed " + getChanged());
+        /*
+        while (!getChanged())
+        {
+            Delay.msDelay(100);
+            System.out.println("Status " + getStatus() + " changed " + getChanged());
+        }*/
         Delay.msDelay(100);
-        setOperatingMode(TYPE_IIC_UNKNOWN, 255);        
+        setOperatingMode(TYPE_IIC_UNKNOWN, 0);        
+        System.out.println("Status " + getStatus() + " changed " + getChanged());
         Delay.msDelay(100);
-        //System.out.println("Status " + getStatus() + " changed " + getChanged());
+        System.out.println("Status " + getStatus() + " changed " + getChanged());
         return true;
     }
     
@@ -108,15 +113,33 @@ public class EV3I2CPort extends EV3IOPort implements I2CPort
      */
     public boolean open(int t, int p, EV3Port r)
     {
+        if (ldm.getPortType(p) != CONN_NXT_IIC)
+            return false;
         if (!super.open(t, p, r))
             return false;
-        if (!initSensor())
-        {
-            super.close();
-            return false;
-        }
+        // Set pin state to a sane default
+        setPinMode(CMD_FLOAT);
         return true;
     }
+    
+    @Override
+    public boolean setType(int type)
+    {
+        System.out.println("Set type " + type);
+        switch(type)
+        {
+        case TYPE_LOWSPEED:
+            setPinMode(CMD_SET|CMD_PIN5);
+            break;
+        case TYPE_LOWSPEED_9V:
+            setPinMode(CMD_SET|CMD_PIN1|CMD_PIN5);
+            break;
+        default:
+            return false;
+        }
+        return initSensor();
+    }
+
     
     /**
      * High level i2c interface. Perform a complete i2c transaction and return

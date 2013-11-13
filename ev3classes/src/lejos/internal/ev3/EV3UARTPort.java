@@ -325,14 +325,13 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
     @Override
     public boolean open(int typ, int port, EV3Port ref)
     {
+        if (ldm.getPortType(port) != CONN_INPUT_UART)
+            return false;
         if (!super.open(typ, port, ref))
             return false;
         // clear mode data cache
         modeCnt = 0;
-        if (initialiseSensor(0))
-            return true;
-        super.close();
-        return false;
+        return true;
     }
 
     /** {@inheritDoc}
@@ -352,6 +351,9 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
     public boolean setMode(int mode)
     {
         System.out.println("Set mode " + mode);
+        // are we initialised ?
+        if (modeCnt <= 0)
+            return initialiseSensor(mode);
         if (modeInfo[mode] == null)
             return false;
         System.out.println("Mode is " + getModeName(mode));

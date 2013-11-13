@@ -8,6 +8,9 @@ import lejos.hardware.port.PortException;
 
 public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
 {
+    private int type;
+    private int mode;
+    private int id;
 	
     public RemoteNXTI2CPort(NXTCommand nxtCommand) {
 		super(nxtCommand);
@@ -102,5 +105,45 @@ public class RemoteNXTI2CPort extends RemoteNXTIOPort implements I2CPort
 		} catch (IOException e) {
 			throw new PortException(e);
 		}
-    }  
+    } 
+    
+    /**
+     * Set the sensor type and mode
+     * @param type the sensor type
+     * @param mode the sensor mode
+     * @return 
+     */
+    public boolean setTypeAndMode(int type, int mode) {
+        this.type = type;
+        this.mode = mode;
+        try {
+            nxtCommand.setInputMode(id, type, mode);
+        } catch (IOException e) {
+            throw new PortException(e);
+        }
+        return true;
+    }
+    
+    /**
+     * Set the sensor type
+     * @param type the sensor type
+     * @return 
+     */
+    public boolean setType(int type) {
+        this.type = type;
+        setTypeAndMode(type, mode);
+        return true;
+    }
+    
+    /**
+     * Set the sensor mode
+     * @param mode the sensor mode
+     * @return 
+     */
+    public boolean setMode(int mode) {
+        this.mode = mode;
+        setTypeAndMode(type, mode);
+        return true;
+    }
+
 }

@@ -56,7 +56,12 @@ public class UARTSensor extends BaseSensor
      */
     public UARTSensor(Port port, int mode)
     {
-        this(port.open(UARTPort.class), mode);
+        this(port.open(UARTPort.class));
+        if (!this.port.setMode(mode))
+        {
+            this.port.close();
+            throw new IllegalArgumentException("Invalid sensor mode");
+        }
         releaseOnClose(this.port);
     }
     
