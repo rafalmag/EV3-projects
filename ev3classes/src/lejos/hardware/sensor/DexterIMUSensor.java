@@ -24,13 +24,13 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
   protected int Gyro_I2C_address  = 0xD2;
 
   public DexterIMUSensor(I2CPort port) {
-    DexterIMUGyroSensor gyro = new DexterIMUGyroSensor(port);
-    setModes(new SensorMode[] { gyro.getMode(0), new DexterIMUAccelerationSensor(port), gyro.getMode(1) });
+    DexterIMUGyroSensor gyro = new DexterIMUGyroSensor(port, Gyro_I2C_address);
+    setModes(new SensorMode[] { gyro.getMode(0), new DexterIMUAccelerationSensor(port, Accel_I2C_address), gyro.getMode(1) });
   }
 
   public DexterIMUSensor(Port port) {
     DexterIMUGyroSensor gyro = new DexterIMUGyroSensor(port, Gyro_I2C_address);
-    setModes(new SensorMode[] { gyro.getMode(0), new DexterIMUAccelerationSensor(port, Accel_I2C_address), gyro.getMode(1) });
+    setModes(new SensorMode[] { gyro.getMode(0), new DexterIMUAccelerationSensor(gyro.port, Accel_I2C_address), gyro.getMode(1) });
   }
 
   /**
@@ -96,8 +96,8 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
 
     private byte[]           buf         = new byte[7];
 
-    public DexterIMUGyroSensor(I2CPort port) {
-      super(port);
+    public DexterIMUGyroSensor(I2CPort port, int address) {
+      super(port, address);
       init();
     }
 
@@ -253,13 +253,8 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
 
     private byte[]               buf      = new byte[6];
 
-    private DexterIMUAccelerationSensor(Port port, int address) {
-      super(port, address, I2CPort.TYPE_LOWSPEED_9V);
-      sendData(MODE_REG, (byte) 0x05);
-    }
-
-    private DexterIMUAccelerationSensor(I2CPort port) {
-      super(port);
+    private DexterIMUAccelerationSensor(I2CPort port, int address) {
+      super(port, address);
       sendData(MODE_REG, (byte) 0x05);
     }
 
