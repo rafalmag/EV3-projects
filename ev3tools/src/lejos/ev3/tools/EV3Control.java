@@ -16,12 +16,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -46,6 +50,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.AbstractTableModel;
 
@@ -116,6 +121,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 	private Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 	private JFrame frame = new JFrame(title);
+	private JPanel ev3Panel;
 	private JTable ev3Table = new JTable();
 	private JScrollPane ev3TablePane;
 	private JTextField nameText = new JTextField(8);
@@ -175,6 +181,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	private SensorPanel s2Panel = new SensorPanel(1);
 	private SensorPanel s3Panel = new SensorPanel(2);
 	private SensorPanel s4Panel = new SensorPanel(3);
+	private EV3ConnectionModel model;
 	
 	// Other instance data
 	private ExtendedFileModel fmPrograms, fmSamples;
@@ -194,6 +201,10 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	
 	private String[] accessPoints = new String[0];
 	private RemoteBTDevice[] bluetoothDevices = new RemoteBTDevice[0];
+	
+    private static final int DEFAULT_PORT = 3016;
+    private DatagramSocket socket;
+    private DatagramPacket packet;
 
 	/**
 	 * Command line entry point
@@ -365,7 +376,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Lay out EV3 Selection panel
 	 */
 	private void createEV3SelectionPanel() {
-		JPanel ev3Panel = new JPanel();
+		ev3Panel = new JPanel();
 		ev3TablePane = new JScrollPane(ev3Table);
 		ev3TablePane.setPreferredSize(ev3TableSize);
 		ev3Panel.add(new JScrollPane(ev3TablePane), BorderLayout.WEST);
@@ -1283,6 +1294,15 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 			
 		}
 	}
+	
+	/**
+	 * Update connection status in the connections table
+	 */
+	private void updateConnectionStatus(int row, EV3ConnectionState state) {
+		model.setConnected(row, state);
+		ev3Table.repaint();
+		updateConnectButton(state != EV3ConnectionState.DISCONNECTED);
+	}
 
 	/**
 	 * Search for available EV3s and populate table with results.
@@ -1291,6 +1311,49 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		closeAll();
 		clearFiles();
 		updateConnectButton(false);
+		
+		Map<String,EV3Info> ev3s = new HashMap<String,EV3Info>();
+		
+        try {
+            socket = new DatagramSocket(DEFAULT_PORT);
+        } catch( Exception ex ) {
+            showMessage("Failed to create datagram socket");
+            return;
+        }
+
+        packet = new DatagramPacket (new byte[100], 100);
+
+        long start = System.currentTimeMillis();
+        
+        while ((System.currentTimeMillis() - start) < 2000) {
+            try {
+                socket.receive (packet);
+                String message = new String(packet.getData(), "UTF-8");
+                String ip = packet.getAddress().getHostAddress();
+                System.out.println("Adding " + ip);
+                ev3s.put(ip, new EV3Info(message.trim(),ip));
+
+            } catch (IOException ie) {
+                showMessage("Failed to read discovery datagram");
+            }
+        }
+        
+        if (socket != null) socket.close();
+        
+        EV3Info[] devices = new EV3Info[ev3s.size()];
+        int i = 0;
+        for(String ev3: ev3s.keySet()) {
+        	EV3Info info = ev3s.get(ev3);
+        	devices[i++] = info;
+        	System.out.println("Found " + info.getName() + " " + info.getIPAddress());
+        }
+        
+        model = new EV3ConnectionModel(devices, devices.length);
+		ev3Table.setModel(model);
+	    TableColumn col = ev3Table.getColumnModel().getColumn(3);
+	    col.setPreferredWidth(150);
+		ev3Table.setRowSelectionInterval(0, 0);
+		ev3Table.getSelectionModel().addListSelectionListener(this);
 	}
 
 	/**
@@ -1302,6 +1365,8 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		s3Panel.close();
 		s4Panel.close();
 		if (cvc != null) cvc.close();
+		ev3 = null;
+		menu = null;
 	}
 
 	/**
@@ -1378,7 +1443,23 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 * Connect to the EV3
 	 */
 	private void connect() {
-		String name = nameText.getText();
+		String name;
+		int row = ev3Table.getSelectedRow();
+		if (row >= 0) {
+			name =  (String) model.getValueAt(row, 2);
+			System.out.println("Name is " + name);
+			
+			EV3ConnectionState state = (EV3ConnectionState) ev3Table.getValueAt(row, 3);
+		
+			if (state == EV3ConnectionState.CONNECTED) {
+				closeAll();
+				updateConnectionStatus(row, EV3ConnectionState.DISCONNECTED);
+				return;
+			}
+		} else {
+			name = nameText.getText();
+		}
+		
 		if (name != null && name.length() > 0) {
 			System.out.println("Connecting to " + name);
 			try {
@@ -1389,12 +1470,13 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 				s3Panel.setEV3(ev3);
 				s4Panel.setEV3(ev3);
 				cvc.connectTo(name, name, 0, true);
+				if (row >= 0) updateConnectionStatus(row, EV3ConnectionState.CONNECTED);
 				showFiles();
 			} catch (RemoteException | MalformedURLException
 					| NotBoundException e) {
 				e.printStackTrace();
 			}
-		}	
+		}
 	}
 	
 	/**

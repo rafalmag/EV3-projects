@@ -33,9 +33,9 @@ public class RMIRemoteI2CPort extends UnicastRemoteObject implements RMII2CPort 
 	}
 
 	@Override
-	public void setPinMode(int mode) throws RemoteException {
+	public boolean setType(int type) throws RemoteException {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 	
 	
