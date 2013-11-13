@@ -10,7 +10,7 @@ import java.util.Enumeration;
 
 public class Broadcast {
 	
-public static final int port = 3000;
+public static final int port = 3016;
 
 	public static void broadcast(String message) {
 		DatagramSocket c;
@@ -24,7 +24,7 @@ public static final int port = 3000;
 		  try {
 		    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), port);
 		    c.send(sendPacket);
-		    System.out.println("Request packet sent to: 255.255.255.255");
+		    //System.out.println("Request packet sent to: 255.255.255.255");
 		  } catch (Exception e) {
 			  System.err.println("Exception send to default: " + e);
 		  }
@@ -40,9 +40,7 @@ public static final int port = 3000;
 
 		    for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
 		      InetAddress broadcast = interfaceAddress.getBroadcast();
-		      if (broadcast == null) {
-		        continue;
-		      }
+		      if (broadcast == null) continue;
 
 		      // Send the broadcast packet.
 		      try {
@@ -52,7 +50,7 @@ public static final int port = 3000;
 		    	  System.err.println("Exception sending to : " + networkInterface.getDisplayName() + " : "+ e);
 		      }
 
-		      System.out.println("Request packet sent to: " + broadcast.getHostAddress() + "; Interface: " + networkInterface.getDisplayName());
+		      //System.out.println("Request packet sent to: " + broadcast.getHostAddress() + "; Interface: " + networkInterface.getDisplayName());
 		    }
 		  }
 
