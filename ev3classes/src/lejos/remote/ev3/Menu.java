@@ -2,13 +2,13 @@ package lejos.remote.ev3;
 
 public interface Menu {
 	
-	public int runProgram(String programName);
+	public void runProgram(String programName);
 	
-	public int runSample(String programName);
+	public void runSample(String programName);
 	
-	public int debugProgram(String programName);
+	public void debugProgram(String programName);
 	
-	public int deleteFile(String fileName);
+	public boolean deleteFile(String fileName);
 	
 	public long getFileSize(String filename);
 	
@@ -16,15 +16,15 @@ public interface Menu {
 	
 	public String[] getSampleNames();
 
-	public int uploadFile(String fileName, byte[] contents);
+	public boolean uploadFile(String fileName, byte[] contents);
 	
 	public byte[] fetchFile(String fileName);
 	
 	public String getSetting(String setting);
 	
-	public boolean setSetting(String setting, String value);
+	public void setSetting(String setting, String value);
 	
-	public boolean deleteAllPrograms();
+	public void deleteAllPrograms();
 	
 	public String getVersion();
 	
@@ -32,5 +32,5 @@ public interface Menu {
 	
 	public String getName();
 	
-	public boolean setName(String name);
+	public void setName(String name);
 }

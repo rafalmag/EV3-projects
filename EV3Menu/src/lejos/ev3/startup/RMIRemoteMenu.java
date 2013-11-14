@@ -17,12 +17,12 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 	}
 
 	@Override
-	public int runProgram(String programName) throws RemoteException {
-		return menu.runProgram(programName);
+	public void runProgram(String programName) throws RemoteException {
+		menu.runProgram(programName);
 	}
 
 	@Override
-	public int deleteFile(String fileName) throws RemoteException {
+	public boolean deleteFile(String fileName) throws RemoteException {
 		return menu.deleteFile(fileName);
 	}
 
@@ -32,13 +32,13 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 	}
 
 	@Override
-	public int debugProgram(String programName) throws RemoteException {
-		return menu.debugProgram(programName);
+	public void debugProgram(String programName) throws RemoteException {
+		menu.debugProgram(programName);
 	}
 
 	@Override
-	public int runSample(String programName) throws RemoteException {
-		return menu.runSample(programName);
+	public void runSample(String programName) throws RemoteException {
+		menu.runSample(programName);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 	}
 
 	@Override
-	public int uploadFile(String fileName, byte[] contents)
+	public boolean uploadFile(String fileName, byte[] contents)
 			throws RemoteException {
 		return menu.uploadFile(fileName, contents);
 	}
@@ -67,14 +67,14 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 	}
 
 	@Override
-	public boolean setSetting(String setting, String value)
+	public void setSetting(String setting, String value)
 			throws RemoteException {
-		return menu.setSetting(setting, value);
+		menu.setSetting(setting, value);
 	}
 
 	@Override
-	public boolean deleteAllPrograms() throws RemoteException {
-		return menu.deleteAllPrograms();
+	public void deleteAllPrograms() throws RemoteException {
+		menu.deleteAllPrograms();
 	}
 
 	@Override
@@ -93,8 +93,8 @@ public class RMIRemoteMenu extends UnicastRemoteObject implements RMIMenu {
 	}
 
 	@Override
-	public boolean setName(String name) throws RemoteException {
-		return menu.setName(name);
+	public void setName(String name) throws RemoteException {
+		menu.setName(name);
 	}
 
 	@Override

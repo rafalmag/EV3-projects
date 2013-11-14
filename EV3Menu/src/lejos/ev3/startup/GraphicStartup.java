@@ -932,8 +932,8 @@ public class GraphicStartup implements Menu {
         	LCD.clearDisplay();
         	LCD.refresh();
           }
-          catch (Exception err) {
-            err.printStackTrace();
+          catch (Exception e) {
+            System.err.println("Failed to execute program: " + e);
           } 	
     }
    
@@ -1196,9 +1196,9 @@ public class GraphicStartup implements Menu {
         try
         {
             interfaces = NetworkInterface.getNetworkInterfaces();
-        } catch (SocketException e1)
+        } catch (SocketException e)
         {
-            e1.printStackTrace();
+            System.err.println("Failed to get network interfaces: " + e);
             return null;
         }
         while (interfaces.hasMoreElements()){
@@ -1208,7 +1208,7 @@ public class GraphicStartup implements Menu {
                 if (!current.isUp() || current.isLoopback() || current.isVirtual()) continue;
             } catch (SocketException e)
             {
-                e.printStackTrace();
+            	System.err.println("Failed to get network properties: " + e);
             }
             Enumeration<InetAddress> addresses = current.getInetAddresses();
             while (addresses.hasMoreElements()){
@@ -1221,18 +1221,16 @@ public class GraphicStartup implements Menu {
     } 
  
 	@Override
-	public int runProgram(String programName) {
+	public void runProgram(String programName) {
     	ind.suspend();
     	exec(JAVA_RUN_JAR + "/home/lejos/programs/" + programName + ".jar");
     	ind.resume();
-		return 0;
 	}
 
 	@Override
-	public int deleteFile(String fileName) {
+	public boolean deleteFile(String fileName) {
 		File f = new File("/home/lejos/programs/" + fileName);
-		boolean res = f.delete();
-		return (res ? 0 : -1);
+		return f.delete();
 	}
 
 	@Override
@@ -1246,19 +1244,17 @@ public class GraphicStartup implements Menu {
 	}
 
 	@Override
-	public int runSample(String programName) {
+	public void runSample(String programName) {
     	ind.suspend();
     	exec(JAVA_RUN_JAR + "/home/root/lejos/samples/" + programName + ".jar");
     	ind.resume();
-		return 0;
 	}
 
 	@Override
-	public int debugProgram(String programName) {
+	public void debugProgram(String programName) {
     	ind.suspend();
     	exec(JAVA_DEBUG_JAR + "/home/lejos/programs/" + programName + ".jar");
     	ind.resume();
-		return 0;
 	}
 
 	@Override
@@ -1277,15 +1273,15 @@ public class GraphicStartup implements Menu {
 	}
 
 	@Override
-	public int uploadFile(String fileName, byte[] contents) {
+	public boolean uploadFile(String fileName, byte[] contents) {
 		try {
 			FileOutputStream out = new FileOutputStream(fileName);
 			out.write(contents);
 			out.close();
-			return 0;
+			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
-			return -1;
+			System.out.println("Failed to upload file: " + e);
+			return false;
 		}
 	
 	}
@@ -1361,7 +1357,7 @@ public class GraphicStartup implements Menu {
 		    in.close();
 		    return data;
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Failed to fetch file: " + e);
 			return null;
 		}
 
@@ -1373,20 +1369,18 @@ public class GraphicStartup implements Menu {
 	}
 
 	@Override
-	public boolean setSetting(String setting, String value) {
+	public void setSetting(String setting, String value) {
 		Settings.setProperty(setting, value);
-		return true;
 	}
 
 	@Override
-	public boolean deleteAllPrograms() {
+	public void deleteAllPrograms() {
     	File dir = new File("/home/lejos/programs");
         for (String fn : dir.list()) {
             File aFile = new File(dir,fn);
             System.out.println("Deleting " + aFile.getPath());
             aFile.delete();
         }
-		return true;
 	}
 
 	@Override
@@ -1405,8 +1399,7 @@ public class GraphicStartup implements Menu {
 	}
 
 	@Override
-	public boolean setName(String name) {
+	public void setName(String name) {
 		// TODO How to set name?
-		return false;
 	}
 }

@@ -5,13 +5,13 @@ import java.rmi.RemoteException;
 
 public interface RMIMenu extends Remote {
 	
-	public int runProgram(String programName) throws RemoteException;
+	public void runProgram(String programName) throws RemoteException;
 	
-	public int debugProgram(String programName) throws RemoteException;
+	public void debugProgram(String programName) throws RemoteException;
 	
-	public int runSample(String programName) throws RemoteException;
+	public void runSample(String programName) throws RemoteException;
 	
-	public int deleteFile(String fileName) throws RemoteException;
+	public boolean deleteFile(String fileName) throws RemoteException;
 	
 	public long getFileSize(String fileName) throws RemoteException;
 	
@@ -19,15 +19,15 @@ public interface RMIMenu extends Remote {
 	
 	public String[] getSampleNames()  throws RemoteException;
 	
-	public int uploadFile(String fileName, byte[] contents) throws RemoteException;
+	public boolean uploadFile(String fileName, byte[] contents) throws RemoteException;
 	
 	public byte[] fetchFile(String fileName) throws RemoteException;
 	
 	public String getSetting(String setting) throws RemoteException;
 	
-	public boolean setSetting(String setting, String value) throws RemoteException;
+	public void setSetting(String setting, String value) throws RemoteException;
 	
-	public boolean deleteAllPrograms() throws RemoteException;
+	public void deleteAllPrograms() throws RemoteException;
 	
 	public String getVersion() throws RemoteException;
 	
@@ -35,7 +35,7 @@ public interface RMIMenu extends Remote {
 	
 	public String getName() throws RemoteException;
 	
-	public boolean setName(String name) throws RemoteException;
+	public void setName(String name) throws RemoteException;
 	
 	public void configureWifi(String ssid, String pwd) throws RemoteException;
 
