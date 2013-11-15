@@ -52,4 +52,8 @@ public class Cuckoo {
 		cuckooMotor.stop();
 		cuckooMotor.flt();
 	}
+
+	public void resetTickCount() {
+		tick.reset();
+	}
 }

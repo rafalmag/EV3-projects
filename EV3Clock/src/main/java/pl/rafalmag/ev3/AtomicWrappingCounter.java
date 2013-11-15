@@ -17,4 +17,8 @@ public class AtomicWrappingCounter {
 		value = (value + 1) % max;
 		return value;
 	}
+
+	public void reset() {
+		value = 0;
+	}
 }

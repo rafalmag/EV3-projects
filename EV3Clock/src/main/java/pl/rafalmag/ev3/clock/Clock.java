@@ -96,6 +96,7 @@ public class Clock {
 
 							}, 0, tickPeriod.getPeriod(),
 									tickPeriod.getTimeUnit());
+							cuckoo.resetTickCount();
 						} else {
 							System.out.println("Clock is already running");
 						}
