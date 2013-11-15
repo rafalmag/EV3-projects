@@ -56,13 +56,13 @@ public class Clock {
 			public void update(ClockRunning clockRunning, Boolean running) {
 				System.out.println("Clock running=" + running);
 				if (running) {
-					start(tickPeriod, motor);
+					start(tickPeriod);
 				} else {
-					stop(motor);
+					stop();
 				}
 			}
 
-			private void stop(final RegulatedMotor motor) {
+			private void stop() {
 				LockUtil.doInLock(lock, new Runnable() {
 
 					@Override
@@ -70,12 +70,10 @@ public class Clock {
 						executor.shutdownNow();
 					}
 				});
-				motor.stop();
-				motor.flt();
+				doStop();
 			}
 
-			private void start(final TickPeriod tickPeriod,
-					final RegulatedMotor motor) {
+			private void start(final TickPeriod tickPeriod) {
 				LockUtil.doInLock(lock, new Runnable() {
 
 					@Override
@@ -86,21 +84,31 @@ public class Clock {
 
 								@Override
 								public void run() {
-									motor.setSpeed(TICK_SPEED);
-									motor.rotate(TICK_ANGLE);
-									motor.stop();
-									motor.flt();
+									doTick();
 								}
+
 							}, 0, tickPeriod.getPeriod(),
 									tickPeriod.getTimeUnit());
 						} else {
-
+							System.out.println("Clock is already running");
 						}
 
 					}
 				});
 			}
+
 		});
+	}
+
+	private void doTick() {
+		motor.setSpeed(TICK_SPEED);
+		motor.rotate(TICK_ANGLE);
+		doStop();
+	}
+
+	private void doStop() {
+		motor.stop();
+		motor.flt();
 	}
 
 	public void start() {
