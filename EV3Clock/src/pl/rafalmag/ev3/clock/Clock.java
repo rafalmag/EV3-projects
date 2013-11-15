@@ -33,6 +33,10 @@ public class Clock {
 			// guarded by lock
 			private ScheduledExecutorService executor = getNewExecutor();
 
+			{
+				executor.shutdown();
+			}
+
 			private ScheduledExecutorService getNewExecutor() {
 				return Executors
 						.newSingleThreadScheduledExecutor(new ThreadFactory() {
@@ -52,7 +56,6 @@ public class Clock {
 			public void update(ClockRunning clockRunning, Boolean running) {
 				System.out.println("Clock running=" + running);
 				if (running) {
-					// FIXME prevent from starting if was already running
 					start(tickPeriod, motor);
 				} else {
 					stop(motor);
@@ -77,18 +80,22 @@ public class Clock {
 
 					@Override
 					public void run() {
-						executor.shutdownNow();
-						executor = getNewExecutor();
-						executor.scheduleAtFixedRate(new Runnable() {
+						if (executor.isShutdown()) {
+							executor = getNewExecutor();
+							executor.scheduleAtFixedRate(new Runnable() {
 
-							@Override
-							public void run() {
-								motor.setSpeed(TICK_SPEED);
-								motor.rotate(TICK_ANGLE);
-								motor.stop();
-								motor.flt();
-							}
-						}, 0, tickPeriod.getPeriod(), tickPeriod.getTimeUnit());
+								@Override
+								public void run() {
+									motor.setSpeed(TICK_SPEED);
+									motor.rotate(TICK_ANGLE);
+									motor.stop();
+									motor.flt();
+								}
+							}, 0, tickPeriod.getPeriod(),
+									tickPeriod.getTimeUnit());
+						} else {
+
+						}
 
 					}
 				});
