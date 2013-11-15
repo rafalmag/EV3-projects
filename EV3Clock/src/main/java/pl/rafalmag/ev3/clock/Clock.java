@@ -12,20 +12,27 @@ import pl.rafalmag.ev3.LoggingExceptionHandler;
 
 public class Clock {
 
+	private static final int CUCKOO_SPEED = 300;
 	private static final int TICK_SPEED = 400;
 	private static final int FAST_SPEED = 720;
 	private static final float GEAR_RATIO = 1f / 6f;
-	private static final int TICK_ANGLE = Math.round(new Float(
-			1f / 12f * 360f / GEAR_RATIO));
+	static final int TICKS_PER_ROTATION = 12;
+	private static final int TICK_ANGLE = Math.round(new Float(1f
+			/ TICKS_PER_ROTATION * 360f / GEAR_RATIO));
 
 	private final ClockRunning clockRunning = new ClockRunning(false);
 
-	private final RegulatedMotor motor;
+	private final RegulatedMotor handMotor;
+	private Cuckoo cuckoo;
 
-	public Clock(final TickPeriod tickPeriod, final RegulatedMotor motor) {
-		this.motor = motor;
-		motor.setSpeed(TICK_SPEED);
-		motor.setAcceleration(800);
+	public Clock(final TickPeriod tickPeriod, final RegulatedMotor handMotor,
+			RegulatedMotor cuckooMotor) {
+		this.handMotor = handMotor;
+		handMotor.setSpeed(TICK_SPEED);
+		handMotor.setAcceleration(800);
+		this.cuckoo = new Cuckoo(cuckooMotor);
+		cuckooMotor.setAcceleration(400);
+		cuckooMotor.setSpeed(CUCKOO_SPEED);
 
 		clockRunning.addObserver(new ClockRunningObserver() {
 
@@ -101,14 +108,15 @@ public class Clock {
 	}
 
 	private void doTick() {
-		motor.setSpeed(TICK_SPEED);
-		motor.rotate(TICK_ANGLE);
+		handMotor.setSpeed(TICK_SPEED);
+		handMotor.rotate(TICK_ANGLE);
 		doStop();
+		cuckoo.cuckoo();
 	}
 
 	private void doStop() {
-		motor.stop();
-		motor.flt();
+		handMotor.stop();
+		handMotor.flt();
 	}
 
 	public void start() {
@@ -121,14 +129,14 @@ public class Clock {
 
 	public void fastForward() {
 		stop();
-		motor.setSpeed(FAST_SPEED);
-		motor.forward();
+		handMotor.setSpeed(FAST_SPEED);
+		handMotor.forward();
 	}
 
 	public void fastBackward() {
 		stop();
-		motor.setSpeed(FAST_SPEED);
-		motor.backward();
+		handMotor.setSpeed(FAST_SPEED);
+		handMotor.backward();
 	}
 
 	public void toggleStart() {

@@ -15,7 +15,7 @@ public class Main {
 		LCD.drawString("Clock", 0, 5);
 
 		Clock clock = new Clock(new TickPeriod(1, TimeUnit.SECONDS),
-				MirrorMotor.invertMotor(Motor.A));
+				MirrorMotor.invertMotor(Motor.A), Motor.B);
 		ClockController clockController = new ClockController(clock);
 		clockController.init();
 		Button.setKeyClickVolume(1);
