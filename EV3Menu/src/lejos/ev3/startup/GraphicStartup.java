@@ -7,9 +7,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -37,9 +41,13 @@ import lejos.hardware.port.TachoMotorPort;
 import lejos.internal.io.Settings;
 import lejos.internal.io.SystemSettings;
 import lejos.remote.ev3.Menu;
+import lejos.remote.ev3.MenuReply;
+import lejos.remote.ev3.MenuRequest;
 import lejos.remote.ev3.RMIRemoteEV3;
 
 public class GraphicStartup implements Menu {
+	
+	static final int REMOTE_MENU_PORT = 8002;
 	
 	static final String JAVA_RUN_JAR = "jrun -jar ";
 	static final String JAVA_DEBUG_JAR = "jrun -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=y -jar ";
@@ -87,6 +95,7 @@ public class GraphicStartup implements Menu {
     private PipeReader pipeReader = new PipeReader();
     private RConsole rcons = new RConsole();
     private BroadcastThread broadcast = new BroadcastThread();
+    private RemoteMenuThread remoteMenuThread = new RemoteMenuThread();
     
     //private GraphicMenu curMenu;
     private int timeout = 0;
@@ -222,6 +231,7 @@ public class GraphicStartup implements Menu {
     	rcons.start();
     	pipeReader.start();
     	broadcast.start();
+    	remoteMenuThread.start();
     }
 	
 	/**
@@ -279,6 +289,117 @@ public class GraphicStartup implements Menu {
         
         // Shut down the EV3
         shutdown();
+    }
+    
+    public class RemoteMenuThread extends Thread {
+        @Override
+        public void run() {
+        	
+    		ServerSocket ss;
+    		Socket conn;
+    		
+        	// Create a server socket
+        	try {
+    			ss = new ServerSocket(REMOTE_MENU_PORT);
+    			System.out.println("Server socket created");
+    		} catch (IOException e1) {
+    			e1.printStackTrace();
+    			return;
+    		}
+        	
+        	while(true) {   		
+                try {
+                	System.out.println("Waiting for a connection");
+            		conn = ss.accept();
+            		conn.setSoTimeout(2000);
+            		
+            		ObjectInputStream is = new ObjectInputStream(conn.getInputStream());
+            		ObjectOutputStream os = new ObjectOutputStream(conn.getOutputStream());
+            		
+            		MenuRequest request = (MenuRequest) is.readObject();
+            		MenuReply reply = new MenuReply();
+            		
+            		try {
+	            		while(true) {      		
+		            		switch (request.request) {
+		            		case RUN_PROGRAM:
+		            			runProgram(request.name);
+		            			break;
+							case DEBUG_PROGRAM:
+								debugProgram(request.name);
+								break;
+							case DELETE_ALL_PROGRAMS:
+								deleteAllPrograms();
+								break;
+							case DELETE_FILE:
+								reply.result = deleteFile(request.name);
+								os.writeObject(reply);
+								break;
+							case FETCH_FILE:
+								reply.contents = fetchFile(request.name);
+								os.writeObject(reply);
+								break;
+							case GET_FILE_SIZE:
+								reply.reply = (int) getFileSize(request.name);
+								os.writeObject(reply);
+								break;
+							case GET_MENU_VERSION:
+								reply.value = getMenuVersion();
+								os.writeObject(reply);
+								break;
+							case GET_NAME:
+								reply.value = "EV3";
+								os.writeObject(reply);
+								break;
+							case GET_PROGRAM_NAMES:
+								reply.names = getProgramNames();
+								os.writeObject(reply);
+								break;
+							case GET_SAMPLE_NAMES:
+								reply.names = getSampleNames();
+								os.writeObject(reply);
+								break;
+							case GET_SETTING:
+								reply.value = getSetting(request.value);
+								os.writeObject(reply);
+								break;
+							case GET_VERSION:
+								reply.value = getSetting(request.value);
+								os.writeObject(reply);
+								break;
+							case RUN_SAMPLE:
+		            			runSample(request.name);
+								break;
+							case SET_NAME:
+								break;
+							case SET_SETTING:
+								setSetting(request.name, request.value);
+								break;
+							case UPLOAD_FILE:
+								reply.result = uploadFile(request.name, request.contents);
+								os.writeObject(reply);
+								break;
+							default:
+								break;       			
+		            		}
+	            		}
+            		
+                    } catch(Exception e) {
+                    	System.err.println("Error read from connection " + e);
+                    }
+            		
+                } catch(Exception e) {
+                	System.err.println("Error accepting connection " + e);
+                	break;
+                }		
+        	}
+        	
+        	try {
+				ss.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }
     }
     
     /**
