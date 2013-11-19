@@ -1,7 +1,10 @@
 package lejos.remote.ev3;
 
-public class MenuRequest {
-	
+import java.io.Serializable;
+
+public class MenuRequest implements Serializable {
+	private static final long serialVersionUID = -7409357683572161291L;
+
 	public enum Request {
 		RUN_PROGRAM,
 		RUN_SAMPLE,

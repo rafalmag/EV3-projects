@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -296,31 +297,31 @@ public class GraphicStartup implements Menu {
         public void run() {
         	
     		ServerSocket ss;
-    		Socket conn;
+    		Socket conn = null;
     		
         	// Create a server socket
         	try {
     			ss = new ServerSocket(REMOTE_MENU_PORT);
-    			System.out.println("Server socket created");
-    		} catch (IOException e1) {
-    			e1.printStackTrace();
+    			System.out.println("Remote menu server socket created");
+    		} catch (IOException e) {
+    			System.err.println("Error creating server socket: " + e);
     			return;
     		}
         	
         	while(true) {   		
                 try {
-                	System.out.println("Waiting for a connection");
+                	System.out.println("Waiting for a remote menu connection");
             		conn = ss.accept();
-            		conn.setSoTimeout(2000);
+            		//conn.setSoTimeout(2000);
             		
-            		ObjectInputStream is = new ObjectInputStream(conn.getInputStream());
             		ObjectOutputStream os = new ObjectOutputStream(conn.getOutputStream());
-            		
-            		MenuRequest request = (MenuRequest) is.readObject();
-            		MenuReply reply = new MenuReply();
-            		
+            		ObjectInputStream is = new ObjectInputStream(conn.getInputStream());
+            		            		
             		try {
-	            		while(true) {      		
+	            		while(true) { 
+	                		MenuRequest request = (MenuRequest) is.readObject();
+	                		MenuReply reply = new MenuReply();
+	                		
 		            		switch (request.request) {
 		            		case RUN_PROGRAM:
 		            			runProgram(request.name);
@@ -348,7 +349,7 @@ public class GraphicStartup implements Menu {
 								os.writeObject(reply);
 								break;
 							case GET_NAME:
-								reply.value = "EV3";
+								reply.value = menu.getName();
 								os.writeObject(reply);
 								break;
 							case GET_PROGRAM_NAMES:
@@ -360,17 +361,18 @@ public class GraphicStartup implements Menu {
 								os.writeObject(reply);
 								break;
 							case GET_SETTING:
-								reply.value = getSetting(request.value);
+								reply.value = getSetting(request.name);
 								os.writeObject(reply);
 								break;
 							case GET_VERSION:
-								reply.value = getSetting(request.value);
+								reply.value = getVersion();
 								os.writeObject(reply);
 								break;
 							case RUN_SAMPLE:
 		            			runSample(request.name);
 								break;
 							case SET_NAME:
+								setName(request.name);
 								break;
 							case SET_SETTING:
 								setSetting(request.name, request.value);
@@ -378,14 +380,17 @@ public class GraphicStartup implements Menu {
 							case UPLOAD_FILE:
 								reply.result = uploadFile(request.name, request.contents);
 								os.writeObject(reply);
-								break;
-							default:
-								break;       			
+								break;     			
 		            		}
 	            		}
             		
                     } catch(Exception e) {
-                    	System.err.println("Error read from connection " + e);
+                    	System.err.println("Error reading from connection " + e);
+						try {
+							conn.close();
+						} catch (IOException e1) {
+							System.err.println("Error closing connection: " + e);
+						}
                     }
             		
                 } catch(Exception e) {

@@ -1,7 +1,9 @@
 package lejos.remote.ev3;
 
-public class MenuReply {
-	
+import java.io.Serializable;
+
+public class MenuReply implements Serializable {
+	private static final long serialVersionUID = -7200416724089157694L;
 	public String[] names;
 	public String value;
 	
