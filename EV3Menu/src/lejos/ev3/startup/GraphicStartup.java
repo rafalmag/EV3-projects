@@ -3,13 +3,13 @@ package lejos.ev3.startup;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -714,8 +714,8 @@ public class GraphicStartup implements Menu {
      */
     private void systemMenu()
     {
-        String[] menuData = {"Delete all", "", "Auto Run", "NTP host", "Suspend menu", "Unset default"};
-        String[] iconData = {ICFormat,ICSleep,ICAutoRun,ICDefault,ICDefault,ICDefault};
+        String[] menuData = {"Delete all", "", "Auto Run", "Change name", "NTP host", "Suspend menu", "Unset default"};
+        String[] iconData = {ICFormat,ICSleep,ICAutoRun,ICDefault,ICDefault,ICDefault,ICDefault};
         boolean rechargeable = false;
         GraphicMenu menu = new GraphicMenu(menuData,iconData,4);
         int selection = 0;
@@ -733,8 +733,8 @@ public class GraphicStartup implements Menu {
             menuData[1] = "Sleep time: " + (timeout == 0 ? "off" : String.valueOf(timeout));
             File f = getDefaultProgram();
             if (f == null){
-            	menuData[5] = null;
-            	iconData[5] = null;
+            	menuData[6] = null;
+            	iconData[6] = null;
             }
             menu.setItems(menuData,iconData);
             selection = getSelection(menu, selection);
@@ -761,13 +761,20 @@ public class GraphicStartup implements Menu {
                     systemAutoRun();
                     break;
                 case 3:
+                	String newName = new Keyboard().getString();
+                	
+                	if (newName != null) {
+                		setName(newName);
+                	}
+                	break;
+                case 4:
                 	String host = new Keyboard().getString();
                 	
                 	if(host != null) {
                 		Settings.setProperty(ntpProperty, host);
                 	}
                 	break;
-                case 4:
+                case 5:
                 	ind.suspend();
                 	LCD.clearDisplay();
                 	LCD.refresh();
@@ -784,7 +791,7 @@ public class GraphicStartup implements Menu {
                 	ind.resume();
                 	System.out.println("Menu resumed");
                 	break;
-                case 5:
+                case 6:
                     Settings.setProperty(defaultProgramProperty, "");
                     Settings.setProperty(defaultProgramAutoRunProperty, "");
                     selection = 0;
@@ -1534,6 +1541,15 @@ public class GraphicStartup implements Menu {
 
 	@Override
 	public void setName(String name) {
-		// TODO How to set name?
+		hostname = name;
+		
+		try {
+			PrintStream out = new PrintStream(new FileOutputStream("/etc/hostname"));
+			out.println(name);
+			out.close();
+			
+		} catch (FileNotFoundException e) {
+			System.err.println("Failed to write to /etc/hostname: " + e);
+		}
 	}
 }
