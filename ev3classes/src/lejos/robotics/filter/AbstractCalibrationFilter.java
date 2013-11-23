@@ -87,6 +87,7 @@ public abstract class AbstractCalibrationFilter extends AbstractFilter implement
    * After starting calibration new minimum and maximum values are calculated on
    * each fetched sample. From this calibration parameters can be calculated.
    */
+  
   public void startCalibration() {
     lowPassFilter = new LowPassFilter(source, timeConstant);
     calibrating = true;

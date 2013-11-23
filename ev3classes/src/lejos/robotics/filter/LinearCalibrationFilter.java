@@ -125,7 +125,6 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
 
   public LinearCalibrationFilter(SampleProvider source) {
     super(source);
-    lowPassFilter = new LowPassFilter(source, 0);
     lowerBound = new float[sampleSize];
     upperBound = new float[sampleSize];
     offset = new float[sampleSize];
@@ -138,7 +137,7 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
       scale[i] = 1;
     }
   }
-  
+
   public String toString() {
     return "LinearCalibrationFilter";
   }
@@ -223,13 +222,15 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
     super.startCalibration();
     reset();
   }
-  
+
   @Override
   public void stopCalibration() {
     super.stopCalibration();
+//    System.out.println("End calibration using " + numberOfSamplesInCalibration + " samples.");
+//    for (int i = 0; i < sampleSize; i++) {
+//      System.out.println("min: " + min[i] + " max: " + max[i] + " sum: " + sum[i] + " lowerbound: " + lowerBound[i] + " upperbound: " + upperBound[i] + " offset: " + offset[i] + "scale: " + scale[i]);
+//    }
   }
-  
-  
 
   /**
    * Stores the calibration parameters, offset and/or scale depending on current
@@ -242,7 +243,7 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
   public void save(String filename) {
     setPropertyArray("offset", offset);
     setPropertyArray("scale", scale);
-    setProperty("calibrationType",(float)calibrationType);
+    setProperty("calibrationType", (float) calibrationType);
     store(filename);
   }
 
@@ -251,7 +252,7 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
     load(name);
     offset = getPropertyArray("offset");
     scale = getPropertyArray("scale");
-    calibrationType=(int) getProperty("calibrationType");
+    calibrationType = (int) getProperty("calibrationType");
   }
 
   private void reset() {
@@ -271,7 +272,7 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
       if (calibrating) {
         if (upperBound[i] != lowerBound[i])
           scale[i] = (max[i] - min[i]) / (upperBound[i] - lowerBound[i]);
-        offset[i] = (sum[i] / numberOfSamplesInCalibration) - (upperBound[i] - lowerBound[i]);
+        offset[i] = (sum[i] / numberOfSamplesInCalibration) - (upperBound[i] + lowerBound[i]) / 2;
       }
       else {
         dst[i + off] = (dst[i + off] - offset[i]);

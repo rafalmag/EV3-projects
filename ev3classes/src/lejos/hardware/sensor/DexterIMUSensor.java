@@ -271,9 +271,10 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
         System.out.print(" " + buf[i]);
       System.out.println();
       for (int i = 0; i < 3; i++) {
+        if ((buf[i + 1] & 0x02) != 0) {
+          buf[i+1]=  (byte)-(buf[i+1] & ~0x02);
+        }
         sample[i + offset] = EndianTools.decodeShortBE(buf, i);
-        if ((buf[i + 1] & 0x02) != 0)
-          sample[i + offset] = -(sample[i + offset] - 512);
         sample[i + offset] *= TOSI;
       }
 
