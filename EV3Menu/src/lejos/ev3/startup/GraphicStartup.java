@@ -543,7 +543,15 @@ public class GraphicStartup implements Menu {
             for (int i = 0; i < pin.length; i++)
                 sb.append((char) pin[i]);
             Settings.setProperty(pinProperty, sb.toString());
-            // TODO: Restart agent to set the pin
+            
+            // 4. Run startbt to restart the agent with the new pin
+        	try {
+				Process p = Runtime.getRuntime().exec("/home/root/lejos/bin/startbt " + sb.toString());
+				int status = p.waitFor();
+				System.out.println("startbt " + sb.toString() + " returned " + status);
+			} catch (IOException | InterruptedException e) {
+				System.err.println("Failed to execute startbt: " + e);
+			}
         }
     }
     
