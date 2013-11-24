@@ -55,14 +55,6 @@ public class Cuckoo {
 			}
 
 		});
-		cuckooExecutor.execute(new Runnable() {
-			
-			@Override
-			public void run() {
-				playCuckoo();
-			}
-
-		});
 	}
 
 	private void playCuckoo() {
@@ -80,6 +72,14 @@ public class Cuckoo {
 		
 	}
 	private void doCuckoo() {
+		cuckooExecutor.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				playCuckoo();
+			}
+
+		});
 		cuckooMotor.rotate(CUCKOO_ROTATION);
 		cuckooMotor.stop();
 		cuckooMotor.flt();
