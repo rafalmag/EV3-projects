@@ -208,29 +208,43 @@ public class Sound
         val |= (d.readByte() & 0xff) << 24;
         return val;
     }
+    
     /**
      * Play a wav file
      * @param file the 8-bit PWM (WAV) sample file
      * @param vol the volume percentage 0 - 100
      * @return The number of milliseconds the sample will play for or < 0 if
      *         there is an error.
-     * @throws FileNotFoundException 
      */
-    public static int playSample(File file, int vol)
+    public static int playSample(File file, int vol){
+        if (file.length() < RIFF_HDR_SIZE)
+            return -9;
+    	try(InputStream is = new FileInputStream(file)){
+    		return playSample(is, vol);
+		} catch (IOException e) {
+			return -1;
+		}
+    }
+    
+    /**
+     * Play a wav file
+     * @param file the 8-bit PWM (WAV) sample file
+     * @param vol the volume percentage 0 - 100
+     * @return The number of milliseconds the sample will play for or < 0 if
+     *         there is an error.
+     */
+    public static int playSample(InputStream is, int vol)
     {
-        // First check that we have a wave file. File must be at least 44 bytes
-        // in size to contain a RIFF header.
         int offset = 0;
     	int sampleRate = 0;
     	int dataLen = 0;
-        if (file.length() < RIFF_HDR_SIZE)
-            return -9;
         // Now check for a RIFF header
-        try
+        try(DataInputStream d = new DataInputStream(is))
         {
-        	FileInputStream f = new FileInputStream(file);
-        	DataInputStream d = new DataInputStream(f);
-
+        	// First check that we have a wave file. File must be at least 44 bytes
+        	// in size to contain a RIFF header.
+        	if (d.available() < RIFF_HDR_SIZE)
+        		return -9;
             if (d.readInt() != RIFF_RIFF_SIG)
                 return -1;
             // Skip chunk size
@@ -300,8 +314,6 @@ public class Sound
                         offset += written;
                 }
             }
-            d.close();
-            f.close();
         }
         catch (IOException e)
         {
