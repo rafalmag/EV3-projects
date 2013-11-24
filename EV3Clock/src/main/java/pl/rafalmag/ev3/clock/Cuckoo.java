@@ -28,7 +28,7 @@ public class Cuckoo {
 	private final RegulatedMotor cuckooMotor;
 
 	private final AtomicWrappingCounter tick = new AtomicWrappingCounter(0,
-			Clock.TICKS_PER_ROTATION);
+			AnalogClock.TICKS_PER_ROTATION);
 
 	public Cuckoo(RegulatedMotor cuckooMotor) {
 		this.cuckooMotor = cuckooMotor;

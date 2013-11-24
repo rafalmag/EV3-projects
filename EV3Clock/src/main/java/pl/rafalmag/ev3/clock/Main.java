@@ -27,7 +27,7 @@ public class Main {
 
 		initSysTime();
 
-		Clock clock = new Clock(new TickPeriod(1, TimeUnit.SECONDS),
+		AnalogClock clock = new AnalogClock(new TickPeriod(1, TimeUnit.SECONDS),
 				MirrorMotor.invertMotor(Motor.A), Motor.B);
 		ClockController clockController = new ClockController(clock);
 		clockController.init();

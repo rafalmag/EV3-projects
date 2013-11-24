@@ -7,9 +7,9 @@ import pl.rafalmag.ev3.LoggingExceptionHandler;
 
 public class ClockController {
 
-	private final Clock clock;
+	private final AnalogClock clock;
 
-	public ClockController(Clock clock) {
+	public ClockController(AnalogClock clock) {
 		this.clock = clock;
 	}
 

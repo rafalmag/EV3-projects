@@ -10,7 +10,7 @@ import lejos.robotics.RegulatedMotor;
 import pl.rafalmag.ev3.LockUtil;
 import pl.rafalmag.ev3.LoggingExceptionHandler;
 
-public class Clock {
+public class AnalogClock {
 
 	private static final int CUCKOO_SPEED = 300;
 	private static final int TICK_SPEED = 400;
@@ -25,7 +25,7 @@ public class Clock {
 	private final RegulatedMotor handMotor;
 	private Cuckoo cuckoo;
 
-	public Clock(final TickPeriod tickPeriod, final RegulatedMotor handMotor,
+	public AnalogClock(final TickPeriod tickPeriod, final RegulatedMotor handMotor,
 			RegulatedMotor cuckooMotor) {
 		this.handMotor = handMotor;
 		handMotor.setSpeed(TICK_SPEED);
