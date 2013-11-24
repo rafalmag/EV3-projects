@@ -42,6 +42,12 @@ public class ClockController {
 		});
 	}
 
+		startButtonsListenerThread();
+
+
+
+
+
 	private void addShutdownHook() {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 
@@ -113,6 +119,8 @@ public class ClockController {
 			@Override
 			public void buttonReleased(Button b) {
 				log.trace("Button.ESCAPE released");
+				clock.stop();
+				Button.LEDPattern(0);
 				stopApp();
 			}
 
