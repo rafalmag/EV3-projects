@@ -2,6 +2,7 @@ package pl.rafalmag.ev3.clock;
 
 import lejos.hardware.Button;
 import lejos.hardware.ButtonListener;
+import lejos.hardware.LCD;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,12 @@ public class ClockController {
 
 	public void init() {
 		addButtonsListeners();
+		startButtonsListenerThread();
+		addRunningLeds();
+		addShutdownHook();
+	}
 
+	private void addRunningLeds() {
 		clock.getClockRunning().addObserver(new ClockRunningObserver() {
 
 			@Override
@@ -34,8 +40,19 @@ public class ClockController {
 				}
 			}
 		});
+	}
 
-		startButtonsListenerThread();
+	private void addShutdownHook() {
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				stopApp();
+				LCD.clear();
+				LCD.drawString("Bye!", 0, 5);
+
+			}
+		}, "Shutdown hook"));
 	}
 
 	private void startButtonsListenerThread() {
@@ -96,8 +113,7 @@ public class ClockController {
 			@Override
 			public void buttonReleased(Button b) {
 				log.trace("Button.ESCAPE released");
-				clock.stop();
-				Button.LEDPattern(0);
+				stopApp();
 			}
 
 			@Override
@@ -105,5 +121,10 @@ public class ClockController {
 				log.trace("Button.ESCAPE pressed");
 			}
 		});
+	}
+
+	private void stopApp() {
+		clock.stop();
+		Button.LEDPattern(0);
 	}
 }
