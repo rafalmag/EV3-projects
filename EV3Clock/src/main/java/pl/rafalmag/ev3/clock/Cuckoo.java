@@ -15,7 +15,7 @@ import pl.rafalmag.ev3.AtomicWrappingCounter;
 import pl.rafalmag.ev3.LoggingExceptionHandler;
 
 public class Cuckoo {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Cuckoo.class);
 
 	private static final int CUCKOO_ROTATION = 720;
@@ -58,22 +58,23 @@ public class Cuckoo {
 	}
 
 	private void playCuckoo() {
-		try(InputStream is = getClass().getResourceAsStream(CUCKOO_WAV)){
-			if(is ==null){
-				throw new IOException("Cannot find wav="+CUCKOO_WAV);
+		try (InputStream is = getClass().getResourceAsStream(CUCKOO_WAV)) {
+			if (is == null) {
+				throw new IOException("Cannot find wav=" + CUCKOO_WAV);
 			}
 			int errorCode = Sound.playSample(is, Sound.VOL_MAX);
-			if(errorCode <0){
-				log.error("Cannot play cuckoo, error code="+errorCode);
+			if (errorCode < 0) {
+				log.error("Cannot play cuckoo, error code=" + errorCode);
 			}
 		} catch (IOException e) {
-			log.error("Cannot play cuckoo, because of "+e.getMessage(),e);
+			log.error("Cannot play cuckoo, because of " + e.getMessage(), e);
 		}
-		
+
 	}
+
 	private void doCuckoo() {
 		cuckooExecutor.execute(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				playCuckoo();
