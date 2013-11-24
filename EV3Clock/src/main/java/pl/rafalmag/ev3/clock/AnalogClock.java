@@ -7,10 +7,17 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import lejos.robotics.RegulatedMotor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pl.rafalmag.ev3.LockUtil;
 import pl.rafalmag.ev3.LoggingExceptionHandler;
 
 public class AnalogClock {
+
+	private static final Logger log = LoggerFactory
+			.getLogger(AnalogClock.class);
 
 	private static final int CUCKOO_SPEED = 300;
 	private static final int TICK_SPEED = 400;
@@ -25,8 +32,8 @@ public class AnalogClock {
 	private final RegulatedMotor handMotor;
 	private Cuckoo cuckoo;
 
-	public AnalogClock(final TickPeriod tickPeriod, final RegulatedMotor handMotor,
-			RegulatedMotor cuckooMotor) {
+	public AnalogClock(final TickPeriod tickPeriod,
+			final RegulatedMotor handMotor, RegulatedMotor cuckooMotor) {
 		this.handMotor = handMotor;
 		handMotor.setSpeed(TICK_SPEED);
 		handMotor.setAcceleration(800);
@@ -61,7 +68,7 @@ public class AnalogClock {
 
 			@Override
 			public void update(ClockRunning clockRunning, Boolean running) {
-				System.out.println("Clock running=" + running);
+				log.debug("Clock running={}", running);
 				if (running) {
 					start(tickPeriod);
 				} else {
@@ -98,7 +105,7 @@ public class AnalogClock {
 									tickPeriod.getTimeUnit());
 							cuckoo.resetTickCount();
 						} else {
-							System.out.println("Clock is already running");
+							log.debug("Clock is already running");
 						}
 
 					}

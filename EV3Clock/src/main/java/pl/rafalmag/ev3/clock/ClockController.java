@@ -2,10 +2,17 @@ package pl.rafalmag.ev3.clock;
 
 import lejos.hardware.Button;
 import lejos.hardware.ButtonListener;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pl.rafalmag.ev3.ButtonsListener;
 import pl.rafalmag.ev3.LoggingExceptionHandler;
 
 public class ClockController {
+
+	private static final Logger log = LoggerFactory
+			.getLogger(AnalogClock.class);
 
 	private final AnalogClock clock;
 
@@ -43,13 +50,13 @@ public class ClockController {
 
 			@Override
 			public void buttonReleased(Button b) {
-				System.out.println("Button.LEFT released");
+				log.trace("Button.LEFT released");
 				clock.stop();
 			}
 
 			@Override
 			public void buttonPressed(Button b) {
-				System.out.println("Button.LEFT pressed");
+				log.trace("Button.LEFT pressed");
 				clock.fastBackward();
 			}
 		});
@@ -58,13 +65,13 @@ public class ClockController {
 
 			@Override
 			public void buttonReleased(Button b) {
-				System.out.println("Button.RIGHT released");
+				log.trace("Button.RIGHT released");
 				clock.stop();
 			}
 
 			@Override
 			public void buttonPressed(Button b) {
-				System.out.println("Button.RIGHT pressed");
+				log.trace("Button.RIGHT pressed");
 				clock.fastForward();
 			}
 		});
@@ -73,13 +80,13 @@ public class ClockController {
 
 			@Override
 			public void buttonReleased(Button b) {
-				System.out.println("Button.ENTER released");
+				log.trace("Button.ENTER released");
 				clock.toggleStart();
 			}
 
 			@Override
 			public void buttonPressed(Button b) {
-				System.out.println("Button.LEFT pressed");
+				log.trace("Button.ENTER pressed");
 				// wait for release
 			}
 		});
@@ -88,14 +95,14 @@ public class ClockController {
 
 			@Override
 			public void buttonReleased(Button b) {
+				log.trace("Button.ESCAPE released");
 				clock.stop();
 				Button.LEDPattern(0);
 			}
 
 			@Override
 			public void buttonPressed(Button b) {
-				// TODO Auto-generated method stub
-
+				log.trace("Button.ESCAPE pressed");
 			}
 		});
 	}
