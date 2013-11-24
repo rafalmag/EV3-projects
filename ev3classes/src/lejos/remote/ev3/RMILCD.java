@@ -9,7 +9,7 @@ public interface RMILCD extends Remote {
 	
 	public void clearDisplay() throws RemoteException;
 	
-	public void drawString(String str, int x, int y, boolean inverted);
+	public void drawString(String str, int x, int y, boolean inverted) throws RemoteException;
 	 
 	public void drawString(String str, int x, int y) throws RemoteException;
 	 

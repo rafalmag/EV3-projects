@@ -6,6 +6,7 @@ import lejos.remote.ev3.RMIBattery;
 import lejos.remote.ev3.RMIBluetooth;
 import lejos.remote.ev3.RMIEV3;
 import lejos.remote.ev3.RMII2CPort;
+import lejos.remote.ev3.RMILCD;
 import lejos.remote.ev3.RMIMotorPort;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
@@ -75,6 +76,12 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 
 	@Override
 	public RMIBluetooth getBluetooth() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RMILCD getLCD() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
