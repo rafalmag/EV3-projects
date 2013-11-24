@@ -1,10 +1,14 @@
 package lejos.remote.ev3;
 
-import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface RMISound extends Remote {
+	
+    public final static int[] PIANO = new int[]{4, 25, 500, 7000, 5};
+    public final static int[] FLUTE = new int[]{10, 25, 2000, 1000, 25};
+    public final static int[] XYLOPHONE = new int[]{1, 8, 3000, 5000, 5};
+    
 	public void systemSound(boolean aQueued, int aCode) throws RemoteException;
 	
 	public void beep() throws RemoteException;
