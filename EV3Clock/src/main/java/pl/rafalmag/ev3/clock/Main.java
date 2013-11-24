@@ -27,10 +27,13 @@ public class Main {
 
 		initSysTime();
 
-		AnalogClock clock = new AnalogClock(new TickPeriod(1, TimeUnit.SECONDS),
+		AnalogClock clock = new AnalogClock(
+				new TickPeriod(1, TimeUnit.SECONDS),
 				MirrorMotor.invertMotor(Motor.A), Motor.B);
 		ClockController clockController = new ClockController(clock);
 		clockController.init();
+		DigitalClock digitalClock = new DigitalClock(clock.getClockRunning());
+		digitalClock.init();
 		Button.setKeyClickVolume(1);
 		log.info("Ready");
 	}

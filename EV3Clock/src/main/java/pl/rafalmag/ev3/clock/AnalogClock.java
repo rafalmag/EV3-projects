@@ -1,23 +1,8 @@
 package pl.rafalmag.ev3.clock;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import lejos.robotics.RegulatedMotor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pl.rafalmag.ev3.LockUtil;
-import pl.rafalmag.ev3.LoggingExceptionHandler;
-
 public class AnalogClock {
-
-	private static final Logger log = LoggerFactory
-			.getLogger(AnalogClock.class);
 
 	private static final int CUCKOO_SPEED = 300;
 	private static final int TICK_SPEED = 400;
@@ -30,7 +15,7 @@ public class AnalogClock {
 	private final ClockRunning clockRunning = new ClockRunning(false);
 
 	private final RegulatedMotor handMotor;
-	private Cuckoo cuckoo;
+	private final Cuckoo cuckoo;
 
 	public AnalogClock(final TickPeriod tickPeriod,
 			final RegulatedMotor handMotor, RegulatedMotor cuckooMotor) {
@@ -41,77 +26,22 @@ public class AnalogClock {
 		cuckooMotor.setAcceleration(400);
 		cuckooMotor.setSpeed(CUCKOO_SPEED);
 
-		clockRunning.addObserver(new ClockRunningObserver() {
+		clockRunning.addObserver(new ClockRunningService(tickPeriod) {
 
-			private final Lock lock = new ReentrantLock();
-			// guarded by lock
-			private ScheduledExecutorService executor = getNewExecutor();
-
-			{
-				executor.shutdown();
-			}
-
-			private ScheduledExecutorService getNewExecutor() {
-				return Executors
-						.newSingleThreadScheduledExecutor(new ThreadFactory() {
-
-							@Override
-							public Thread newThread(Runnable runnable) {
-								Thread thread = new Thread(runnable);
-								thread.setDaemon(true);
-								thread.setName("Scheduled tick");
-								thread.setUncaughtExceptionHandler(new LoggingExceptionHandler());
-								return thread;
-							}
-						});
+			@Override
+			public void onTick() {
+				doTick();
 			}
 
 			@Override
-			public void update(ClockRunning clockRunning, Boolean running) {
-				log.debug("Clock running={}", running);
-				if (running) {
-					start(tickPeriod);
-				} else {
-					stop();
-				}
-			}
-
-			private void stop() {
-				LockUtil.doInLock(lock, new Runnable() {
-
-					@Override
-					public void run() {
-						executor.shutdownNow();
-					}
-				});
+			public void onStop() {
 				doStop();
 			}
 
-			private void start(final TickPeriod tickPeriod) {
-				LockUtil.doInLock(lock, new Runnable() {
-
-					@Override
-					public void run() {
-						if (executor.isShutdown()) {
-							executor = getNewExecutor();
-							executor.scheduleAtFixedRate(new Runnable() {
-
-								@Override
-								public void run() {
-									doTick();
-								}
-
-							}, 0, tickPeriod.getPeriod(),
-									tickPeriod.getTimeUnit());
-							cuckoo.resetTickCount();
-						} else {
-							log.debug("Clock is already running");
-						}
-
-					}
-				});
+			@Override
+			public void onStart() {
+				cuckoo.resetTickCount();
 			}
-
 		});
 	}
 
