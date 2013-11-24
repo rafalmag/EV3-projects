@@ -7,27 +7,44 @@ import lejos.hardware.LCD;
 import lejos.hardware.motor.Motor;
 import lejos.robotics.MirrorMotor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pl.rafalmag.systemtime.SystemTime;
+import pl.rafalmag.systemtime.SystemTimeManager;
+import pl.rafalmag.systemtime.SystemTimeManagerException;
+
 public class Main {
 
+	private static final Logger log = LoggerFactory.getLogger(Main.class);
+
+	private static String NTP_SERVER = "pl.pool.ntp.org";
+
 	public static void main(String[] args) throws InterruptedException {
-		System.out.println("Main started");
+		log.info("Initializing...");
 		LCD.clear();
 		LCD.drawString("Clock", 0, 5);
+
+		initSysTime();
 
 		Clock clock = new Clock(new TickPeriod(1, TimeUnit.SECONDS),
 				MirrorMotor.invertMotor(Motor.A), Motor.B);
 		ClockController clockController = new ClockController(clock);
 		clockController.init();
 		Button.setKeyClickVolume(1);
-		System.out.println("Main ready");
-		// buttons listener is not a deamon, so application won't stop
-		// waitForever();
+		log.info("Ready");
 	}
 
-	// private static void waitForever() throws InterruptedException {
-	// while (true) {
-	// Thread.sleep(1000);
-	// }
-	// }
+	private static void initSysTime() {
+		SystemTimeManager systemTimeManager = new SystemTimeManager(NTP_SERVER);
+		try {
+			long offsetMs = systemTimeManager.getOffsetMs();
+			SystemTime.setOffset(offsetMs);
+		} catch (SystemTimeManagerException e) {
+			log.error(
+					"Could not adjust system clock, because of "
+							+ e.getMessage(), e);
+		}
+	}
 
 }
