@@ -17,6 +17,7 @@ import lejos.robotics.SampleProvider;
  *
  */
 public class OffsetCorrectionFilter extends AbstractFilter {
+  static int SETTLE=10;
 	float speed=0, endSpeed=0;
 	float[] offset; 
 	float[] reference;
@@ -85,17 +86,25 @@ public class OffsetCorrectionFilter extends AbstractFilter {
 
 	public void fetchSample(float[] dst, int off) {
 		super.fetchSample(dst, off);
+
 		for (int i=0;i<sampleSize;i++) {
-			error=dst[i+off]-reference[i];
-			offset[i]=offset[i]*(1.0f-speed)+error*speed;
-			dst[i+off]-=offset[i];
+		  if (n<SETTLE) {
+		    offset[i]=((offset[i]*n+dst[i+off]))/(n+1);
+		    dst[i+off]-=offset[i];
+		  }
+		  else {
+  			error=dst[i+off]-reference[i];
+  			offset[i]=offset[i]*(1.0f-speed)+error*speed;
+  			dst[i+off]-=offset[i];
+  		}
+  		
+  		if (endSpeed<speed) {
+  			speed*=0.95f;
+  			if (speed<endSpeed) {
+  				speed=endSpeed;
+  			}
+  		}
 		}
-		
-		if (endSpeed<speed) {
-			speed*=0.95f;
-			if (speed<endSpeed) {
-				speed=endSpeed;
-			}
-		}
+		n++;
 	}
 }

@@ -226,10 +226,10 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
   @Override
   public void stopCalibration() {
     super.stopCalibration();
-//    System.out.println("End calibration using " + numberOfSamplesInCalibration + " samples.");
-//    for (int i = 0; i < sampleSize; i++) {
-//      System.out.println("min: " + min[i] + " max: " + max[i] + " sum: " + sum[i] + " lowerbound: " + lowerBound[i] + " upperbound: " + upperBound[i] + " offset: " + offset[i] + "scale: " + scale[i]);
-//    }
+    System.out.println("End calibration using " + numberOfSamplesInCalibration + " samples.");
+    for (int i = 0; i < sampleSize; i++) {
+      System.out.println("min: " + min[i] + " max: " + max[i] + " sum: " + sum[i] + " lowerbound: " + lowerBound[i] + " upperbound: " + upperBound[i] + " offset: " + offset[i] + "scale: " + scale[i]);
+    }
   }
 
   /**
@@ -272,7 +272,7 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
       if (calibrating) {
         if (upperBound[i] != lowerBound[i])
           scale[i] = (max[i] - min[i]) / (upperBound[i] - lowerBound[i]);
-        offset[i] = (sum[i] / numberOfSamplesInCalibration) - (upperBound[i] + lowerBound[i]) / 2;
+        offset[i] = (max[i] + min[i])/2 - (upperBound[i] + lowerBound[i])/2;
       }
       else {
         dst[i + off] = (dst[i + off] - offset[i]);
@@ -281,6 +281,10 @@ public class LinearCalibrationFilter extends AbstractCalibrationFilter {
       }
     }
 
+  }
+
+  public int getCalibrationType() {
+    return calibrationType;
   }
 
 }
