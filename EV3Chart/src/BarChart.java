@@ -74,6 +74,9 @@ public class BarChart extends JFrame {
 		String[] labels = {"X","Y","Z"};
         BarChart demo = new BarChart("192.168.0.9", "lejos.hardware.sensor.MindsensorsAccelerometer", "S1", 
         		                     "Acceleration", labels, "m/s/s", -20, 20, 500, 300, 5);
+		//String[] labels = {"X"};
+		//BarChart demo = new BarChart("192.168.0.9", "lejos.hardware.sensor.HiTechnicGyro", "S1", 
+		//        		             "Angular Momentum", labels, "degrees/sec", -360, 360, 500, 200, 5);
         demo.pack();
         demo.setVisible(true);
         demo.run();
