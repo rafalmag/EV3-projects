@@ -542,13 +542,22 @@ public class GraphicStartup implements Menu {
         	StringBuilder sb = new StringBuilder();
             for (int i = 0; i < pin.length; i++)
                 sb.append((char) pin[i]);
-            Settings.setProperty(pinProperty, sb.toString());
+            
+            try {
+				PrintStream out = new PrintStream(new FileOutputStream("/etc/bluetooth/btpin"));
+				out.println(sb.toString());
+				out.close();
+			} catch (IOException e) {
+				System.out.println("Failed to write pin to /etc/bluetooth/btpin: " + e);
+			}
             
             // 4. Run startbt to restart the agent with the new pin
         	try {
-				Process p = Runtime.getRuntime().exec("/home/root/lejos/bin/startbt " + sb.toString());
+        		LCD.clearDisplay();
+        		LCD.drawString("Restarting agent", 0, 1);
+				Process p = Runtime.getRuntime().exec("/home/root/lejos/bin/startbt");
 				int status = p.waitFor();
-				System.out.println("startbt " + sb.toString() + " returned " + status);
+				System.out.println("startbt returned " + status);
 			} catch (IOException | InterruptedException e) {
 				System.err.println("Failed to execute startbt: " + e);
 			}
@@ -1458,15 +1467,7 @@ public class GraphicStartup implements Menu {
             	if (pwd != null) {
                    	System.out.println("Password is " + pwd);
                 	WPASupplicant.writeConfiguration("wpa_supplicant.txt",  "wpa_supplicant.conf",  names[selection], pwd);
-                	try {
-						Process p = Runtime.getRuntime().exec("/home/root/lejos/bin/startwlan");
-						int status = p.waitFor();
-						System.out.println("startwlan returned " + status);
-						// Get IP addresses again
-						ips = getIPAddresses();
-					} catch (IOException | InterruptedException e) {
-						System.err.println("Failed to execute startwlan: " + e);
-					}
+                	startWlan();
             	}
              	selection = -1;
             }
@@ -1543,13 +1544,51 @@ public class GraphicStartup implements Menu {
 	public void setName(String name) {
 		hostname = name;
 		
+		// Write host to /etc/hostname
 		try {
 			PrintStream out = new PrintStream(new FileOutputStream("/etc/hostname"));
 			out.println(name);
 			out.close();
-			
 		} catch (FileNotFoundException e) {
 			System.err.println("Failed to write to /etc/hostname: " + e);
+		}
+		
+    	try {
+			Process p = Runtime.getRuntime().exec("hostname " + hostname);
+			int status = p.waitFor();
+			System.out.println("hostname returned " + status);
+		} catch (IOException | InterruptedException e) {
+			System.err.println("Failed to execute hostname: " + e);
+		}
+		
+		startWlan();
+	}
+	
+	private void startWlan() {
+    	try {
+			Process p = Runtime.getRuntime().exec("/home/root/lejos/bin/startwlan");
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader err= new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            PrintStream lcdStream = new PrintStream(new LCDOutputStream());
+            
+            EchoThread echoIn = new EchoThread(input, lcdStream);
+            EchoThread echoErr = new EchoThread(err, lcdStream);
+            
+            ind.suspend();
+            LCD.clearDisplay();
+            lcdStream.println("Restarting wlan\n");
+            
+            echoIn.start();
+            echoErr.start();
+            
+			int status = p.waitFor();
+			System.out.println("startwlan returned " + status);
+			// Get IP addresses again
+			ips = getIPAddresses();
+        	LCD.clearDisplay();
+        	ind.resume();
+		} catch (IOException | InterruptedException e) {
+			System.err.println("Failed to execute startwlan: " + e);
 		}
 	}
 }
