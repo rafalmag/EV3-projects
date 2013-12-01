@@ -18,6 +18,7 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
     /** The default I2C address of the sensor */
     public static final int DEFAULT_I2C_ADDRESS = 0x22;
     protected static final int ACCEL_DATA = 0x45;
+    protected static final int COMPASS_DATA = 0x4b;
     protected static final int MAG_DATA = 0x4d;
     protected static final int GYRO_DATA = 0x53;
     protected static final int COMMAND = 0x41;
@@ -30,17 +31,19 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
     public static final int HIGH = 2;
     public static final int VERY_HIGH = 3;
     static final float[] gyroScale = {1.0f, 2.0f, 8.0f, 8.0f};
+    static final float[] magneticScale = {1.0f/1100f, 1.0f/1100f, 1.0f/980f};
     protected ShortSensorMode accelMode;
     protected ShortSensorMode magMode;
     protected ShortSensorMode gyroMode;
+    protected ShortSensorMode compassMode;
     
     protected class ShortSensorMode implements SensorMode
     {
         protected final String name;
         protected final int sampleSize;
-        protected final float convert;
+        protected final float[] convert;
         protected final int baseReg;
-        protected float scale;
+        protected float[] scale;
         protected byte[] buffer;
 
         /**
@@ -52,12 +55,26 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
          * @param convert conversion factor to SI units
          * @param scale scale factor needed for range adjustment
          */
-        protected ShortSensorMode(String name, int reg, int sampleSize, float convert, float scale)
+        protected ShortSensorMode(String name, int reg, int sampleSize, float[] convert, float scale)
         {
             this.name = name;
             this.sampleSize = sampleSize;
             this.convert = convert;
             this.baseReg = reg;
+            this.scale = new float[sampleSize];
+            setScale(scale);
+            buffer = new byte[sampleSize*2];
+        }
+        
+        protected ShortSensorMode(String name, int reg, int sampleSize, float convert, float scale)
+        {
+            this.convert= new float[sampleSize];
+            for(int i = 0; i < sampleSize; i++)
+                this.convert[i] = convert;
+            this.name = name;
+            this.sampleSize = sampleSize;
+            this.baseReg = reg;
+            this.scale = new float[sampleSize];
             setScale(scale);
             buffer = new byte[sampleSize*2];
         }
@@ -68,7 +85,8 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
          */
         protected void setScale(float scale)
         {
-            this.scale = convert*scale;
+            for(int i = 0; i < convert.length; i++)
+            this.scale[i] = convert[i]*scale;
         }
 
         @Override
@@ -85,7 +103,7 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
             for(int i = 0; i < sampleSize; i++)
             {
                 int rawVal = (buffer[i*2] & 0xff) | ((buffer[i*2+1]) << 8);
-                sample[i+offset] = rawVal*scale;
+                sample[i+offset] = rawVal*scale[i];
             }
         }
 
@@ -101,11 +119,13 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
     {
         // The accelerometer reports readings in mG we convert this to m/s/s
         accelMode = new ShortSensorMode("Acceleration", ACCEL_DATA, 3, 0.00981f, 1.0f);
-        // the magnetometer reports in ??? units
-        magMode = new ShortSensorMode("Magnetic", MAG_DATA, 3, 1.0f, 1.0f);
+        // the magnetometer reports in Gauss
+        magMode = new ShortSensorMode("Magnetic", MAG_DATA, 3, magneticScale, 1.0f);
         // the gyro reports in units of 8.75 milli-degree/s we convert to degree/s
         gyroMode = new ShortSensorMode("Rate", GYRO_DATA, 3, 0.00875f, 1.0f);
-        this.setModes(new SensorMode[] {accelMode, magMode, gyroMode});
+        // the compass reports the angle in degrees.
+        compassMode = new ShortSensorMode("Compass", COMPASS_DATA, 1, 1.0f, 1.0f);
+        this.setModes(new SensorMode[] {compassMode, accelMode, magMode, gyroMode});
         setRange(LOW);
         setGyroFilter(4);
     }
@@ -133,6 +153,15 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
         this(port, DEFAULT_I2C_ADDRESS);
     }
     
+    /**
+     * Return a SensorMode object that will acceleration data for the X, Y and Z axis.
+     * The data is returned in units of degress.
+     * @return a SensorMode object
+     */
+    public SensorMode getCompassMode()
+    {
+        return getMode(0);
+    }
 
     /**
      * Return a SensorMode object that will acceleration data for the X, Y and Z axis.
@@ -141,17 +170,17 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
      */
     public SensorMode getAccelerationMode()
     {
-        return getMode(0);
+        return getMode(1);
     }
 
     /**
      * Return a SensorMode object that will return Magnetic data for the X, Y and Z axis
-     * The data is returned in units of ???
+     * The data is returned in Guass 
      * @return a SensorMode object
      */
     public SensorMode getMagneticMode()
     {
-        return getMode(1);
+        return getMode(2);
     }
     
     /**
@@ -161,7 +190,7 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
      */
     public SensorMode getRateMode()
     {
-        return getMode(2);
+        return getMode(3);
     }
 
     /**

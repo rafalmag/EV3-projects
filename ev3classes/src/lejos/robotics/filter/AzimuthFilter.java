@@ -1,4 +1,14 @@
-//package lejos.robotics.filter;
+package lejos.robotics.filter;
+/**
+ * This class fails to build at the moment (because there is no code. The following dummy class allows it to build
+ * while we decide what to do wuth it!
+ * @author andy
+ *
+ */
+public class AzimuthFilter
+{
+    
+}
 //
 //import lejos.robotics.SampleProvider;
 //
