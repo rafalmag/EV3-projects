@@ -269,18 +269,19 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
 
     @SuppressWarnings("unused")
     // 10 bit data seems not to be working correctly for the Y-axis. 
+    // modified new way (see below seems to work).
     private void fetchSample10(float[] sample, int offset) {
       getData(DATA_10BIT_REG, buf, 6);
       for (int i = 0; i < 3; i++) {
         // old way
-        int x = ((buf[i + 1]) << 8) | (buf[i] & 0xFF) & 0x03ff;
-        if (x > 512)
-          x -= 1024;
-        sample[i + offset] = x * TOSI;
+        //int x = ((buf[i + 1]) << 8) | (buf[i] & 0xFF) & 0x03ff;
+        //if (x > 512)
+          //x -= 1024;
+        //sample[i + offset] = x * TOSI;
         // new way
-        // buf[i+1] = (byte)((byte)(buf[i+1] << 6) >> 6);
-        // sample[i + offset] = EndianTools.decodeShortLE(buf, i*2);
-        // sample[i + offset] *= TOSI;
+         buf[i*2+1] = (byte)((byte)(buf[i*2+1] << 6) >> 6);
+         sample[i + offset] = EndianTools.decodeShortLE(buf, i*2);
+         sample[i + offset] *= TOSI;
       }
     }
 
@@ -298,7 +299,7 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
 
     @Override
     public void fetchSample(float[] sample, int offset) {
-      fetchSample8(sample, offset);
+      fetchSample10(sample, offset);
     }
   }
 
