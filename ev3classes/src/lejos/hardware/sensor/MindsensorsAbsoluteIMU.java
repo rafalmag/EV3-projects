@@ -31,7 +31,8 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
     public static final int HIGH = 2;
     public static final int VERY_HIGH = 3;
     static final float[] gyroScale = {1.0f, 2.0f, 8.0f, 8.0f};
-    static final float[] magneticScale = {1.0f/1100f, 1.0f/1100f, 1.0f/980f};
+    static final float[] magneticToSI = {1.0f/1100f, 1.0f/1100f, 1.0f/980f};
+    static final float[] accelerationToSI = {-0.00981f, 0.00981f, 0.00981f};
     protected ShortSensorMode accelMode;
     protected ShortSensorMode magMode;
     protected ShortSensorMode gyroMode;
@@ -86,7 +87,7 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
         protected void setScale(float scale)
         {
             for(int i = 0; i < convert.length; i++)
-            this.scale[i] = convert[i]*scale;
+                this.scale[i] = convert[i]*scale;
         }
 
         @Override
@@ -118,9 +119,10 @@ public class MindsensorsAbsoluteIMU extends I2CSensor implements SensorModes, Ca
     protected void init()
     {
         // The accelerometer reports readings in mG we convert this to m/s/s
-        accelMode = new ShortSensorMode("Acceleration", ACCEL_DATA, 3, 0.00981f, 1.0f);
+        // TODO: we switch X axis direction to match dexter device. Do we need to do anything with the gyro etc?
+        accelMode = new ShortSensorMode("Acceleration", ACCEL_DATA, 3, accelerationToSI, 1.0f);
         // the magnetometer reports in Gauss
-        magMode = new ShortSensorMode("Magnetic", MAG_DATA, 3, magneticScale, 1.0f);
+        magMode = new ShortSensorMode("Magnetic", MAG_DATA, 3, magneticToSI, 1.0f);
         // the gyro reports in units of 8.75 milli-degree/s we convert to degree/s
         gyroMode = new ShortSensorMode("Rate", GYRO_DATA, 3, 0.00875f, 1.0f);
         // the compass reports the angle in degrees.
