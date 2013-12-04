@@ -76,42 +76,6 @@ public interface GraphicsLCD extends CommonLCD {
     /* Public color definitions NOT Standard*/
     public static final int BLACK = 0;
     public static final int WHITE = 0xffffff;
-	
-    /**
-     * Standard two input BitBlt function with the LCD display as the
-     * destination. Supports standard raster ops and
-     * overlapping images. Images are held in native leJOS/Lego format.
-     * @param src byte array containing the source image
-     * @param sw Width of the source image
-     * @param sh Height of the source image
-     * @param sx X position to start the copy from
-     * @param sy Y Position to start the copy from
-     * @param dx X destination
-     * @param dy Y destination
-     * @param w width of the area to copy
-     * @param h height of the area to copy
-     * @param rop raster operation.
-     */
-    public void bitBlt(byte[] src, int sw, int sh, int sx, int sy, int dx, int dy, int w, int h, int rop);
-    
-    /**
-     * Standard two input BitBlt function. Supports standard raster ops and
-     * overlapping images. Images are held in native leJOS/Lego format.
-     * @param src byte array containing the source image
-     * @param sw Width of the source image
-     * @param sh Height of the source image
-     * @param sx X position to start the copy from
-     * @param sy Y Position to start the copy from
-     * @param dst byte array containing the destination image
-     * @param dw Width of the destination image
-     * @param dh Height of the destination image
-     * @param dx X destination
-     * @param dy Y destination
-     * @param w width of the area to copy
-     * @param h height of the area to copy
-     * @param rop raster operation.
-     */
-    public void bitBlt(byte[] src, int sw, int sh, int sx, int sy, byte dst[], int dw, int dh, int dx, int dy, int w, int h, int rop);
     
     /**
      * Set the period used to perform automatic refreshing of the display.
