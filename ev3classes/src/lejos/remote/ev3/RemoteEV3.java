@@ -6,6 +6,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import lejos.hardware.Audio;
 import lejos.hardware.Battery;
 import lejos.hardware.ev3.EV3;
 import lejos.hardware.port.Port;
@@ -103,4 +104,11 @@ public class RemoteEV3 implements EV3 {
 			throw new PortException(e);
 		}
 	}
+
+    @Override
+    public Audio getAudio()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

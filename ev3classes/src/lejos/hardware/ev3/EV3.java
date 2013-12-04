@@ -1,5 +1,6 @@
 package lejos.hardware.ev3;
 
+import lejos.hardware.Audio;
 import lejos.hardware.Battery;
 import lejos.hardware.port.Port;
 
@@ -18,6 +19,12 @@ public interface EV3
      * @return A battery object
      */
     public Battery getBattery();
+
+    /**
+     * return a Audio object which can be used to access the device's audio playback
+     * @return A Audio device
+     */
+    public Audio getAudio();
     
     //TODO: Extend to include motor ports and perhaps motors, also buttons, sound, LCD etc.
 
