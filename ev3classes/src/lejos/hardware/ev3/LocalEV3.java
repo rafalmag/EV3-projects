@@ -26,9 +26,12 @@ public class LocalEV3 implements EV3
         // Check that we have EV3 hardware available
         EV3DeviceManager.getLocalDeviceManager();
     }
+    
     public static final LocalEV3 ev3 = new LocalEV3();
     public final Battery battery = new EV3Battery();
     protected ArrayList<EV3Port> ports = new ArrayList<EV3Port>();
+    protected TextLCD textLCD;
+    protected GraphicsLCD graphicsLCD;
     
     private LocalEV3()
     {
@@ -70,12 +73,15 @@ public class LocalEV3 implements EV3
 
 	@Override
 	public TextLCD getTextLCD() {
-		return new EV3TextLCD();
+		if (textLCD == null) textLCD = new EV3TextLCD();
+		return textLCD;
 	}
 
 	@Override
 	public GraphicsLCD getGraphicsLCD() {
-		return new EV3GraphicsLCD();
+		
+		if (graphicsLCD == null) graphicsLCD = new EV3GraphicsLCD(); 
+		return graphicsLCD;
 	}
 
 	@Override
