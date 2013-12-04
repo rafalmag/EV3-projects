@@ -149,20 +149,21 @@ public class Splash
         g.drawString("leJOS", (SW-logo.getWidth())/ 2 + logo.getWidth(), 0, Graphics.TOP|Graphics.HCENTER);
         g.drawString("EV3", (SW-logo.getWidth())/ 2 + logo.getWidth(), Font.getLargeFont().getHeight(), Graphics.TOP|Graphics.HCENTER);
         g.setFont(Font.getDefaultFont());
-        g.drawString(ver, SW/2, logo.getHeight()+ 5, Graphics.TOP|Graphics.HCENTER);
+        g.drawString(ver, SW/2, logo.getHeight()+ 15, Graphics.TOP|Graphics.HCENTER);
         int cnt = 1;
+        /*
         for(String s:getIPAddresses())
         {
             g.drawString(s, SW/2, logo.getHeight()+ 5 + cnt*Font.getDefaultFont().getHeight(), Graphics.TOP|Graphics.HCENTER);
             cnt++;
-        }
+        }*/
         LCD.refresh();
     }
     
     public static void main(String[] args)
     {
         Splash s = new Splash();
-        s.displaySplash(args[0]);
+        s.displaySplash(args[0]+" "+args[1]);
     }
 
 }

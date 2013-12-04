@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import lejos.hardware.Audio;
 import lejos.hardware.Battery;
 import lejos.hardware.ev3.EV3;
+import lejos.hardware.lcd.Font;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.PortException;
 
@@ -105,10 +108,30 @@ public class RemoteEV3 implements EV3 {
 		}
 	}
 
+
     @Override
     public Audio getAudio()
     {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public TextLCD getTextLCD() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public GraphicsLCD getGraphicsLCD() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TextLCD getTextLCD(Font f) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -1,14 +1,20 @@
+
 package lejos.hardware.ev3;
 
 import java.util.ArrayList;
 
 import lejos.hardware.Audio;
 import lejos.hardware.Battery;
+import lejos.hardware.lcd.Font;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.port.Port;
 import lejos.internal.ev3.EV3Audio;
 import lejos.internal.ev3.EV3DeviceManager;
+import lejos.internal.ev3.EV3GraphicsLCD;
 import lejos.internal.ev3.EV3Port;
 import lejos.internal.ev3.EV3Battery;
+import lejos.internal.ev3.EV3TextLCD;
 
 /**
  * This class represents the local instance of an EV3 device. It can be used to
@@ -23,10 +29,13 @@ public class LocalEV3 implements EV3
         // Check that we have EV3 hardware available
         EV3DeviceManager.getLocalDeviceManager();
     }
+    
     public static final LocalEV3 ev3 = new LocalEV3();
     public final Battery battery = new EV3Battery();
-    public final Audio audio = EV3Audio.getAudio();
+    protected final Audio audio = EV3Audio.getAudio();
     protected ArrayList<EV3Port> ports = new ArrayList<EV3Port>();
+    protected TextLCD textLCD;
+    protected GraphicsLCD graphicsLCD;
     
     private LocalEV3()
     {
@@ -66,6 +75,24 @@ public class LocalEV3 implements EV3
         return battery;
     }
 
+	@Override
+	public TextLCD getTextLCD() {
+		if (textLCD == null) textLCD = new EV3TextLCD();
+		return textLCD;
+	}
+
+	@Override
+	public GraphicsLCD getGraphicsLCD() {
+		
+		if (graphicsLCD == null) graphicsLCD = new EV3GraphicsLCD(); 
+		return graphicsLCD;
+	}
+
+	@Override
+	public TextLCD getTextLCD(Font f) {
+		return new EV3TextLCD(f);
+	}
+	
     /** {@inheritDoc}
      */    
     @Override
@@ -74,3 +101,4 @@ public class LocalEV3 implements EV3
         return audio;
     }
 }
+
