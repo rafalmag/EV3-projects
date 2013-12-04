@@ -72,5 +72,15 @@ public interface TextLCD extends CommonLCD {
      * Get the current font
      */
     public Font getFont();
+    
+    /**
+     * Get the width of the screen in characters
+     */
+    public int getTextWidth();
+    
+    /**
+     * Get the height of the screen in characters
+     */
+    public int getTextHeight();
 
 }

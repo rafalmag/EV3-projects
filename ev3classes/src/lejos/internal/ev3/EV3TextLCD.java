@@ -130,4 +130,14 @@ public class EV3TextLCD extends EV3LCD implements TextLCD {
 		return font;
 	}
 
+	@Override
+	public int getTextWidth() {
+		return getWidth() / font.width;
+	}
+
+	@Override
+	public int getTextHeight() {
+		return getHeight() / font.height;
+	}
+
 }
