@@ -101,4 +101,20 @@ public interface CommonLCD {
      * @param rop raster operation.
      */
     public void bitBlt(byte[] src, int sw, int sh, int sx, int sy, byte dst[], int dw, int dh, int dx, int dy, int w, int h, int rop);
+    
+    /**
+     * Turn on/off the automatic refresh of the LCD display. At system startup
+     * auto refresh is on.
+     * @param on true to enable, false to disable
+     */
+    public void setAutoRefresh(boolean on);
+    
+    /**
+     * Set the period used to perform automatic refreshing of the display.
+     * A period of 0 disables the refresh.
+     * @param period time in ms
+     * @return the previous refresh period.
+     */
+    public int setAutoRefreshPeriod(int period);
+    
 }

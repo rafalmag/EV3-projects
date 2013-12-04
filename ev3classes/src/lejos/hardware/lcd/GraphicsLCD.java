@@ -1,6 +1,5 @@
 package lejos.hardware.lcd;
 
-
 public interface GraphicsLCD extends CommonLCD {
 	
     public static final int TRANS_MIRROR = 2;
@@ -76,21 +75,6 @@ public interface GraphicsLCD extends CommonLCD {
     /* Public color definitions NOT Standard*/
     public static final int BLACK = 0;
     public static final int WHITE = 0xffffff;
-    
-    /**
-     * Set the period used to perform automatic refreshing of the display.
-     * A period of 0 disables the refresh.
-     * @param period time in ms
-     * @return the previous refresh period.
-     */
-    public int setAutoRefreshPeriod(int period);
-    
-    /**
-     * Turn on/off the automatic refresh of the LCD display. At system startup
-     * auto refresh is on.
-     * @param on true to enable, false to disable
-     */
-    public void setAutoRefresh(boolean on);
     
     /**
      * Method to set a pixel on the screen.
