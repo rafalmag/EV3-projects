@@ -67,5 +67,10 @@ public interface TextLCD extends CommonLCD {
      * Scrolls the screen up one text line
      */
     public void scroll();
+    
+    /**
+     * Get the current font
+     */
+    public Font getFont();
 
 }
