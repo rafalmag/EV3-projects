@@ -3,10 +3,15 @@ package lejos.hardware.ev3;
 import java.util.ArrayList;
 
 import lejos.hardware.Battery;
+import lejos.hardware.lcd.Font;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.port.Port;
 import lejos.internal.ev3.EV3DeviceManager;
+import lejos.internal.ev3.EV3GraphicsLCD;
 import lejos.internal.ev3.EV3Port;
 import lejos.internal.ev3.EV3Battery;
+import lejos.internal.ev3.EV3TextLCD;
 
 /**
  * This class represents the local instance of an EV3 device. It can be used to
@@ -62,4 +67,19 @@ public class LocalEV3 implements EV3
     {
         return battery;
     }
+
+	@Override
+	public TextLCD getTextLCD() {
+		return new EV3TextLCD();
+	}
+
+	@Override
+	public GraphicsLCD getGraphicsLCD() {
+		return new EV3GraphicsLCD();
+	}
+
+	@Override
+	public TextLCD getTextLCD(Font f) {
+		return new EV3TextLCD(f);
+	}
 }
