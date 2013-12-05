@@ -1,20 +1,16 @@
-import javax.microedition.lcdui.Font;
-import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.Image;
-
 import lejos.hardware.Button;
-import lejos.hardware.LCD;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.Font;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.lcd.Image;
 import lejos.internal.io.NativeDevice;
-
-
-
 
 /** Simple example of JNA interface mapping and usage. */
 public class PowerOff
 {
-    Graphics g = new Graphics();
-    final int SW = LCD.SCREEN_WIDTH;
-    final int SH = LCD.SCREEN_HEIGHT;
+    GraphicsLCD g = LocalEV3.get().getGraphicsLCD();
+    final int SW = g.getWidth();;
+    final int SH = g.getHeight();
     Image logo = new Image(52, 64, new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xf0, (byte) 0xff, 
             (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, 
             (byte) 0xf0, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, 
@@ -110,11 +106,11 @@ public class PowerOff
     {
         g.clear();
         //g.setFont(Font.getDefaultFont());
-        g.drawRegion(logo, 0, 0, logo.getWidth(), logo.getHeight(), 0, SW / 2, SH / 4 , Graphics.HCENTER | Graphics.VCENTER);
+        g.drawRegion(logo, 0, 0, logo.getWidth(), logo.getHeight(), 0, SW / 2, SH / 4 , GraphicsLCD.HCENTER | GraphicsLCD.VCENTER);
         g.setFont(Font.getDefaultFont());
-        g.drawString("leJOS/EV3", SW/2, 3*SH/4, Graphics.BASELINE|Graphics.HCENTER);
-        g.drawString(ver, SW/2, (3*SH/4)+Font.getDefaultFont().getHeight(), Graphics.BASELINE|Graphics.HCENTER);
-        LCD.refresh();
+        g.drawString("leJOS/EV3", SW/2, 3*SH/4, GraphicsLCD.BASELINE|GraphicsLCD.HCENTER);
+        g.drawString(ver, SW/2, (3*SH/4)+Font.getDefaultFont().getHeight(), GraphicsLCD.BASELINE|GraphicsLCD.HCENTER);
+        g.refresh();
     }
     
     public static void main(String[] args)

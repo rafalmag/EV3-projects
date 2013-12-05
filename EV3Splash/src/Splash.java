@@ -5,19 +5,17 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-import javax.microedition.lcdui.Font;
-import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.Image;
-
-import lejos.hardware.Button;
-import lejos.hardware.LCD;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.Font;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.lcd.Image;
 
 
 public class Splash
 {
-    Graphics g = new Graphics();
-    final int SW = LCD.SCREEN_WIDTH;
-    final int SH = LCD.SCREEN_HEIGHT;
+    GraphicsLCD g = LocalEV3.get().getGraphicsLCD();
+    final int SW = g.getWidth();
+    final int SH = g.getHeight();
     Image logo = new Image(52, 64, new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xf0, (byte) 0xff, 
             (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, 
             (byte) 0xf0, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, 
@@ -146,10 +144,10 @@ public class Splash
         //g.setFont(Font.getDefaultFont());
         g.drawRegion(logo, 0, 0, logo.getWidth(), logo.getHeight(), 0, 0, 0, 0);
         g.setFont(Font.getLargeFont());
-        g.drawString("leJOS", (SW-logo.getWidth())/ 2 + logo.getWidth(), 0, Graphics.TOP|Graphics.HCENTER);
-        g.drawString("EV3", (SW-logo.getWidth())/ 2 + logo.getWidth(), Font.getLargeFont().getHeight(), Graphics.TOP|Graphics.HCENTER);
+        g.drawString("leJOS", (SW-logo.getWidth())/ 2 + logo.getWidth(), 0, GraphicsLCD.TOP|GraphicsLCD.HCENTER);
+        g.drawString("EV3", (SW-logo.getWidth())/ 2 + logo.getWidth(), Font.getLargeFont().getHeight(), GraphicsLCD.TOP|GraphicsLCD.HCENTER);
         g.setFont(Font.getDefaultFont());
-        g.drawString(ver, SW/2, logo.getHeight()+ 15, Graphics.TOP|Graphics.HCENTER);
+        g.drawString(ver, SW/2, logo.getHeight()+ 15, GraphicsLCD.TOP|GraphicsLCD.HCENTER);
         int cnt = 1;
         /*
         for(String s:getIPAddresses())
@@ -157,7 +155,7 @@ public class Splash
             g.drawString(s, SW/2, logo.getHeight()+ 5 + cnt*Font.getDefaultFont().getHeight(), Graphics.TOP|Graphics.HCENTER);
             cnt++;
         }*/
-        LCD.refresh();
+        g.refresh();
     }
     
     public static void main(String[] args)
