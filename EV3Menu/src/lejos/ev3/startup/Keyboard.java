@@ -1,11 +1,13 @@
 package lejos.ev3.startup;
+
 import lejos.hardware.Button;
-import lejos.hardware.LCD;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
 
 public class Keyboard {
 	
+	private TextLCD lcd = LocalEV3.get().getTextLCD();
 	
 	int x = 0, y = 5;
 	
@@ -27,15 +29,15 @@ public class Keyboard {
 	
 	void display() {
 		//LCD.drawString("Keyboard", 4, 0);
-		LCD.clearDisplay();
+		lcd.clear();
 		for(int i=0;i<lines.length;i++) {
-			LCD.drawString(lines[i], 0, i+1);
+			lcd.drawString(lines[i], 0, i+1);
 		}
 		displayCursor(true);
 	}
 	
 	void displayCursor(boolean inverted) {
-		LCD.drawString(lines[y-1].substring(x,x+1), x, y, inverted);
+		lcd.drawString(lines[y-1].substring(x,x+1), x, y, inverted);
 	}
 	
 	String getString() {
@@ -72,7 +74,7 @@ public class Keyboard {
 					case 'x':
 						if (sb.length() > 0) {
 							sb.deleteCharAt(sb.length()-1);
-							LCD.drawString(" ", sb.length(), 7);
+							lcd.drawString(" ", sb.length(), 7);
 						} else Sound.buzz();
 						break;
 					case 'D':
@@ -86,7 +88,7 @@ public class Keyboard {
 			displayCursor(true);
 			String s = sb.toString();
 			if (s.length() > 18) s = s.substring(s.length() - 18, s.length());
-			LCD.drawString(s, 0, 7);
+			lcd.drawString(s, 0, 7);
 		}
 	}
 	

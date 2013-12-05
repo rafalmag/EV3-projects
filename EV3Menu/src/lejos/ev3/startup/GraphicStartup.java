@@ -29,7 +29,6 @@ import lejos.utility.Delay;
 import lejos.ev3.startup.Config;
 import lejos.hardware.Bluetooth;
 import lejos.hardware.Button;
-import lejos.hardware.LCD;
 import lejos.hardware.LCDOutputStream;
 import lejos.hardware.LocalBTDevice;
 import lejos.hardware.LocalWifiDevice;
@@ -37,6 +36,7 @@ import lejos.hardware.RemoteBTDevice;
 import lejos.hardware.Sound;
 import lejos.hardware.Wifi;
 import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.TachoMotorPort;
 import lejos.internal.io.Settings;
@@ -106,6 +106,8 @@ public class GraphicStartup implements Menu {
     private static List<String> ips = getIPAddresses();
     private static LocalBTDevice bt;
 	private static GraphicStartup menu = new GraphicStartup();
+	
+	private static TextLCD lcd = LocalEV3.get().getTextLCD();
     
     /**
      * Main method
@@ -251,7 +253,7 @@ public class GraphicStartup implements Menu {
             newScreen(hostname);
             int row = 1;
             for(String ip: ips) {
-            	LCD.drawString(ip,8 - ip.length()/2,row++);
+            	lcd.drawString(ip,8 - ip.length()/2,row++);
             }
             selection = getSelection(menu, selection);
             switch (selection)
@@ -427,8 +429,8 @@ public class GraphicStartup implements Menu {
             visible = bt.getVisibility();
             System.out.println("Visibility is " + visible);
 
-            LCD.drawString("Visibility", 0, 2);
-            LCD.drawString(visible ? "on" : "off", 11, 2);
+            lcd.drawString("Visibility", 0, 2);
+            lcd.drawString(visible ? "on" : "off", 11, 2);
             menu.setItems(new String[]
                     {
                         "Search/Pair", "Devices", "Visibility", "Change PIN"
@@ -480,9 +482,9 @@ public class GraphicStartup implements Menu {
         while (true)
         {
             newScreen();
-            LCD.drawString(title, 0, 2);
+            lcd.drawString(title, 0, 2);
             for (int i = 0; i < digits; i++)
-                LCD.drawChar((char)number[i], i * 2 + 1, 4);
+            	lcd.drawChar((char)number[i], i * 2 + 1, 4);
             
             if (curDigit >= digits)
             	return true;
@@ -553,8 +555,8 @@ public class GraphicStartup implements Menu {
             
             // 4. Run startbt to restart the agent with the new pin
         	try {
-        		LCD.clearDisplay();
-        		LCD.drawString("Restarting agent", 0, 1);
+        		lcd.clear();
+        		lcd.drawString("Restarting agent", 0, 1);
 				Process p = Runtime.getRuntime().exec("/home/root/lejos/bin/startbt");
 				int status = p.waitFor();
 				System.out.println("startbt returned " + status);
@@ -616,8 +618,8 @@ public class GraphicStartup implements Menu {
                 //LCD.bitBlt(
                 //	Utils.stringToBytes8(getDeviceIcon(btrd.getDeviceClass()))
                 //	, 7, 7, 0, 0, 2, 16, 7, 7, LCD.ROP_COPY);
-                LCD.drawString(names[selected], 2, 2);
-                LCD.drawString(btrd.getAddress(), 0, 3);
+                lcd.drawString(names[selected], 2, 2);
+                lcd.drawString(btrd.getAddress(), 0, 3);
                 int subSelection = getSelection(subMenu, 0);
                 if (subSelection == 0){
                     newScreen("Pairing");
@@ -626,18 +628,18 @@ public class GraphicStartup implements Menu {
                     byte[] pin = { '0', '0', '0', '0' };
                     if (!enterNumber("PIN for " + btrd.getName(), pin, pin.length))
                     	break;
-                    LCD.drawString("Please wait...", 0, 6);
+                    lcd.drawString("Please wait...", 0, 6);
                     try {
                     	Bluetooth.getLocalDevice().authenticate(btrd.getAddress(), new String(pin));
                     	// Indicate Success or failure:
-                        LCD.drawString("Paired!      ", 0, 6);
+                    	lcd.drawString("Paired!      ", 0, 6);
                     } catch (Exception e)
                     {
                     	System.err.println("Failed to pair:" + e);
-                        LCD.drawString("UNSUCCESSFUL  ", 0, 6);
+                    	lcd.drawString("UNSUCCESSFUL  ", 0, 6);
                         //Bluetooth.removeDevice(btrd);
                     }
-                    LCD.drawString("Press any key", 0, 7);
+                    lcd.drawString("Press any key", 0, 7);
                     getButtonPress();
                 }
             }
@@ -683,8 +685,8 @@ public class GraphicStartup implements Menu {
                 newScreen();
                 RemoteBTDevice btrd = devList.get(selected);
                 byte[] devclass = btrd.getDeviceClass();
-                LCD.drawString(btrd.getName(), 2, 2);
-                LCD.drawString(btrd.getAddress(), 0, 3);
+                lcd.drawString(btrd.getName(), 2, 2);
+                lcd.drawString(btrd.getAddress(), 0, 3);
                 // TODO device class is overwritten by menu
                 // LCD.drawString("0x"+Integer.toHexString(devclass), 0, 4);
                 int subSelection = getSelection(subMenu, 0);
@@ -730,15 +732,15 @@ public class GraphicStartup implements Menu {
         int selection = 0;
         do {
             newScreen("System");
-            LCD.drawString("RAM", 0, 1);
-            LCD.drawInt((int) (Runtime.getRuntime().freeMemory()), 11, 1);
-            LCD.drawString("Battery", 0, 2);
+            lcd.drawString("RAM", 0, 1);
+            lcd.drawInt((int) (Runtime.getRuntime().freeMemory()), 11, 1);
+            lcd.drawString("Battery", 0, 2);
             int millis = LocalEV3.ev3.getBattery().getVoltageMilliVolt() + 50;
-            LCD.drawInt((millis - millis % 1000) / 1000, 11, 2);
-            LCD.drawString(".", 12, 2);
-            LCD.drawInt((millis % 1000) / 100, 13, 2);
+            lcd.drawInt((millis - millis % 1000) / 1000, 11, 2);
+            lcd.drawString(".", 12, 2);
+            lcd.drawInt((millis % 1000) / 100, 13, 2);
             if (rechargeable)
-                LCD.drawString("R", 15, 2);
+            	lcd.drawString("R", 15, 2);
             menuData[1] = "Sleep time: " + (timeout == 0 ? "off" : String.valueOf(timeout));
             File f = getDefaultProgram();
             if (f == null){
@@ -785,18 +787,18 @@ public class GraphicStartup implements Menu {
                 	break;
                 case 5:
                 	ind.suspend();
-                	LCD.clearDisplay();
-                	LCD.refresh();
-                	LCD.setAutoRefresh(false);
+                	lcd.clear();
+                	lcd.refresh();
+                	lcd.setAutoRefresh(false);
                 	System.out.println("Menu suspended");
                     while(true) {
                         int b = Button.getButtons(); 
                         if (b == 6) break;
                         Delay.msDelay(200);
                     }
-                  	LCD.setAutoRefresh(true);
-                  	LCD.clearDisplay();
-                  	LCD.refresh();            	
+                    lcd.setAutoRefresh(true);
+                    lcd.clear();
+                    lcd.refresh();            	
                 	ind.resume();
                 	System.out.println("Menu resumed");
                 	break;
@@ -823,8 +825,8 @@ public class GraphicStartup implements Menu {
     	}
     	
     	newScreen("Auto Run");
-    	LCD.drawString("Default Program:", 0, 2);
-    	LCD.drawString(f.getName(), 1, 3);
+    	lcd.drawString("Default Program:", 0, 2);
+    	lcd.drawString(f.getName(), 1, 3);
     	
     	String current = Settings.getProperty(defaultProgramAutoRunProperty, "");
         int selection = getYesNo("Run at power up?", current.equals("ON"));
@@ -839,7 +841,7 @@ public class GraphicStartup implements Menu {
      */
     private int getYesNo(String prompt, boolean yes)
     {
-    	LCD.bitBlt(null, 178, 64, 0, 0, 0, 64, 178, 64, LCD.ROP_CLEAR);
+//    	lcd.bitBlt(null, 178, 64, 0, 0, 0, 64, 178, 64, CommonLCD.ROP_CLEAR);
         GraphicMenu menu = new GraphicMenu(new String[]{"No", "Yes"},new String[]{ICNo,ICYes},5,prompt,4);
         return getSelection(menu, yes ? 1 : 0);
     }
@@ -948,10 +950,10 @@ public class GraphicStartup implements Menu {
     private void displayVersion()
     {
         newScreen("Version");
-        LCD.drawString("leJOS:", 0, 2);
-        LCD.drawString(version, 6, 2);
-        LCD.drawString("Menu:", 0, 3);
-        LCD.drawString(Utils.versionToString(Config.VERSION),6, 3);
+        lcd.drawString("leJOS:", 0, 2);
+        lcd.drawString(version, 6, 2);
+        lcd.drawString("Menu:", 0, 3);
+        lcd.drawString(Utils.versionToString(Config.VERSION),6, 3);
         getButtonPress();
     }
     
@@ -997,8 +999,8 @@ public class GraphicStartup implements Menu {
         	icons = new String[]{ICDelete};
         }
         newScreen();
-        LCD.drawString("Size:", 0, 2);
-        LCD.drawString(Long.toString(file.length()), 5, 2);
+        lcd.drawString("Size:", 0, 2);
+        lcd.drawString(Long.toString(file.length()), 5, 2);
         GraphicMenu menu = new GraphicMenu(items,icons,3,fileName,1);
         int selection = getSelection(menu, 0);
         if (selection >= 0)
@@ -1050,9 +1052,9 @@ public class GraphicStartup implements Menu {
      */
     private static void exec(String program) {
         try {
-        	LCD.clearDisplay();
-        	LCD.refresh();
-        	LCD.setAutoRefresh(false);
+        	lcd.clear();
+        	lcd.refresh();
+        	lcd.setAutoRefresh(false);
             Process p = Runtime.getRuntime().exec(program);
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
             BufferedReader err= new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -1078,9 +1080,9 @@ public class GraphicStartup implements Menu {
             System.out.println("Waiting for process to die");;
             p.waitFor();
             System.out.println("Program finished");
-        	LCD.setAutoRefresh(true);
-        	LCD.clearDisplay();
-        	LCD.refresh();
+            lcd.setAutoRefresh(true);
+            lcd.clear();
+            lcd.refresh();
           }
           catch (Exception e) {
             System.err.println("Failed to execute program: " + e);
@@ -1170,7 +1172,7 @@ public class GraphicStartup implements Menu {
      */
     private void newScreen()
     {
-        LCD.clear();
+    	lcd.clear();
         ind.updateNow();
     }
     
@@ -1192,7 +1194,7 @@ public class GraphicStartup implements Menu {
     private void msg(String msg)
     {
         newScreen();
-        LCD.drawString(msg, 0, 2);
+        lcd.drawString(msg, 0, 2);
         long start = System.currentTimeMillis();
         int button;
         int buttons = Button.readButtons();
@@ -1235,8 +1237,8 @@ public class GraphicStartup implements Menu {
     	System.out.println("Shutting down the EV3");
         ind.suspend();
     	exec("init 0");
-        LCD.drawString("  Shutting down", 0, 6);
-        LCD.refresh();
+    	lcd.drawString("  Shutting down", 0, 6);
+        lcd.refresh();
     }
     
     class PipeReader extends Thread {
@@ -1256,12 +1258,12 @@ public class GraphicStartup implements Menu {
 	    				
 	    				if (c == 's') {
 	                    	ind.suspend();
-	                    	LCD.clearDisplay();
-	                    	LCD.refresh();
-	                    	LCD.setAutoRefresh(false);
+	                    	lcd.clear();
+	                    	lcd.refresh();
+	                    	lcd.setAutoRefresh(false);
 	                    	System.out.println("Menu suspended");
 	    				} else if (c == 'r') {
-	                    	LCD.setAutoRefresh(true);
+	    					lcd.setAutoRefresh(true);
 	                    	ind.resume();
 	                    	System.out.println("Menu resumed");
 	    				}
@@ -1309,12 +1311,13 @@ public class GraphicStartup implements Menu {
 	    		{
 	    			long time = System.currentTimeMillis();
 	    			
-	    			byte[] buf = LCD.getDisplay();
+	    			byte[] buf = lcd.getDisplay();
+	    			// TODO: Fix this
 	    			// clear not necessary, pixels are always overwritten
-	    			for (int i=0; i<LCD.SCREEN_WIDTH; i++)
+	    			for (int i=0; i<lcd.getWidth(); i++)
 	    				buf[i] = 0;	    			
 	    			indiBA.draw(time, buf);
-	    			LCD.asyncRefresh();
+	    			lcd.refresh();
     			
     				// wait until next tick
     				time = System.currentTimeMillis();
@@ -1575,7 +1578,7 @@ public class GraphicStartup implements Menu {
             EchoThread echoErr = new EchoThread(err, lcdStream);
             
             ind.suspend();
-            LCD.clearDisplay();
+            lcd.clear();
             lcdStream.println("Restarting wlan\n");
             
             echoIn.start();
@@ -1585,7 +1588,7 @@ public class GraphicStartup implements Menu {
 			System.out.println("startwlan returned " + status);
 			// Get IP addresses again
 			ips = getIPAddresses();
-        	LCD.clearDisplay();
+			lcd.clear();
         	ind.resume();
 		} catch (IOException | InterruptedException e) {
 			System.err.println("Failed to execute startwlan: " + e);

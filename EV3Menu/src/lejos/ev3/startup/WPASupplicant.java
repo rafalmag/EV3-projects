@@ -25,8 +25,7 @@ public class WPASupplicant {
 			br.close();
 			fw.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Failed to write wpa supplication configuration: " + e);
 		}
 	}
 }
