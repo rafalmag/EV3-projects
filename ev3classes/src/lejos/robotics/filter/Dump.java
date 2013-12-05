@@ -1,6 +1,6 @@
 package lejos.robotics.filter;
 
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 import lejos.robotics.SampleProvider;
 
 public class Dump extends AbstractFilter {

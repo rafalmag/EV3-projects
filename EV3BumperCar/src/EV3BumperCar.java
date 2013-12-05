@@ -1,6 +1,6 @@
 
 import lejos.hardware.Button;
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3IRSensor;

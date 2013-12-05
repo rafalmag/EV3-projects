@@ -1,4 +1,4 @@
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 import lejos.hardware.Sound;
 import lejos.hardware.device.RCXLink;
 import lejos.hardware.port.I2CPort;

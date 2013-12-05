@@ -3,7 +3,7 @@ package lejos.remote.ev3;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 
 public class RMIRemoteLCD extends UnicastRemoteObject implements RMILCD {
 	private static final long serialVersionUID = 2378483122054140698L;

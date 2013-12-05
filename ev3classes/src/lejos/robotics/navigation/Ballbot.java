@@ -1,6 +1,6 @@
 package lejos.robotics.navigation;
 
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 import lejos.hardware.Sound;
 import lejos.robotics.EncoderMotor;
 import lejos.robotics.Gyroscope;

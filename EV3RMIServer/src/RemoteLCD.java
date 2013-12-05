@@ -12,49 +12,49 @@ public class RemoteLCD extends UnicastRemoteObject implements LCD {
 
 	@Override
 	public void drawChar(char c, int x, int y) throws RemoteException {
-		lejos.hardware.LCD.drawChar(c, x, y);
+		lejos.hardware.lcd.LCD.drawChar(c, x, y);
 	}
 
 	@Override
 	public void clearDisplay() throws RemoteException {
-		lejos.hardware.LCD.clearDisplay();
+		lejos.hardware.lcd.LCD.clearDisplay();
 	}
 
 	@Override
 	public void drawString(String str, int x, int y, boolean inverted)
 			throws RemoteException {
-		lejos.hardware.LCD.drawString(str, x, y, inverted);
+		lejos.hardware.lcd.LCD.drawString(str, x, y, inverted);
 	}
 
 	@Override
 	public void drawString(String str, int x, int y) throws RemoteException {
-		lejos.hardware.LCD.drawString(str, x, y);
+		lejos.hardware.lcd.LCD.drawString(str, x, y);
 	}
 
 	@Override
 	public void drawInt(int i, int x, int y) throws RemoteException {
-		lejos.hardware.LCD.drawInt(i, x, y);	
+		lejos.hardware.lcd.LCD.drawInt(i, x, y);	
 	}
 
 	@Override
 	public void drawInt(int i, int places, int x, int y) throws RemoteException {
-		lejos.hardware.LCD.drawInt(i, places, x, y);	
+		lejos.hardware.lcd.LCD.drawInt(i, places, x, y);	
 	}
 
 	@Override
 	public void asyncRefresh() throws RemoteException {
-		lejos.hardware.LCD.asyncRefresh();
+		lejos.hardware.lcd.LCD.asyncRefresh();
 		
 	}
 
 	@Override
 	public void refresh() throws RemoteException {
-		lejos.hardware.LCD.refresh();
+		lejos.hardware.lcd.LCD.refresh();
 	}
 
 	@Override
 	public void clear() throws RemoteException {
-		lejos.hardware.LCD.clear();
+		lejos.hardware.lcd.LCD.clear();
 	}
 
 }
