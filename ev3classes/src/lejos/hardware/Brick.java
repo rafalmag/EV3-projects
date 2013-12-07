@@ -47,5 +47,35 @@ public interface Brick
      * @return the graphics LCD
      */
     public GraphicsLCD getGraphicsLCD();
+    
+    /**
+     * Test whether the brick is a local one
+     * @return true iff brick is local
+     */
+    public boolean isLocal();
+    
+    /**
+     * Get the type of brick, e.g. "EV3", "NXT", "BrickPi"
+     * @return the brick type
+     */
+    public String getType();
+    
+    /**
+     * Get he name of the brick
+     * @return the name
+     */
+    public String getName();
+    
+    /**
+     * Get the local Bluetooth device
+     * @return the local Bluetooth device
+     */
+    public LocalBTDevice getBluetoothDevice();
+    
+    /**
+     * Get the local Wifi device
+     * @return the local Wifi device
+     */
+    public LocalWifiDevice getWifiDevice();
 
 }

@@ -15,6 +15,10 @@ public class RMIRemoteTextLCD  extends UnicastRemoteObject implements RMITextLCD
 	protected RMIRemoteTextLCD() throws RemoteException {
 		super(0);
 	}
+	
+	public void setFont(Font f) {
+		lcd = LocalEV3.get().getTextLCD(f);
+	}
 
 	@Override
 	public void refresh() throws RemoteException {

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import lejos.hardware.Audio;
 import lejos.hardware.Battery;
+import lejos.hardware.LocalBTDevice;
+import lejos.hardware.LocalWifiDevice;
 import lejos.hardware.ev3.EV3;
 import lejos.hardware.lcd.Font;
 import lejos.hardware.lcd.GraphicsLCD;
@@ -119,8 +121,39 @@ public class RemoteEV3 implements EV3 {
 
 	@Override
 	public TextLCD getTextLCD(Font f) {
-		// TODO Auto-generated method stub
+		try {
+			return new RemoteTextLCD(rmiEV3.getTextLCD(f));
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
+	}
+
+	@Override
+	public boolean isLocal() {
+		return false;
+	}
+
+	@Override
+	public String getType() {
+		return "EV3";
+	}
+
+	@Override
+	public String getName() {
+		try {
+			return rmiEV3.getName();
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
+	}
+
+	@Override
+	public LocalBTDevice getBluetoothDevice() {
 		return null;
 	}
 
+	@Override
+	public LocalWifiDevice getWifiDevice() {
+		return null;
+	}
 }

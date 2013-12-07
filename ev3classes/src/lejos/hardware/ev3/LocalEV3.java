@@ -1,10 +1,17 @@
 
 package lejos.hardware.ev3;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import lejos.hardware.Audio;
 import lejos.hardware.Battery;
+import lejos.hardware.Bluetooth;
+import lejos.hardware.LocalBTDevice;
+import lejos.hardware.LocalWifiDevice;
+import lejos.hardware.Wifi;
 import lejos.hardware.lcd.Font;
 import lejos.hardware.lcd.GraphicsLCD;
 import lejos.hardware.lcd.TextLCD;
@@ -100,5 +107,37 @@ public class LocalEV3 implements EV3
     {
         return audio;
     }
-}
 
+	@Override
+	public boolean isLocal() {
+		return true;
+	}
+
+	@Override
+	public String getType() {
+		return "EV3";
+	}
+
+	@Override
+	public String getName() {
+		
+		try {
+			BufferedReader in = new BufferedReader(new FileReader("/etc/hostname"));
+			String name = in.readLine().trim();
+			in.close();
+			return name;
+		} catch (IOException e) {
+			return "Not known";
+		}
+	}
+
+	@Override
+	public LocalBTDevice getBluetoothDevice() {
+		return Bluetooth.getLocalDevice();
+	}
+
+	@Override
+	public LocalWifiDevice getWifiDevice() {
+		return Wifi.getLocalDevice("wlan0");
+	}
+}
