@@ -48,6 +48,7 @@ import lejos.utility.Delay;
  *   int angle = Motor.A.getTachoCount(); // should be -360
  *   LCD.drawInt(angle,0,0);
  * </pre></code>
+ * TODO: Fix the name
  * @author Roger Glassey/Andy Shaw
  */
 public class NXTRegulatedMotor extends Device implements RegulatedMotor
