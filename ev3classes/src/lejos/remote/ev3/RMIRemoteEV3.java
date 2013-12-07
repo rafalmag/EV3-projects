@@ -56,11 +56,6 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	}
 
 	@Override
-	public RMISound getSound() throws RemoteException {
-		return new RMIRemoteSound();
-	}
-
-	@Override
 	public RMIWifi getWifi() throws RemoteException {
 		return new RMIRemoteWifi();
 	}
@@ -71,7 +66,17 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	}
 
 	@Override
-	public RMILCD getLCD() throws RemoteException {
-		return new RMIRemoteLCD();
+	public RMITextLCD getTextLCD() throws RemoteException {
+		return new RMIRemoteTextLCD();
+	}
+
+	@Override
+	public RMIAudio getAudio() throws RemoteException {
+		return new RMIRemoteAudio();
+	}
+
+	@Override
+	public RMIGraphicsLCD getGraphicsLCD() throws RemoteException {
+		return new RMIRemoteGraphicsLCD();
 	}
 }

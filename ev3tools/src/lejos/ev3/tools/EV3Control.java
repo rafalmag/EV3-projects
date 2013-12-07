@@ -1654,11 +1654,11 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	private void playTone() {
 		try {
-			ev3.getSound().playTone((Integer) freq.getValue(), (Integer) duration.getValue());
-		} catch (IOException ioe) {
-			showMessage("IO Exception playing tone");
+			ev3.getAudio().playTone((Integer) freq.getValue(), (Integer) duration.getValue());
 		} catch (NumberFormatException nfe) {
 			showMessage("Frequency and Duration must be integers");
+		} catch (Exception ioe) {
+			showMessage("Exception playing tone");
 		}
 	}
 	
@@ -1696,7 +1696,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		String fileName = fmPrograms.getFile(row).fileName;
 		try {
 			System.out.println("Playing file " + fileName);
-			ev3.getSound().playSample("/home/root/lejos/samples/" + fileName);
+			ev3.getAudio().playSample(new File("/home/root/lejos/samples/" + fileName));
 		} catch (Exception ioe) {
 			showMessage("IO Exception playing sound file");
 		}

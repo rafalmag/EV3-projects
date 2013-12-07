@@ -19,9 +19,11 @@ public interface RMIEV3 extends Remote {
 	
 	public RMIRegulatedMotor createRegulatedMotor(String portName) throws RemoteException;
 
-	public RMISound getSound() throws RemoteException;
+	public RMIAudio getAudio() throws RemoteException;
 	
-	public RMILCD getLCD() throws RemoteException;
+	public RMITextLCD getTextLCD() throws RemoteException;
+	
+	public RMIGraphicsLCD getGraphicsLCD() throws RemoteException;
 	
 	public RMIWifi getWifi() throws RemoteException;
 	

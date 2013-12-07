@@ -76,17 +76,17 @@ public class RemoteEV3 implements EV3 {
 		}
 	}
 	
-	public RMISound getSound() {
+	public Audio getAudio() {
 		try {
-			return rmiEV3.getSound();
+			return new RemoteAudio(rmiEV3.getAudio());
 		} catch (RemoteException e) {
 			throw new PortException(e);
 		}
 	}
 	
-	public RMILCD getLCD() {
+	public TextLCD getTextLCD() {
 		try {
-			return rmiEV3.getLCD();
+			return new RemoteTextLCD(rmiEV3.getTextLCD());
 		} catch (RemoteException e) {
 			throw new PortException(e);
 		}
@@ -108,24 +108,13 @@ public class RemoteEV3 implements EV3 {
 		}
 	}
 
-
-    @Override
-    public Audio getAudio()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-	@Override
-	public TextLCD getTextLCD() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public GraphicsLCD getGraphicsLCD() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return new RemoteGraphicsLCD(rmiEV3.getGraphicsLCD());
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
 	}
 
 	@Override

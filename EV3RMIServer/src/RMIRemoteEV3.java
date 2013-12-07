@@ -2,15 +2,18 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 import lejos.remote.ev3.RMIAnalogPort;
+import lejos.remote.ev3.RMIAudio;
 import lejos.remote.ev3.RMIBattery;
 import lejos.remote.ev3.RMIBluetooth;
 import lejos.remote.ev3.RMIEV3;
+import lejos.remote.ev3.RMIGraphicsLCD;
 import lejos.remote.ev3.RMII2CPort;
 import lejos.remote.ev3.RMILCD;
 import lejos.remote.ev3.RMIMotorPort;
 import lejos.remote.ev3.RMIRegulatedMotor;
+import lejos.remote.ev3.RMIRemoteTextLCD;
 import lejos.remote.ev3.RMISampleProvider;
-import lejos.remote.ev3.RMISound;
+import lejos.remote.ev3.RMITextLCD;
 import lejos.remote.ev3.RMIUARTPort;
 import lejos.remote.ev3.RMIWifi;
 
@@ -63,12 +66,6 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	}
 
 	@Override
-	public RMISound getSound() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public RMIWifi getWifi() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
@@ -81,7 +78,18 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	}
 
 	@Override
-	public RMILCD getLCD() throws RemoteException {
+	public RMIAudio getAudio() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RMITextLCD getTextLCD() throws RemoteException {
+		return null;
+	}
+
+	@Override
+	public RMIGraphicsLCD getGraphicsLCD() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
