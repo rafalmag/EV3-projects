@@ -1,10 +1,6 @@
 package lejos.hardware.port;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
-import lejos.hardware.ev3.LocalEV3;
-import lejos.internal.io.NativeDevice;
+import lejos.hardware.BrickFinder;
 
 /**
  * 
@@ -15,25 +11,24 @@ import lejos.internal.io.NativeDevice;
  */
 public interface MotorPort {
 	
-    
 	/**
 	 * MotorPort A.
 	 */
-	public static final Port A = LocalEV3.ev3.getPort("A");
+	public static final Port A = BrickFinder.getDefault().getPort("A");
 	
 	/**
 	 * MotorPort B.
 	 */
-	public static final Port B = LocalEV3.ev3.getPort("B");
+	public static final Port B = BrickFinder.getDefault().getPort("B");
 	
     /**
      * MotorPort C.
      */
-    public static final Port C = LocalEV3.ev3.getPort("C");
+    public static final Port C = BrickFinder.getDefault().getPort("C");
     
     /**
      * MotorPort D.
      */
-    public static final Port D = LocalEV3.ev3.getPort("D");
+    public static final Port D = BrickFinder.getDefault().getPort("D");
 
 }

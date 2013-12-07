@@ -2,9 +2,6 @@ package lejos.hardware;
 
 import java.io.*;
 
-import lejos.hardware.ev3.LocalEV3;
-import lejos.internal.io.NativeDevice;
-import lejos.internal.io.SystemSettings;
 import lejos.utility.Delay;
 
 /**
@@ -13,7 +10,7 @@ import lejos.utility.Delay;
  */
 public class Sound implements Sounds
 {
-    protected final static Audio audio = LocalEV3.get().getAudio();
+    protected final static Audio audio = BrickFinder.getDefault().getAudio();
     // TODO: We should probably not have the following. Add a saveProperties method?
     public final static String VOL_SETTING = "lejos.volume";
 

@@ -1,6 +1,6 @@
 package lejos.hardware.motor;
 
-import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.BrickFinder;
 
 /**
  * Motor class contains 3 instances of regulated motors.
@@ -27,24 +27,23 @@ public class Motor
     /**
      * Motor A.
      */
-    public static final NXTRegulatedMotor A = new NXTRegulatedMotor(LocalEV3.ev3.getPort("A"));
+    public static final NXTRegulatedMotor A = new NXTRegulatedMotor(BrickFinder.getDefault().getPort("A"));
     /**
      * Motor B.
      */
-    public static final NXTRegulatedMotor B = new NXTRegulatedMotor(LocalEV3.ev3.getPort("B"));
+    public static final NXTRegulatedMotor B = new NXTRegulatedMotor(BrickFinder.getDefault().getPort("B"));
     /**
      * Motor C.
      */
-    public static final NXTRegulatedMotor C = new NXTRegulatedMotor(LocalEV3.ev3.getPort("C"));
+    public static final NXTRegulatedMotor C = new NXTRegulatedMotor(BrickFinder.getDefault().getPort("C"));
     
     /**
      * Motor D.
      */
-    public static final NXTRegulatedMotor D = new NXTRegulatedMotor(LocalEV3.ev3.getPort("D"));
+    public static final NXTRegulatedMotor D = new NXTRegulatedMotor(BrickFinder.getDefault().getPort("D"));
     
     private Motor() {
     	// Motor class cannot be instantiated
     }
-
-
+    
 }

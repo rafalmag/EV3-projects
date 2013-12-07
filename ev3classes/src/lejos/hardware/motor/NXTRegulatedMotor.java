@@ -1,5 +1,6 @@
 package lejos.hardware.motor;
 
+import lejos.hardware.BrickFinder;
 import lejos.hardware.Device;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
@@ -871,6 +872,6 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
 	public float getMaxSpeed() {
 	    // It is generally assumed, that the maximum accurate speed of Motor is
 	    // 100 degree/second * Voltage
-		return LocalEV3.ev3.battery.getVoltage() * 100.0f;
+		return BrickFinder.getDefault().getBattery().getVoltage() * 100.0f;
 	}
 }

@@ -2,7 +2,7 @@ package lejos.hardware.lcd;
 
 import java.io.OutputStream;
 
-import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.BrickFinder;
 
 /**
  * A simple output stream that implements console output.
@@ -20,7 +20,7 @@ public class LCDOutputStream extends OutputStream {
 	private int col = 0;
 	private int line = 0;
 	
-	private TextLCD lcd = LocalEV3.get().getTextLCD();
+	private TextLCD lcd = BrickFinder.getDefault().getTextLCD();
 	
 	@Override
 	public void write(int c) {

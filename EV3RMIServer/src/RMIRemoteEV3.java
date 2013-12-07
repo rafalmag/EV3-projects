@@ -1,6 +1,7 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+import lejos.hardware.lcd.Font;
 import lejos.remote.ev3.RMIAnalogPort;
 import lejos.remote.ev3.RMIAudio;
 import lejos.remote.ev3.RMIBattery;
@@ -90,6 +91,18 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 
 	@Override
 	public RMIGraphicsLCD getGraphicsLCD() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RMITextLCD getTextLCD(Font f) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getName() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}

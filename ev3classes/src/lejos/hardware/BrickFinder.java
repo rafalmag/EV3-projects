@@ -6,28 +6,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.port.PortException;
 import lejos.internal.ev3.EV3DeviceManager;
 import lejos.remote.ev3.RemoteEV3;
 
 public class BrickFinder {
-	private static final int DEFAULT_PORT = 3016;
+	private static final int DISCOVERY_PORT = 3016;
+	private static Brick defaultBrick, localBrick;
 	
 	public static Brick getLocal() {
+		if (localBrick != null) return localBrick;
+		// Check we are running on an EV3
 		EV3DeviceManager.getLocalDeviceManager();
-		return LocalEV3.get();
+		localBrick = LocalEV3.get();
+		return localBrick;
 	}
 	
-	public static Brick getDefault() throws Exception {
+	public static Brick getDefault() {
+		if (defaultBrick != null) return defaultBrick;
 		try {
+			// See if we are running on an EV3
 			EV3DeviceManager.getLocalDeviceManager();
-			return LocalEV3.get();
-		} catch (Exception e) {
-
-			BrickInfo[] bricks = discover();
-			if (bricks.length > 0) {
-				return new RemoteEV3(bricks[0].getIPAddress());
-			} else {
-				throw new Exception("No brick found");
+			defaultBrick =  LocalEV3.get();
+			return defaultBrick;
+		} catch (UnsupportedOperationException e) {
+			try {
+				BrickInfo[] bricks = discover();
+				if (bricks.length > 0) {
+					defaultBrick = new RemoteEV3(bricks[0].getIPAddress());
+					return defaultBrick;
+				} else {
+					throw new DeviceException("No brick found");
+				}
+			} catch (Exception e1) {
+				throw new DeviceException("Error finding remote bricks", e1);
 			}
 		}
 	}
@@ -38,7 +50,7 @@ public class BrickFinder {
 	public static BrickInfo[] discover() throws Exception {	
 		
 		Map<String,BrickInfo> ev3s = new HashMap<String,BrickInfo>();
-		DatagramSocket socket = new DatagramSocket(DEFAULT_PORT);
+		DatagramSocket socket = new DatagramSocket(DISCOVERY_PORT);
 		socket.setSoTimeout(2000);
         DatagramPacket packet = new DatagramPacket (new byte[100], 100);
 

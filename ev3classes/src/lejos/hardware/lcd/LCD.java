@@ -1,7 +1,6 @@
 package lejos.hardware.lcd;
 
-import lejos.internal.ev3.EV3GraphicsLCD;
-import lejos.internal.ev3.EV3TextLCD;
+import lejos.hardware.BrickFinder;
 import lejos.utility.Delay;
 
 /**
@@ -41,8 +40,8 @@ public class LCD
     public static final int ROP_NAND = 0xff0000ff;
     public static final int ROP_SET = 0x000000ff;
 
-    protected static TextLCD t = new EV3TextLCD();
-    protected static GraphicsLCD g = new EV3GraphicsLCD();
+    protected static TextLCD t = BrickFinder.getDefault().getTextLCD();
+    protected static GraphicsLCD g = BrickFinder.getDefault().getGraphicsLCD();
 
     private LCD() {
     }

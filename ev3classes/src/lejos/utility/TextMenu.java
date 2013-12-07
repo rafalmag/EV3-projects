@@ -1,7 +1,7 @@
 package lejos.utility;
 
+import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
-import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 
 /**
@@ -67,7 +67,7 @@ public class TextMenu
 	 */
 	protected static final int BUTTON_POLL_INTERVAL = 10; // Time to wait for button press
 	
-	protected TextLCD lcd = LocalEV3.get().getTextLCD();
+	protected TextLCD lcd =  BrickFinder.getDefault().getTextLCD();
 
 	/**
 	 * This constructor sets location of the top row of the item list to row 0 of the display.
