@@ -9,11 +9,11 @@ import lejos.hardware.port.PortException;
 /**
  * Battery readings from a remote NXT.
  */
-public class RemoteBattery implements Battery, NXTProtocol {
+public class RemoteNXTBattery implements Battery, NXTProtocol {
 	
 	private NXTCommand nxtCommand;
 	
-	public RemoteBattery(NXTCommand nxtCommand) {
+	public RemoteNXTBattery(NXTCommand nxtCommand) {
 		this.nxtCommand = nxtCommand;
 	}
 		

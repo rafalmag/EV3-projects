@@ -3,8 +3,15 @@ package lejos.remote.nxt;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import lejos.hardware.Audio;
 import lejos.hardware.Battery;
+import lejos.hardware.LocalBTDevice;
+import lejos.hardware.LocalWifiDevice;
+import lejos.hardware.lcd.Font;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.port.Port;
+import lejos.hardware.port.PortException;
 import lejos.internal.ev3.EV3Port;
 
 public class RemoteNXT implements NXT {
@@ -13,7 +20,7 @@ public class RemoteNXT implements NXT {
 	private NXTComm nxtComm;
 	private Battery battery;
 	private String name;
-	private byte[] address = new byte[6];
+	private Audio audio;
 	
     protected ArrayList<RemoteNXTPort> ports = new ArrayList<RemoteNXTPort>();
     
@@ -29,7 +36,7 @@ public class RemoteNXT implements NXT {
         ports.add(new RemoteNXTPort("C", RemoteNXTPort.MOTOR_PORT, 2, nxtCommand));
     }
 	
-	private RemoteNXT(String name, NXTCommConnector connector) throws IOException {		
+	public RemoteNXT(String name, NXTCommConnector connector) throws IOException {		
 		this.name = name;
 		connect(connector);
 		createPorts();
@@ -38,7 +45,6 @@ public class RemoteNXT implements NXT {
 	public RemoteNXT(String name, byte[] address) {
 		createPorts();
 		this.name = name;
-		this.address = address;
 	}
 	
 	public void connect(NXTCommConnector connector) throws IOException {
@@ -49,7 +55,8 @@ public class RemoteNXT implements NXT {
 		System.out.println("Connected");;
 		nxtCommand = new NXTCommand(nxtComm);
 		System.out.println("Creating remote battery");
-		battery = new RemoteBattery(nxtCommand);
+		battery = new RemoteNXTBattery(nxtCommand);
+		audio = new RemoteNXTAudio(nxtCommand);
 	}
 	
 	public static NXT get(String name, NXTCommConnector connector) throws IOException {
@@ -69,4 +76,52 @@ public class RemoteNXT implements NXT {
 		return battery;
 	}
 
+	@Override
+	public Audio getAudio() {
+		return audio;
+	}
+
+	@Override
+	public TextLCD getTextLCD() {
+		throw new UnsupportedOperationException("Remote LCD not supported on the NXT");
+	}
+
+	@Override
+	public TextLCD getTextLCD(Font f) {
+		throw new UnsupportedOperationException("Remote LCD not supported on the NXT");
+	}
+
+	@Override
+	public GraphicsLCD getGraphicsLCD() {
+		throw new UnsupportedOperationException("Remote LCD not supported on the NXT");
+	}
+
+	@Override
+	public boolean isLocal() {
+		return false;
+	}
+
+	@Override
+	public String getType() {
+		return "NXT";
+	}
+
+	@Override
+	public String getName() {
+		try {
+			return nxtCommand.getFriendlyName();
+		} catch (IOException e) {
+			throw new PortException(e);
+		}
+	}
+
+	@Override
+	public LocalBTDevice getBluetoothDevice() {
+		throw new UnsupportedOperationException("localBluetoothDevice not supported on the NXT");
+	}
+
+	@Override
+	public LocalWifiDevice getWifiDevice() {
+		throw new UnsupportedOperationException("localWifiDevice not supported on the NXT");
+	}
 }

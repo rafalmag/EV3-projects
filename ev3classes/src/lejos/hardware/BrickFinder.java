@@ -1,14 +1,16 @@
 package lejos.hardware;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.port.PortException;
 import lejos.internal.ev3.EV3DeviceManager;
 import lejos.remote.ev3.RemoteEV3;
+import lejos.remote.nxt.RemoteNXT;
 
 public class BrickFinder {
 	private static final int DISCOVERY_PORT = 3016;
@@ -36,7 +38,12 @@ public class BrickFinder {
 					defaultBrick = new RemoteEV3(bricks[0].getIPAddress());
 					return defaultBrick;
 				} else {
-					throw new DeviceException("No brick found");
+					// No EV3s, look for a NXT
+				    bricks = discoverNXT();
+				    if (bricks.length > 0) {
+						defaultBrick = new RemoteNXT(bricks[0].getName(), Bluetooth.getNXTCommConnector());
+						return defaultBrick;
+				    } else throw new DeviceException("No brick found");
 				}
 			} catch (Exception e1) {
 				throw new DeviceException("Error finding remote bricks", e1);
@@ -73,5 +80,20 @@ public class BrickFinder {
         }
         
         return devices;
+	}
+	
+	public static BrickInfo[] discoverNXT() {
+		try {
+			Collection<RemoteBTDevice> nxts = Bluetooth.getLocalDevice().search();
+			BrickInfo[] bricks = new BrickInfo[nxts.size()];
+			int i = 0;
+			for(RemoteBTDevice d: nxts) {
+				BrickInfo b = new BrickInfo(d.getName(), d.getAddress(), "NXT");
+				bricks[i++] = b;
+			}
+			return bricks;
+		} catch (IOException e) {
+			throw new DeviceException("Error finding remote NXTs", e);
+		}
 	}
 }
