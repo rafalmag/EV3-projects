@@ -37,16 +37,19 @@ public class BrickFinder {
 				if (bricks.length > 0) {
 					defaultBrick = new RemoteEV3(bricks[0].getIPAddress());
 					return defaultBrick;
-				} else {
-					// No EV3s, look for a NXT
-				    bricks = discoverNXT();
-				    if (bricks.length > 0) {
+				} else throw new Exception("No EV3 brick found");
+			} catch (Exception e1) {
+				// No EV3s, look for a NXT
+			    BrickInfo[] bricks = discoverNXT();
+			    if (bricks.length > 0) {
+					try {
 						defaultBrick = new RemoteNXT(bricks[0].getName(), Bluetooth.getNXTCommConnector());
 						return defaultBrick;
-				    } else throw new DeviceException("No brick found");
-				}
-			} catch (Exception e1) {
-				throw new DeviceException("Error finding remote bricks", e1);
+					} catch (Exception e2) {
+						// Fall through
+					}
+			    }
+			    throw new DeviceException("No brick found");
 			}
 		}
 	}
@@ -92,7 +95,7 @@ public class BrickFinder {
 				bricks[i++] = b;
 			}
 			return bricks;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new DeviceException("Error finding remote NXTs", e);
 		}
 	}
