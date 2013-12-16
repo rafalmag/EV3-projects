@@ -872,6 +872,6 @@ public class NXTRegulatedMotor extends Device implements RegulatedMotor
 	public float getMaxSpeed() {
 	    // It is generally assumed, that the maximum accurate speed of Motor is
 	    // 100 degree/second * Voltage
-		return BrickFinder.getDefault().getBattery().getVoltage() * 100.0f;
+		return BrickFinder.getDefault().getPower().getVoltage() * 100.0f;
 	}
 }

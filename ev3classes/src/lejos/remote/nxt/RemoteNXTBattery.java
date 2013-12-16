@@ -2,14 +2,14 @@ package lejos.remote.nxt;
 
 import java.io.*;
 
-import lejos.hardware.Battery;
+import lejos.hardware.Power;
 import lejos.hardware.port.PortException;
 
 
 /**
  * Battery readings from a remote NXT.
  */
-public class RemoteNXTBattery implements Battery, NXTProtocol {
+public class RemoteNXTBattery implements Power, NXTProtocol {
 	
 	private NXTCommand nxtCommand;
 	

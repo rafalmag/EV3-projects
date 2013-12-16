@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import lejos.hardware.Audio;
-import lejos.hardware.Battery;
+import lejos.hardware.Power;
 import lejos.hardware.LocalBTDevice;
 import lejos.hardware.LocalWifiDevice;
 import lejos.hardware.lcd.Font;
@@ -18,7 +18,7 @@ public class RemoteNXT implements NXT {
 	
 	private NXTCommand nxtCommand;
 	private NXTComm nxtComm;
-	private Battery battery;
+	private Power battery;
 	private String name;
 	private Audio audio;
 	
@@ -72,7 +72,7 @@ public class RemoteNXT implements NXT {
 	}
 
 	@Override
-	public Battery getBattery() {
+	public Power getPower() {
 		return battery;
 	}
 

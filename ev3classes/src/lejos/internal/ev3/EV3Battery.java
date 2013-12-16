@@ -1,6 +1,6 @@
 package lejos.internal.ev3;
 
-import lejos.hardware.Battery;
+import lejos.hardware.Power;
 import lejos.hardware.sensor.EV3SensorConstants;
 
 /**
@@ -10,7 +10,7 @@ import lejos.hardware.sensor.EV3SensorConstants;
  * @author andy
  *
  */
-public class EV3Battery implements Battery
+public class EV3Battery implements Power
 {
     protected final static float SHUNT_IN = 0.11f;
     protected final static float AMP_CIN = 22.0f;

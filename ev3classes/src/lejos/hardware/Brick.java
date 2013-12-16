@@ -1,7 +1,7 @@
 package lejos.hardware;
 
 import lejos.hardware.Audio;
-import lejos.hardware.Battery;
+import lejos.hardware.Power;
 import lejos.hardware.lcd.Font;
 import lejos.hardware.lcd.GraphicsLCD;
 import lejos.hardware.lcd.TextLCD;
@@ -21,7 +21,7 @@ public interface Brick
      * return a battery object which can be used to obtain battery voltage etc.
      * @return A battery object
      */
-    public Battery getBattery();
+    public Power getPower();
 
     /**
      * return a Audio object which can be used to access the device's audio playback

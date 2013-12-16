@@ -168,7 +168,7 @@ public class LCP {
 			break;
 		}
 		case GET_BATTERY_LEVEL: {
-			setReplyShortInt(BrickFinder.getDefault().getBattery().getVoltageMilliVolt(), reply, 3);
+			setReplyShortInt(BrickFinder.getDefault().getPower().getVoltageMilliVolt(), reply, 3);
 			len = 5;									
 			break;
 		}

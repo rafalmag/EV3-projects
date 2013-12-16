@@ -1435,7 +1435,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	private void getSensorValues() {
 		if (ev3 != null) {
-			mv = ev3.getBattery().getVoltageMilliVolt();
+			mv = ev3.getPower().getVoltageMilliVolt();
 		}
 	}
 

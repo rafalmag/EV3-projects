@@ -52,7 +52,7 @@ public class BatteryIndicator
     		this.levelHigh = STD_MAX;
     	}
     	
-    	int val = LocalEV3.ev3.getBattery().getVoltageMilliVolt();
+    	int val = LocalEV3.ev3.getPower().getVoltageMilliVolt();
 		windowcenter = val;
 		historysum = val * HISTORY_SIZE;
 		for (int i = 0; i < HISTORY_SIZE; i++)
@@ -79,7 +79,7 @@ public class BatteryIndicator
     
     private int getLevel()
     {
-    	int val = LocalEV3.ev3.getBattery().getVoltageMilliVolt();
+    	int val = LocalEV3.ev3.getPower().getVoltageMilliVolt();
     	
 		historysum += val - history[historyindex];
 		history[historyindex] = val;

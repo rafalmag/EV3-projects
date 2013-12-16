@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import lejos.hardware.Audio;
-import lejos.hardware.Battery;
+import lejos.hardware.Power;
 import lejos.hardware.LocalBTDevice;
 import lejos.hardware.LocalWifiDevice;
 import lejos.hardware.ev3.EV3;
@@ -49,7 +49,7 @@ public class RemoteEV3 implements EV3 {
 	}
 
 	@Override
-	public Battery getBattery() {
+	public Power getPower() {
 		try {
 			return new RemoteBattery(rmiEV3.getBattery());
 		} catch (RemoteException e) {

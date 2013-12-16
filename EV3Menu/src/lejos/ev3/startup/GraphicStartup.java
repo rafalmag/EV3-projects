@@ -735,7 +735,7 @@ public class GraphicStartup implements Menu {
             lcd.drawString("RAM", 0, 1);
             lcd.drawInt((int) (Runtime.getRuntime().freeMemory()), 11, 1);
             lcd.drawString("Battery", 0, 2);
-            int millis = LocalEV3.ev3.getBattery().getVoltageMilliVolt() + 50;
+            int millis = LocalEV3.ev3.getPower().getVoltageMilliVolt() + 50;
             lcd.drawInt((millis - millis % 1000) / 1000, 11, 2);
             lcd.drawString(".", 12, 2);
             lcd.drawInt((millis % 1000) / 100, 13, 2);

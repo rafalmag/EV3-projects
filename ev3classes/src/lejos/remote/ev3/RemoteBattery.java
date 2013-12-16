@@ -2,10 +2,10 @@ package lejos.remote.ev3;
 
 import java.rmi.RemoteException;
 
-import lejos.hardware.Battery;
+import lejos.hardware.Power;
 import lejos.hardware.port.PortException;
 
-public class RemoteBattery implements Battery {
+public class RemoteBattery implements Power {
 	RMIBattery battery;
 	
 	public RemoteBattery(RMIBattery battery) {

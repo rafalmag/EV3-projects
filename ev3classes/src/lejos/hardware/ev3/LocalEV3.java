@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import lejos.hardware.Audio;
-import lejos.hardware.Battery;
+import lejos.hardware.Power;
 import lejos.hardware.Bluetooth;
 import lejos.hardware.LocalBTDevice;
 import lejos.hardware.LocalWifiDevice;
@@ -38,7 +38,7 @@ public class LocalEV3 implements EV3
     }
     
     public static final LocalEV3 ev3 = new LocalEV3();
-    public final Battery battery = new EV3Battery();
+    public final Power battery = new EV3Battery();
     protected final Audio audio = EV3Audio.getAudio();
     protected ArrayList<EV3Port> ports = new ArrayList<EV3Port>();
     protected TextLCD textLCD;
@@ -77,7 +77,7 @@ public class LocalEV3 implements EV3
     /** {@inheritDoc}
      */    
     @Override
-    public Battery getBattery()
+    public Power getPower()
     {
         return battery;
     }

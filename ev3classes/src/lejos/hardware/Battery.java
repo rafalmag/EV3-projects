@@ -1,36 +1,21 @@
 package lejos.hardware;
 
-//import lejos.pc.comm.*;
+public class Battery {
+	private static Power power = BrickFinder.getDefault().getPower();
 
-/**
- * Interface used to access information about the EV3 battery and current usage.
- * @author Brian Bagnall, Lawrie Griffiths Andy Shaw
- *
- */
-public interface Battery {
-		
-	/**
-	 * The NXT uses 6 batteries of 1500 mV each.
-	 * @return Battery voltage in mV. ~9000 = full.
-	 */
-	public int getVoltageMilliVolt();
+	public static int getVoltageMilliVolt() {
+		return power.getVoltageMilliVolt();
+	}
 
-	/**
-	 * The NXT uses 6 batteries of 1.5 V each.
-	 * @return Battery voltage in Volt. ~9V = full.
-	 */
-	public float getVoltage();
+	public static float getVoltage() {
+		return power.getVoltage();
+	}
 
-	/**
-	 * Return the current draw from the battery
-	 * @return current in Amps
-	 */
-	public float getBatteryCurrent();
+	public static float getBatteryCurrent() {
+		return power.getBatteryCurrent();
+	}
 
-	/**
-	 * return the motor current draw
-	 * @return current in Amps
-	 */
-	public float getMotorCurrent();
+	public static float getMotorCurrent() {
+		return power.getMotorCurrent();
+	}
 }
-
