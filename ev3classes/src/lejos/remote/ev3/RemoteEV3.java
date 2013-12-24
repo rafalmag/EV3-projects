@@ -71,7 +71,7 @@ public class RemoteEV3 implements EV3 {
 		}
 	}
 	
-	public RMIRegulatedMotor createRegulatedProvider(String portName) {
+	public RMIRegulatedMotor createRegulatedMotor(String portName) {
 		try {
 			return rmiEV3.createRegulatedMotor(portName);
 		} catch (RemoteException e) {

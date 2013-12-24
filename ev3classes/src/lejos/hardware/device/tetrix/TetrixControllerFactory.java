@@ -108,7 +108,7 @@ public class TetrixControllerFactory  {
     {
         this.currentMotorIndex = finder.findProduct(this.currentMotorIndex, TETRIX_MOTORCON_PRODUCT_ID);
         if (this.currentMotorIndex<0) throw new IllegalStateException("no motor controllers available");
-        TetrixMotorController mc = new TetrixMotorController(this.port, (this.currentMotorIndex + 1) * 2);
+        TetrixMotorController mc = new TetrixMotorController(finder.getPort(), (this.currentMotorIndex + 1) * 2);
         this.currentMotorIndex++;
         return mc;
     }

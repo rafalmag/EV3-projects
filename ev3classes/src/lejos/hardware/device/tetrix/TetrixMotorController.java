@@ -1,5 +1,6 @@
 package lejos.hardware.device.tetrix;
 
+import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.I2CSensor;
 import lejos.utility.Delay;
@@ -114,8 +115,8 @@ public class TetrixMotorController extends I2CSensor {
      * @see lejos.nxt.SensorPort
      * @throws IllegalStateException if a Motor Controller was not found with given <code>port</code> and <code>daisyChainPosition</code>
      */
-    public TetrixMotorController(Port port, int daisyChainPosition) {
-        super(port, daisyChainPosition, TYPE_LOWSPEED);
+    public TetrixMotorController(I2CPort port, int daisyChainPosition) {
+        super(port, daisyChainPosition);
         address = daisyChainPosition;
         if (!(getVendorID().equalsIgnoreCase(TetrixControllerFactory.TETRIX_VENDOR_ID) && 
             getProductID().equalsIgnoreCase(TetrixControllerFactory.TETRIX_MOTORCON_PRODUCT_ID))) {
