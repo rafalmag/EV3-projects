@@ -129,7 +129,7 @@ public class TetrixControllerFactory  {
     {
         this.currentServoIndex = finder.findProduct(this.currentServoIndex, TETRIX_SERVOCON_PRODUCT_ID);
         if (this.currentServoIndex<0) throw new IllegalStateException("no servo controllers available");
-        TetrixServoController sc = new TetrixServoController(this.port, (this.currentServoIndex + 1) * 2);
+        TetrixServoController sc = new TetrixServoController(finder.getPort(), (this.currentServoIndex + 1) * 2);
         this.currentServoIndex++;
         return sc;
     }
