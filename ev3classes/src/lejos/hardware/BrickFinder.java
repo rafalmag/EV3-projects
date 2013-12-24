@@ -98,4 +98,8 @@ public class BrickFinder {
 			throw new DeviceException("Error finding remote NXTs", e);
 		}
 	}
+	
+	public static void setDefault(Brick brick) {
+		defaultBrick = brick;
+	}
 }

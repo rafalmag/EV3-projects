@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import lejos.hardware.Audio;
+import lejos.hardware.BrickFinder;
 import lejos.hardware.Power;
 import lejos.hardware.Bluetooth;
 import lejos.hardware.LocalBTDevice;
@@ -139,5 +140,10 @@ public class LocalEV3 implements EV3
 	@Override
 	public LocalWifiDevice getWifiDevice() {
 		return Wifi.getLocalDevice("wlan0");
+	}
+
+	@Override
+	public void setDefault() {
+		BrickFinder.setDefault(this);		
 	}
 }

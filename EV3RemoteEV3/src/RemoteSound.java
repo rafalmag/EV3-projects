@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import lejos.hardware.Audio;
+import lejos.hardware.Sound;
 import lejos.hardware.Sounds;
 import lejos.remote.ev3.RemoteEV3;
 import lejos.utility.Delay;
@@ -16,11 +17,12 @@ public class RemoteSound {
 	
 	public static void main(String[] args) throws Exception {
 		RemoteEV3 ev3 = new RemoteEV3("192.168.0.9");
+		ev3.setDefault();
 		
 		Audio sound = ev3.getAudio();
 		
 		for(int i=0;i<5;i++) {
-			sound.systemSound(i);
+			Sound.systemSound(false, i);
 			Delay.msDelay(1000);
 		}
 		

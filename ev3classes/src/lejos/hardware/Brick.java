@@ -77,5 +77,10 @@ public interface Brick
      * @return the local Wifi device
      */
     public LocalWifiDevice getWifiDevice();
+    
+    /**
+     * Set this brick as the default one for static methods
+     */
+    public void setDefault();
 
 }

@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import lejos.hardware.Audio;
+import lejos.hardware.BrickFinder;
 import lejos.hardware.Power;
 import lejos.hardware.LocalBTDevice;
 import lejos.hardware.LocalWifiDevice;
@@ -155,5 +156,10 @@ public class RemoteEV3 implements EV3 {
 	@Override
 	public LocalWifiDevice getWifiDevice() {
 		return null;
+	}
+
+	@Override
+	public void setDefault() {
+		BrickFinder.setDefault(this);
 	}
 }

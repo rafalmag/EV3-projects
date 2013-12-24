@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import lejos.hardware.Audio;
+import lejos.hardware.BrickFinder;
 import lejos.hardware.Power;
 import lejos.hardware.LocalBTDevice;
 import lejos.hardware.LocalWifiDevice;
@@ -123,5 +124,10 @@ public class RemoteNXT implements NXT {
 	@Override
 	public LocalWifiDevice getWifiDevice() {
 		throw new UnsupportedOperationException("localWifiDevice not supported on the NXT");
+	}
+
+	@Override
+	public void setDefault() {
+		BrickFinder.setDefault(this);	
 	}
 }
