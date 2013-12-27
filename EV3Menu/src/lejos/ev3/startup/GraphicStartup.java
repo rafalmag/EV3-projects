@@ -190,7 +190,7 @@ public class GraphicStartup implements Menu {
             }
             
             System.out.println("Setting java.rmi.server.hostname to " + lastIp);
-            System.setProperty("java.rmi.server.hostname", "192.168.0.9");
+            System.setProperty("java.rmi.server.hostname", lastIp);
             
             try { //special exception handler for registry creation
                 LocateRegistry.createRegistry(1099); 
