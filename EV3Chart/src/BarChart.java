@@ -1,7 +1,9 @@
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileReader;
 import java.rmi.RemoteException;
+import java.util.Properties;
 
 import javax.swing.JFrame;
 
@@ -17,6 +19,14 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+/**
+ * Sample program to draw a real-time bar chart of any EV3 sensor that supports the SampleProvider interface.
+ * 
+ * The chart.properties file defines the sensor to use and all the other parameters for the sensor and the chart
+ * 
+ * @author Lawrie Griffiths
+ *
+ */
 public class BarChart extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private static String title = "EV3 sampling";
@@ -26,14 +36,18 @@ public class BarChart extends JFrame {
 	private String category;
 	private String[] labels;
 	private float frequency;
+	private float factor;
 	
 	public BarChart(String host, String sensorClass, String portName, String category, String[] labels, 
-			String units, float minValue, float maxValue, int windowWidth, int windowHeight, float frequency) throws Exception {
+			String units, float minValue, float maxValue, int windowWidth, int windowHeight, 
+			float frequency, float factor) throws Exception {
 		super(title);
 		ev3 = new RemoteEV3(host);
 		this.category = category;
 		this.labels = labels;
 		this.frequency = frequency;
+		this.factor = factor;
+		System.out.println("Creating remote sensor class: " + sensorClass + " on port " + portName);
 		sp = ev3.createSampleProvider(portName, sensorClass, null);
 		JFreeChart chart = ChartFactory.createBarChart(title, category, units, dataset, 
 				PlotOrientation.VERTICAL, true, true, false);
@@ -51,7 +65,7 @@ public class BarChart extends JFrame {
 	        @Override
 	        public void windowClosing(WindowEvent e) {
 	        	try {
-					sp.close();
+					if (sp != null) sp.close();
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
@@ -64,19 +78,22 @@ public class BarChart extends JFrame {
         	float[] sample = sp.fetchSample();
         	dataset.clear();
         	for(int i=0;i<labels.length;i++) {
-        		dataset.addValue(sample[i], labels[i], category);
+        		dataset.addValue(sample[i] * factor, labels[i], category);
         	}
     		Delay.msDelay(((int) (1000f/frequency)));
         }
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String[] labels = {"X","Y","Z"};
-        BarChart demo = new BarChart("192.168.0.9", "lejos.hardware.sensor.MindsensorsAccelerometer", "S1", 
-        		                     "Acceleration", labels, "m/s/s", -20, 20, 500, 300, 5);
-		//String[] labels = {"X"};
-		//BarChart demo = new BarChart("192.168.0.9", "lejos.hardware.sensor.HiTechnicGyro", "S1", 
-		//        		             "Angular Momentum", labels, "degrees/sec", -360, 360, 500, 200, 5);
+		Properties p = new Properties();
+		p.load(new FileReader("chart.properties"));
+		
+		String[] labels = p.getProperty("labels").split(",");
+        BarChart demo = new BarChart(p.getProperty("host"), p.getProperty("class"), p.getProperty("port"), 
+        		                     p.getProperty("category"), labels, p.getProperty("units"), 
+        		                     Float.parseFloat(p.getProperty("min")), Float.parseFloat(p.getProperty("max")), 
+        		                     Integer.parseInt(p.getProperty("width")), Integer.parseInt(p.getProperty("height")), 
+        		                     Float.parseFloat(p.getProperty("frequency")),Float.parseFloat(p.getProperty("factor", "1.0")));
         demo.pack();
         demo.setVisible(true);
         demo.run();
