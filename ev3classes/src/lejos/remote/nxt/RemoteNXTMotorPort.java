@@ -2,6 +2,7 @@ package lejos.remote.nxt;
 
 import java.io.IOException;
 
+import lejos.hardware.motor.MotorRegulator;
 import lejos.hardware.port.BasicMotorPort;
 import lejos.hardware.port.PortException;
 import lejos.hardware.port.TachoMotorPort;
@@ -83,5 +84,13 @@ public class RemoteNXTMotorPort extends RemoteNXTIOPort implements NXTProtocol, 
     public void setPWMMode(int mode)
     {
     	// TODO: How can we support this on a remote NXT?
+    }
+
+    @Override
+    public MotorRegulator getRegulator()
+    {
+        // TODO Does it make sense to allow this to be remote?
+        throw(new UnsupportedOperationException("Remote regulators are not supported"));
+        //return null;
     }  
 }

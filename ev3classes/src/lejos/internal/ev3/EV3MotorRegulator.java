@@ -2,10 +2,13 @@ package lejos.internal.ev3;
 
 import lejos.hardware.motor.MotorRegulator;
 import lejos.hardware.port.TachoMotorPort;
+import lejos.robotics.RegulatedMotor;
+import lejos.robotics.RegulatedMotorListener;
 import lejos.utility.Delay;
 
 /**
- * Inner class to regulate velocity; also stop motor at desired rotation angle.
+ * Java based regulator 
+ * regulate velocity; also stop motor at desired rotation angle.
  * This class uses a very simple movement model based on simple linear
  * acceleration. This model is used to generate ideal target positions which
  * are then used to generate error terms between the actual and target position
@@ -44,6 +47,13 @@ public class EV3MotorRegulator implements MotorRegulator
     static final float HOLD_P = 2f;
     static final float HOLD_I = 0.02f;
     static final float HOLD_D = 8f;
+    
+    float moveP;
+    float moveI;
+    float moveD;
+    float holdP;
+    float holdI;
+    float holdD;
     float basePower = 0; //used to calculate power
     float err1 = 0; // used in smoothing
     float err2 = 0; // used in smoothing
@@ -72,6 +82,9 @@ public class EV3MotorRegulator implements MotorRegulator
     public int power;
     int mode;
     boolean active = false;
+    RegulatedMotorListener listener;
+    RegulatedMotor motor;
+    boolean stalled;
     int stallCnt = 0;
     protected int stallLimit = 50;
     protected int stallTime = 1000;
@@ -104,9 +117,11 @@ public class EV3MotorRegulator implements MotorRegulator
         return tachoPort.getTachoCount() - zeroTachoCnt;
     }
     
-    public void resetTachoCount()
+    public synchronized void resetTachoCount()
     {
+        newMove(0, 1000, NO_LIMIT, false, true);
         zeroTachoCnt = tachoPort.getTachoCount();
+        reset();
     }
 
     public boolean isMoving()
@@ -124,11 +139,86 @@ public class EV3MotorRegulator implements MotorRegulator
         this.stallLimit = error;
         this.stallTime = time/Controller.UPDATE_PERIOD;
     }
+    
+    
+    /**
+     * Update the internal state of the motor.
+     * @param velocity
+     * @param hold
+     * @param stalled
+     */
+    protected synchronized void updateState(int velocity, boolean hold, boolean stalled)
+    {
+        if (listener != null)
+        {
+            if (velocity == 0)
+                listener.rotationStopped(motor, getTachoCount(), stalled, System.currentTimeMillis());
+            else
+                listener.rotationStarted(motor, getTachoCount(), false, System.currentTimeMillis());
+        }
+    }
+    
+    @Override
+    public void addListener(RegulatedMotor motor, RegulatedMotorListener listener)
+    {
+        // TODO Auto-generated method stub
+        this.motor = motor;
+        this.listener = listener;        
+    }
+
+
+    @Override
+    public RegulatedMotorListener removeListener()
+    {
+        RegulatedMotorListener old = listener;
+        listener = null;
+        // TODO Auto-generated method stub
+        return old;
+    }
+
+
+
+    @Override
+    public void setControlParamaters(int typ, float moveP, float moveI,
+            float moveD, float holdP, float holdI, float holdD, int offset)
+    {
+        // Stop the motor if needed
+        newMove(0, 1000, NO_LIMIT, false, true);
+        this.moveP = moveP;
+        this.moveI = moveI;
+        this.moveD = moveD;
+        this.holdP = holdP;
+        this.holdI = holdI;
+        this.holdD = holdD;
+        reset();
+    }
+
+
+    @Override
+    public void waitComplete()
+    {
+        waitStop();
+    }
+
+
+    @Override
+    public int getLimitAngle()
+    {
+        return curLimit;
+    }
+
+
+    @Override
+    public boolean isStalled()
+    {
+        return stalled;
+    }
+
 
     /**
      * Reset the tachometer readings
      */
-    public synchronized void reset()
+    protected synchronized void reset()
     {
         curCnt = tachoCnt = getTachoCount();
         baseTime = now = System.currentTimeMillis();
@@ -216,6 +306,8 @@ public class EV3MotorRegulator implements MotorRegulator
         }
         // ditch any existing pending command
         pending = false;
+        // no longer stalled
+        stalled = false;
         // Stop moves always happen now
         if (speed == 0)
             startSubMove(0, acceleration, NO_LIMIT, hold);
@@ -223,7 +315,7 @@ public class EV3MotorRegulator implements MotorRegulator
         {
             // not moving so we start a new move
             startSubMove(speed, acceleration, limit, hold);
-            //updateState(Math.round(curTargetVelocity), hold, false);
+            updateState(Math.round(curTargetVelocity), hold, false);
         }
         else
         {
@@ -290,7 +382,8 @@ public class EV3MotorRegulator implements MotorRegulator
     synchronized private void endMove(boolean stalled)
     {
         moving = pending;
-        //updateState(0, curHold, stalled);
+        this.stalled = stalled;
+        updateState(0, curHold, stalled);
         if (stalled)
         {
             // stalled try and maintain current position
@@ -304,7 +397,7 @@ public class EV3MotorRegulator implements MotorRegulator
         {
             pending = false;
             startSubMove(newSpeed, newAcceleration, newLimit, newHold);
-            //updateState(Math.round(curTargetVelocity), curHold, false);
+            updateState(Math.round(curTargetVelocity), curHold, false);
         }
         notifyAll();
     }

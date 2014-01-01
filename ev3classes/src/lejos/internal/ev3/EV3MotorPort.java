@@ -3,6 +3,7 @@ package lejos.internal.ev3;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import lejos.hardware.motor.MotorRegulator;
 import lejos.hardware.port.BasicMotorPort;
 import lejos.hardware.port.TachoMotorPort;
 import lejos.internal.io.NativeDevice;
@@ -22,6 +23,14 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     static final byte OUTPUT_STOP = (byte)0xa3;
     static final byte OUTPUT_CLR_COUNT = (byte)0xb2;
     
+    static final int ST_IDLE = 0;
+    static final int ST_STALL = 1;
+    static final int ST_HOLD = 2;
+    static final int ST_START = 3;
+    static final int ST_ACCEL = 4;
+    static final int ST_MOVE = 5;
+    static final int ST_DECEL = 6;
+    
     static final int NO_LIMIT = 0x7fffffff;
     
     protected static NativeDevice tacho;
@@ -33,11 +42,15 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         initDeviceIO();
     }
     protected int curMode = FLOAT+1; // current mode is unknown
-    protected byte[] cmd = new byte[32];
-
+    protected byte[] cmd = new byte[43];
+    protected MotorRegulator regulator;
+    protected float curPosition;
+    protected float curVelocity;
+    protected float curCnt;
+    protected int curTime;
+    
     // Fixed point routines and constants
     static final int FIX_SCALE = 256;
-    static final int FIX_SHIFT = 8;
     
     static int floatToFix(float f)
     {
@@ -46,7 +59,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     
     static int intToFix(int i)
     {
-        return i << FIX_SHIFT;
+        return i*FIX_SCALE;
     }
     
     static float FixToFloat(int fix)
@@ -56,17 +69,17 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     
     static int FixMult(int a, int b)
     {
-        return (a*b) >> FIX_SHIFT;
+        return (a*b)/FIX_SCALE;
     }
     
     static int FixDiv(int a, int b)
     {
-        return (a << FIX_SHIFT)/b;
+        return (a*FIX_SCALE)/b;
     }
     
     static int FixRound(int a)
     {
-        return (a+FIX_SCALE/2) >> FIX_SHIFT;
+        return (a >= 0 ? (a+FIX_SCALE/2)/FIX_SCALE : (a-FIX_SCALE/2)/FIX_SCALE);
     }
 
    
@@ -102,7 +115,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
 
     }
 
-    public void setControlParams(int typ, float moveP, float moveI, float moveD, float holdP, float holdI, float holdD)
+    public void setControlParams(int typ, float moveP, float moveI, float moveD, float holdP, float holdI, float holdD, int offset, int deadBand)
     {
         cmd[0] = OUTPUT_SET_TYPE;
         cmd[1] = (byte)port;
@@ -113,34 +126,118 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         setVal(cmd, 15, floatToFix(holdP));
         setVal(cmd, 19, floatToFix(holdI));
         setVal(cmd, 23, floatToFix(holdD));
-        pwm.write(cmd, 27);
+        setVal(cmd, 27, offset);
+        setVal(cmd, 31, intToFix(deadBand));
+        pwm.write(cmd, 35);
         
     }
     
-    /**
-     * Helper method. Start a sub move operation. A sub move consists
-     * of acceleration/deceleration to a set velocity and then holding that
-     * velocity up to an optional limit point. If a limit point is set this
-     * method will be called again to initiate a controlled deceleration
-     * to that point
-     * @param speed
-     * @param acceleration
-     * @param limit
-     * @param hold
-     */
-    synchronized private void startSubMove(float speed, float acceleration, int limit, boolean hold)
+
+
+    protected void subMove(int t1, int t2, int t3, float c2, float c3, float v1, float v2, float a1, float a3, int time, boolean hold)
     {
-        // rescale speed and acceleration to be in units/1024mS rather than 1000mS
-        speed = (speed/1000f)*1024f;
-        acceleration = (acceleration/1000f)*1024f;
+        // convert units from /s (i.e 100ms) to be per 1024ms to allow div to be performed by shift
+        v1 = (v1/1000f)*1024f;
+        v2 = (v2/1000f)*1024f;
+        a1 = (((a1/1000f)*1024f)/1000f)*1024f;
+        a3 = (((a3/1000f)*1024f)/1000f)*1024f;
         // now start the actual move
         cmd[0] = OUTPUT_START;
         cmd[1] = (byte)port;
-        setVal(cmd, 2, floatToFix(speed));
-        setVal(cmd, 6, floatToFix(acceleration));
-        setVal(cmd, 10, limit);
-        cmd[15] = (byte) (hold ? 1 : 0);
-        pwm.write(cmd,  15);
+        setVal(cmd, 2, t1);
+        setVal(cmd, 6, t2);
+        setVal(cmd, 10, t3);
+        setVal(cmd, 14, floatToFix(c2));
+        setVal(cmd, 18, floatToFix(c3));
+        setVal(cmd, 22, floatToFix(v1));
+        setVal(cmd, 26, floatToFix(v2));
+        setVal(cmd, 30, floatToFix(a1));
+        setVal(cmd, 34, floatToFix(a3));
+        setVal(cmd, 38, time);
+        cmd[42] = (byte) (hold ? 1 : 0);
+        pwm.write(cmd, 43);      
+    }
+    
+    /**
+     * Helper method generate a move by splitting it into three phases, initial
+     * acceleration, constant velocity, and final deceleration. We allow for the case
+     * were it is not possible to reach the required constant velocity and hence the
+     * move becomes triangular rather than trapezoid.   
+     * @param curVel
+     * @param curPos
+     * @param speed
+     * @param acc
+     * @param limit
+     * @param hold
+     */
+    protected void genMove(float curVel, float curPos, float curCnt, int curTime, float speed, float acc, int limit, boolean hold)
+    {
+        float u2 = curVel*curVel;
+        int len = (int)(limit - curPos);
+        float v = speed;
+        float a1 = acc;
+        float a3 = acc;
+        System.out.println("limit " + limit + " len " + len + " speed " + speed + " hold " + hold);
+        if (speed == 0.0)
+        {
+            System.out.println("Stop");
+            if (curVel < 0)
+                a3 = -a3;
+            // Stop case
+            float s3 = (u2)/(2*a3);
+            int t3 = (int)(1000*(2*(s3))/(curVel));
+            subMove(0, 0, t3, 0, curCnt, 0, curVel, 0, -a3, curTime, hold);
+            return;
+        }
+        if (len < 0)
+        {
+            a3 = -a3;
+            a1 = -a1;
+            v = -speed;
+        }
+        float v2 = v*v;
+        if (v2 < u2)
+            a1 = -a1;
+        if (Math.abs(limit) == NO_LIMIT)
+        {
+            System.out.println("Unlimited move");
+            // Run forever, no need for deceleration
+            float s1 = (v2 - u2)/(2*a1);
+            int t1 = (int)(1000*(2*s1)/(curVel + v));
+            subMove(t1, NO_LIMIT, 0, curCnt + s1, 0, curVel, v, a1, 0, curTime, hold);
+            return;
+        }
+        float vmax2 = a3*len + u2/2;
+        if (vmax2 <= v2)
+        {
+            System.out.println("Triangle");
+            v = (float) Math.sqrt(vmax2);
+            if (len < 0)
+            {
+                v = -v;
+            }
+            // triangular move
+            float s1 = (vmax2 - u2)/(2*a1);
+            int t1 = (int)(1000*(2*s1)/(curVel + v));
+            int t2 = t1;
+            int t3 = t2 + (int)(1000*(2*(len-s1))/(v));
+            subMove(t1, t2, t3, 0, s1+curCnt, curVel, v, a1, -a3, curTime, hold);         
+        }
+        else
+        {
+            System.out.println("Trap");
+            // trapezoid move
+            float s1 = (v2 - u2)/(2*a1);
+            float s3 = (v2)/(2*a3);
+            float s2 = len - s1 - s3;
+            System.out.println("s1 " + s1 + " s2 " + s2 + " s3 " + s3);
+            int t1 = (int)(1000*(2*s1)/(curVel + v));
+            int t2 = t1 + (int)(1000*s2/v);
+            int t3 = t2 + (int)(1000*(2*(s3))/(v));
+            System.out.println("v " + v + " a1 " + a1 + " a3 " + (-a3));
+            subMove(t1, t2, t3, curCnt+s1, curCnt+s1+s2, curVel, v, a1, -a3, curTime, hold);
+
+        }
     }
 
     /**
@@ -149,8 +246,19 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
      */
     private void waitStop()
     {
+        int pos = this.getTachoCount();
         while(isMoving())
+        {
             Delay.msDelay(1);
+            int newPos = this.getTachoCount();
+            if (newPos != pos)
+            {
+                updateVelocityAndPosition();
+                System.out.println("P: " + newPos + " T " + curPosition + " V " + curVelocity);
+                pos = newPos;
+            }
+        }
+            
     }
 
     
@@ -166,43 +274,32 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
      */
     synchronized public void newMove(float speed, int acceleration, int limit, boolean hold, boolean waitComplete)
     {
+        updateVelocityAndPosition();
         // Stop moves always happen now
         if (speed == 0)
-            startSubMove(0, acceleration, NO_LIMIT, hold);
+            genMove(curVelocity, curPosition, curCnt, curTime, 0, acceleration, NO_LIMIT, hold);
         else if (!isMoving())
         {
             // not moving so we start a new move
-            startSubMove(speed, acceleration, limit, hold);
+            genMove(curVelocity, curPosition, curCnt, 0, speed, acceleration, limit, hold);
         }
         else
         {
-            // TODO: Make this stuff possible
             // we already have a move in progress can we modify it to match
             // the new request? We must ensure that the new move is in the
             // same direction and that any stop will not exceed the current
             // acceleration request.
-            /*
-            float moveLen = limit - curCnt;
+            float moveLen = limit - curPosition;
             float acc = (curVelocity*curVelocity)/(2*(moveLen));
             if (moveLen*curVelocity >= 0 && Math.abs(acc) <= acceleration)
-                startSubMove(speed, acceleration, limit, hold);
+                genMove(curVelocity, curPosition, curCnt, curTime, speed, acceleration, limit, hold);
             else
             {
-                // Save the requested move
-                newSpeed = speed;
-                newAcceleration = acceleration;
-                newLimit = limit;
-                newHold = hold;
-                pending = true;
-                // stop the current move
-                startSubMove(0, acceleration, NO_LIMIT, true);
-                // If we need to wait for the existing command to end
-                if (waitComplete)
-                    waitStop();
-            }*/
-            startSubMove(0, acceleration, NO_LIMIT, true);
-            waitStop();
-            startSubMove(speed, acceleration, limit, hold);
+                genMove(curVelocity, curPosition, curCnt, curTime, 0, acceleration, NO_LIMIT, true);
+                waitStop();
+                updateVelocityAndPosition();
+                genMove(curVelocity, curPosition, curCnt, 0, speed, acceleration, limit, hold);
+            }
         }
         if (waitComplete)
             waitStop();
@@ -242,12 +339,91 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
      */
     public  int getTachoCount()
     {
-        return ibuf.get(port*3 + 2);
+        return ibuf.get(port*6 + 3);
+    }
+    
+    /**
+     * Grabs the current state of the regulator
+     */
+    protected void updateVelocityAndPosition()
+    {
+        int baseCnt;
+        int cnt;
+        int vel;
+        int time;
+        // Check to make sure time is not changed during read
+        do {
+            time = ibuf.get(port*6 + 5);
+            baseCnt = ibuf.get(port*6);
+            cnt = ibuf.get(port*6+1);
+            vel = ibuf.get(port*6+2);
+        } while (time != ibuf.get(port*6 + 5));
+        curCnt = FixToFloat(cnt);
+        curPosition = curCnt + baseCnt;
+        curVelocity = (FixToFloat(vel)/1024)*1000;
+        curTime = time;
+    }
+    
+    /**
+     * returns the current position from the regulator
+     * @return current position in degrees
+     */
+    public  float getPosition()
+    {
+        updateVelocityAndPosition();
+        return curPosition;
+    }
+
+    /**
+     * returns the current velocity from the regulator
+     * @return velocity in degrees per second
+     */
+    public float getCurrentVelocity()
+    {
+        updateVelocityAndPosition();
+        return curVelocity;
+    }
+
+    /**
+     * Waits for the current move operation to complete
+     */
+    public void waitComplete()
+    {
+        waitStop();
+    }
+    
+    protected int getState()
+    {
+        return ibuf.get(port*6 + 4);
     }
     
     public boolean isMoving()
     {
-        return ibuf.get(port*3 + 1) != 0;
+        return getState() >= ST_START;
+    }
+    
+    public boolean isStalled()
+    {
+        return getState() == ST_STALL;
+    }
+    
+    /**
+     * Update the internal state of the motor.
+     * @param velocity
+     * @param hold
+     * @param stalled
+     */
+    void updateState(int velocity, boolean hold, boolean stalled)
+    {
+        /*
+            if (listener != null)
+            {
+                if (velocity == 0)
+                    listener.rotationStopped(this, getTachoCount(), stalled, System.currentTimeMillis());
+                else
+                    listener.rotationStarted(this, getTachoCount(), false, System.currentTimeMillis());
+            }
+            */
     }
     
     /**
@@ -274,5 +450,16 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         ibuf = bbuf.asIntBuffer();
         pwm = new NativeDevice("/dev/lms_pwm");
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public synchronized MotorRegulator getRegulator()
+    {
+        if (regulator == null)
+            regulator = new EV3MotorRegulatorKM(this);
+        return regulator;
     }
 }

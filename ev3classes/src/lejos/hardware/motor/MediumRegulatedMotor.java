@@ -5,26 +5,26 @@ import lejos.hardware.port.TachoMotorPort;
 import lejos.hardware.sensor.EV3SensorConstants;
 
 /**
- * Abstraction for a Large Lego EV3/NXT motor.
+ * Abstraction for a Medium Lego EV3/NXT motor.
  * 
  */
-public class LargeRegulatedMotor extends BaseRegulatedMotor
+public class MediumRegulatedMotor extends BaseRegulatedMotor
 {
-    static final float MOVE_P = 4f;
+    static final float MOVE_P = 8f;
     static final float MOVE_I = 0.04f;
-    static final float MOVE_D = 10f;
-    static final float HOLD_P = 2f;
+    static final float MOVE_D = 8f;
+    static final float HOLD_P = 8f;
     static final float HOLD_I = 0.02f;
-    static final float HOLD_D = 8f;
-    static final int OFFSET = 0;
+    static final float HOLD_D = 0f;
+    static final int OFFSET = 1000;
 
     /**
      * Use this constructor to assign a variable of type motor connected to a particular port.
      * @param port  to which this motor is connected
      */
-    public LargeRegulatedMotor(TachoMotorPort port)
+    public MediumRegulatedMotor(TachoMotorPort port)
     {
-        super(port, null, EV3SensorConstants.TYPE_NEWTACHO, MOVE_P, MOVE_I, MOVE_D,
+        super(port, null, EV3SensorConstants.TYPE_MINITACHO, MOVE_P, MOVE_I, MOVE_D,
                 HOLD_P, HOLD_I, HOLD_D, OFFSET);
     }
     
@@ -32,7 +32,7 @@ public class LargeRegulatedMotor extends BaseRegulatedMotor
      * Use this constructor to assign a variable of type motor connected to a particular port.
      * @param port  to which this motor is connected
      */
-    public LargeRegulatedMotor(Port port)
+    public MediumRegulatedMotor(Port port)
     {
         super(port, null, EV3SensorConstants.TYPE_NEWTACHO, MOVE_P, MOVE_I, MOVE_D,
                 HOLD_P, HOLD_I, HOLD_D, OFFSET);
