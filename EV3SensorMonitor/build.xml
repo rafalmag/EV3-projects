@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-    <project name="SensorMonitor" basedir="." default="copy">
+<project name="SensorMonitor" basedir="." default="copy">
+    <property file="local.properties" />
     <property name="source.dir"     value="src"/>
     <property name="lib.dir"        value="../ev3classes"/>
     <property name="class.dir"      value="build"/>
     <property name="jar.dir"        value="dist"/>
     <property name="main-class"     value="MonitorSensors"/>
     <property name="lejos.home"     value="/home/root/lejos"/>
-    <property name="ev3.host"       value="192.168.0.9"/>
+    <property name="ev3.host"       value="10.0.1.1"/>
 
     <path id="libraries.path">    
         <fileset dir="${lib.dir}">
