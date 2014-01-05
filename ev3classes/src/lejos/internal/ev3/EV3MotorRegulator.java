@@ -161,7 +161,6 @@ public class EV3MotorRegulator implements MotorRegulator
     @Override
     public void addListener(RegulatedMotor motor, RegulatedMotorListener listener)
     {
-        // TODO Auto-generated method stub
         this.motor = motor;
         this.listener = listener;        
     }
@@ -172,7 +171,6 @@ public class EV3MotorRegulator implements MotorRegulator
     {
         RegulatedMotorListener old = listener;
         listener = null;
-        // TODO Auto-generated method stub
         return old;
     }
 
