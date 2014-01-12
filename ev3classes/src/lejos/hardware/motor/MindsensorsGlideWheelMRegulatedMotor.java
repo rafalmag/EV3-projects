@@ -8,7 +8,9 @@ import lejos.hardware.sensor.EV3SensorConstants;
  * Abstraction for a Mindsensors Glidewheel-M equipped PF motor.<br>
  * Note: These settings are for the "M" motor. This motor does not seem
  * to like running slowly, or to use acceleration values less than around
- * 500deg/s/s.
+ * 500deg/s/s. Also tested with the "XL" motor which seems to work well other
+ * than some oscillation when holding. We may need different settings for
+ * the two.
  * TODO: Find some way to make this work with an I term for hold
  * TODO: Can probably be tuned better then this.
  * 
@@ -21,7 +23,7 @@ public class MindsensorsGlideWheelMRegulatedMotor extends BaseRegulatedMotor
     static final float HOLD_P = 2.5f;
     static final float HOLD_I = 0f;
     static final float HOLD_D = 0f;
-    static final int OFFSET = 1000;
+    static final int OFFSET = 0;
 
     /**
      * Use this constructor to assign a variable of type motor connected to a particular port.

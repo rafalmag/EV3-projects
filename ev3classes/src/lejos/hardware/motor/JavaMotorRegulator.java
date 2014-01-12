@@ -1,6 +1,5 @@
-package lejos.internal.ev3;
+package lejos.hardware.motor;
 
-import lejos.hardware.motor.MotorRegulator;
 import lejos.hardware.port.TachoMotorPort;
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.RegulatedMotorListener;
@@ -26,7 +25,7 @@ import lejos.utility.Delay;
  * Once the motor stops, the final position is held using the same PID control
  * mechanism (with slightly different parameters), as that used for movement.
  **/
-public class EV3MotorRegulator implements MotorRegulator
+public class JavaMotorRegulator implements MotorRegulator
 {
     // PID constants for move and for hold
     // Old values
@@ -104,7 +103,7 @@ public class EV3MotorRegulator implements MotorRegulator
         });
     }
 
-    public EV3MotorRegulator(TachoMotorPort p)
+    public JavaMotorRegulator(TachoMotorPort p)
     {
         tachoPort = p;
         tachoPort.setPWMMode(TachoMotorPort.PWM_BRAKE);
@@ -502,16 +501,16 @@ public class EV3MotorRegulator implements MotorRegulator
     protected static class Controller extends Thread
     {
         static final int UPDATE_PERIOD = 4;
-        EV3MotorRegulator [] activeMotors = new EV3MotorRegulator[0];
+        JavaMotorRegulator [] activeMotors = new JavaMotorRegulator[0];
         boolean running = false;
     
         /**
          * Add a motor to the set of active motors.
          * @param m
          */
-        synchronized void addMotor(EV3MotorRegulator m)
+        synchronized void addMotor(JavaMotorRegulator m)
         {
-            EV3MotorRegulator [] newMotors = new EV3MotorRegulator[activeMotors.length+1];
+            JavaMotorRegulator [] newMotors = new JavaMotorRegulator[activeMotors.length+1];
             System.arraycopy(activeMotors, 0, newMotors, 0, activeMotors.length);
             newMotors[activeMotors.length] = m;
             m.reset();
@@ -522,10 +521,10 @@ public class EV3MotorRegulator implements MotorRegulator
          * Remove a motor from the set of active motors.
          * @param m
          */
-        synchronized void removeMotor(EV3MotorRegulator m)
+        synchronized void removeMotor(JavaMotorRegulator m)
         {
             m.tachoPort.controlMotor(0, TachoMotorPort.FLOAT);
-            EV3MotorRegulator [] newMotors = new EV3MotorRegulator[activeMotors.length-1];
+            JavaMotorRegulator [] newMotors = new JavaMotorRegulator[activeMotors.length-1];
             int j = 0;
             for(int i = 0; i < activeMotors.length; i++)
                 if (activeMotors[i] != m)
@@ -537,9 +536,9 @@ public class EV3MotorRegulator implements MotorRegulator
         {
             // Shutdown all of the motors and prevent them from running
             running = false;
-            for(EV3MotorRegulator m : activeMotors)
+            for(JavaMotorRegulator m : activeMotors)
                 m.tachoPort.controlMotor(0, TachoMotorPort.FLOAT);
-            activeMotors = new EV3MotorRegulator[0];
+            activeMotors = new JavaMotorRegulator[0];
         }
     
     
@@ -554,13 +553,13 @@ public class EV3MotorRegulator implements MotorRegulator
                 synchronized (this)
                 {
                     delta = System.currentTimeMillis() - now;
-                    EV3MotorRegulator [] motors = activeMotors;
+                    JavaMotorRegulator [] motors = activeMotors;
                     now += delta;
-                    for(EV3MotorRegulator m : motors)
+                    for(JavaMotorRegulator m : motors)
                         m.tachoCnt = m.tachoPort.getTachoCount() - m.zeroTachoCnt;
-                    for(EV3MotorRegulator m : motors)
+                    for(JavaMotorRegulator m : motors)
                         m.regulateMotor(delta);
-                    for(EV3MotorRegulator m : motors)
+                    for(JavaMotorRegulator m : motors)
                         m.tachoPort.controlMotor(m.power, m.mode);
                 }
                 Delay.msDelay(now + UPDATE_PERIOD - System.currentTimeMillis());

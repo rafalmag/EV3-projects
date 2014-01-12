@@ -3,6 +3,7 @@ package lejos.internal.ev3;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import lejos.hardware.motor.JavaMotorRegulator;
 import lejos.hardware.motor.MotorRegulator;
 import lejos.hardware.port.BasicMotorPort;
 import lejos.hardware.port.TachoMotorPort;
@@ -219,7 +220,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
          */
         protected void subMove(int t1, int t2, int t3, float c1, float c2, float c3, float v1, float v2, float a1, float a3, int sl, int st, int ts, boolean hold)
         {
-            System.out.println("t1 " + t1 + " t2 " + t2 + " t3 " + t3 + " c2 " + c2 + " c3 " + c3 + " v1 " + v1 + " v2 " + v2 + " a1 " + a1 + " a3 " + a3);
+            //System.out.println("t1 " + t1 + " t2 " + t2 + " t3 " + t3 + " c2 " + c2 + " c3 " + c3 + " v1 " + v1 + " v2 " + v2 + " a1 " + a1 + " a3 " + a3);
             // convert units from /s (i.e 100ms) to be per 1024ms to allow div to be performed by shift
             v1 = (v1/1000f)*1024f;
             v2 = (v2/1000f)*1024f;
@@ -271,10 +272,10 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
             float v = speed;
             float a1 = acc;
             float a3 = acc;
-            System.out.println("limit " + limit + " len " + len + " speed " + speed + " hold " + hold);
+            //System.out.println("limit " + limit + " len " + len + " speed " + speed + " hold " + hold);
             if (speed == 0.0)
             {
-                System.out.println("Stop");
+                //System.out.println("Stop");
                 if (curVel < 0)
                     a3 = -a3;
                 // Stop case
@@ -294,7 +295,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
                 a1 = -a1;
             if (Math.abs(limit) == NO_LIMIT)
             {
-                System.out.println("Unlimited move");
+                //System.out.println("Unlimited move");
                 // Run forever, no need for deceleration
                 float s1 = (v2 - u2)/(2*a1);
                 int t1 = (int)(1000*(2*s1)/(curVel + v));
@@ -304,7 +305,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
             float vmax2 = a3*len + u2/2;
             if (vmax2 <= v2)
             {
-                System.out.println("Triangle");
+                //System.out.println("Triangle");
                 v = (float) Math.sqrt(vmax2);
                 if (len < 0)
                 {
@@ -319,16 +320,16 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
             }
             else
             {
-                System.out.println("Trap");
+                //System.out.println("Trap");
                 // trapezoid move
                 float s1 = (v2 - u2)/(2*a1);
                 float s3 = (v2)/(2*a3);
                 float s2 = len - s1 - s3;
-                System.out.println("s1 " + s1 + " s2 " + s2 + " s3 " + s3);
+                //System.out.println("s1 " + s1 + " s2 " + s2 + " s3 " + s3);
                 int t1 = (int)(1000*(2*s1)/(curVel + v));
                 int t2 = t1 + (int)(1000*s2/v);
                 int t3 = t2 + (int)(1000*(2*(s3))/(v));
-                System.out.println("v " + v + " a1 " + a1 + " a3 " + (-a3));
+                //System.out.println("v " + v + " a1 " + a1 + " a3 " + (-a3));
                 subMove(t1, t2, t3, curCnt, curCnt+s1, curCnt+s1+s2, curVel, v, a1, -a3, stallLimit, stallTime, curTime, hold);
 
             }
@@ -661,7 +662,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     {
         if (regulator == null)
             regulator = new EV3MotorRegulatorKernelModule(this);
-            //regulator = new EV3MotorRegulator(this);
+            //regulator = new JavaMotorRegulator(this);
         return regulator;
     }
 }
