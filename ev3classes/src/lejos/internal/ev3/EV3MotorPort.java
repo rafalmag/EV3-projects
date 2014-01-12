@@ -143,7 +143,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
          * @param offset
          * @param deadBand
          */
-        public void setControlParams(int typ, float moveP, float moveI, float moveD, float holdP, float holdI, float holdD, int offset, int deadBand)
+        public void setControlParams(int typ, float moveP, float moveI, float moveD, float holdP, float holdI, float holdD, int offset, float deadBand)
         {
             cmd[0] = OUTPUT_SET_TYPE;
             cmd[1] = (byte)port;
@@ -155,7 +155,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
             setVal(cmd, 19, floatToFix(holdI));
             setVal(cmd, 23, floatToFix(holdD));
             setVal(cmd, 27, offset);
-            setVal(cmd, 31, intToFix(deadBand));
+            setVal(cmd, 31, floatToFix(deadBand));
             pwm.write(cmd, 35);
             
         }
@@ -515,7 +515,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         public void setControlParamaters(int typ, float moveP, float moveI,
                 float moveD, float holdP, float holdI, float holdD, int offset)
         {
-            setControlParams(typ, moveP, moveI, moveD, holdP, holdI, holdD, offset, 0);
+            setControlParams(typ, moveP, moveI, moveD, holdP, holdI, holdD, offset, 0.0f);
         }
 
 
@@ -661,6 +661,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     {
         if (regulator == null)
             regulator = new EV3MotorRegulatorKernelModule(this);
+            //regulator = new EV3MotorRegulator(this);
         return regulator;
     }
 }
