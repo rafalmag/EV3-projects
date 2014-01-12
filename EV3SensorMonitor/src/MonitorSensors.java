@@ -15,13 +15,28 @@ import lejos.hardware.port.UARTPort;
 import lejos.internal.ev3.EV3DeviceManager;
 import lejos.robotics.SampleProvider;
 
+/**
+ * MonitorSensors monitors sensors that are plugged in and removed and attempts to identify them.
+ * 
+ * It then uses reflection to call common sensor methods such as all parameterless get methods and
+ * is methods, and fetchSample.
+ * 
+ * This is useful to see if a sensor is working but not for much else.
+ * 
+ * It needs to be run on the EV3.
+ * 
+ * The mapping to sensor classes needs extending for more sensors.
+ * 
+ * @author Lawrie Griffiths
+ *
+ */
 public class MonitorSensors {
     HashMap<String,String> sensorClasses = new HashMap<String,String>();
       
     // Monitor the sensor ports
     void monitorSensorPorts()
     {
-        // TODO: sort this table out when final class names etc are fixed.
+        // TODO: add more sensors.
     	sensorClasses.put("mndsnsrsNRLink","lejos.hardware.device.RCXLink");
     	sensorClasses.put("mndsnsrsACCL3X03","lejos.hardware.sensor.MindsensorsAccelerometer");
     	sensorClasses.put("HiTechncColor   ","lejos.hardware.sensor.ColorHTSensor");
@@ -52,7 +67,10 @@ public class MonitorSensors {
                     if (typ == EV3SensorConstants.CONN_INPUT_UART) {
                         out.println("Open port " + i);
                         UARTPort u = port[i].open(UARTPort.class);
+                        // Set mode 0 to activate the sensor
+                        u.setMode(0);
                         String modeName = u.getModeName(0);
+                        // Copy with any null terminators in name (in case bug not fixed)
                         if (modeName.indexOf(0) >= 0)modeName = modeName.substring(0, modeName.indexOf(0));
                         out.println("Uart sensor: " + modeName);
                         String className = sensorClasses.get(modeName);

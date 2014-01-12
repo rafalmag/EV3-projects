@@ -15,48 +15,39 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
-/**
- * Sample program to draw a real-time bar chart of any EV3 sensor that supports the SampleProvider interface.
- * 
- * The chart.properties file defines the sensor to use and all the other parameters for the sensor and the chart
- * 
- * @author Lawrie Griffiths
- *
- */
-public class BarChart extends JFrame {
+public class Graph extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private static String title = "EV3 sampling";
-	private DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+	private XYSeries series;
+	private XYSeriesCollection dataset = new XYSeriesCollection();
 	private RemoteEV3 ev3;
 	private RMISampleProvider sp;
-	private String category;
 	private String[] labels;
 	private float frequency;
-	private float factor;
 	
-	public BarChart(String host, String sensorClass, String portName, String category, String[] labels, 
-			String units, float minValue, float maxValue, int windowWidth, int windowHeight, 
-			float frequency, float factor) throws Exception {
+	public Graph(String host, String sensorClass, String portName, String category, String[] labels, 
+			String units, float minValue, float maxValue, int windowWidth, int windowHeight, float frequency) throws Exception {
 		super(title);
 		ev3 = new RemoteEV3(host);
-		this.category = category;
 		this.labels = labels;
 		this.frequency = frequency;
-		this.factor = factor;
-		System.out.println("Creating remote sensor class: " + sensorClass + " on port " + portName);
 		sp = ev3.createSampleProvider(portName, sensorClass, null);
-		JFreeChart chart = ChartFactory.createBarChart(title, category, units, dataset, 
+		series = new XYSeries(labels[0]);
+		dataset.addSeries(series);
+		JFreeChart chart = ChartFactory.createXYLineChart(title, category, units, (XYDataset) dataset, 
 				PlotOrientation.VERTICAL, true, true, false);
 		
 		ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new Dimension(windowWidth, windowHeight));
 		setContentPane(chartPanel);
 		
-		CategoryPlot plot = chart.getCategoryPlot();
+		XYPlot plot = chart.getXYPlot();
 		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 		rangeAxis.setRange(minValue, maxValue);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,6 +57,7 @@ public class BarChart extends JFrame {
 	        public void windowClosing(WindowEvent e) {
 	        	try {
 					if (sp != null) sp.close();
+					sp = null;
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
@@ -74,11 +66,11 @@ public class BarChart extends JFrame {
 	}
 
 	public void run() throws Exception {
-        while(true) {
+		int x=0;
+        while(sp != null) {
         	float[] sample = sp.fetchSample();
-        	dataset.clear();
         	for(int i=0;i<labels.length;i++) {
-        		dataset.addValue(sample[i] * factor, labels[i], category);
+        		series.add(x++,sample[i]);
         	}
     		Delay.msDelay(((int) (1000f/frequency)));
         }
@@ -86,14 +78,12 @@ public class BarChart extends JFrame {
 	
 	public static void main(String[] args) throws Exception {
 		Properties p = new Properties();
-		p.load(new FileReader("chart.properties"));
-		
+		p.load(new FileReader("graph.properties"));
 		String[] labels = p.getProperty("labels").split(",");
-        BarChart demo = new BarChart(p.getProperty("host"), p.getProperty("class"), p.getProperty("port"), 
-        		                     p.getProperty("category"), labels, p.getProperty("units"), 
-        		                     Float.parseFloat(p.getProperty("min")), Float.parseFloat(p.getProperty("max")), 
-        		                     Integer.parseInt(p.getProperty("width")), Integer.parseInt(p.getProperty("height")), 
-        		                     Float.parseFloat(p.getProperty("frequency")),Float.parseFloat(p.getProperty("factor", "1.0")));
+		Graph demo = new Graph(p.getProperty("host"), p.getProperty("class"), p.getProperty("port"),  
+				p.getProperty("category"), labels, p.getProperty("units"), Float.parseFloat(p.getProperty("min")), Float.parseFloat(p.getProperty("max")), 
+                Integer.parseInt(p.getProperty("width")), Integer.parseInt(p.getProperty("height")), 
+                Float.parseFloat(p.getProperty("frequency")));
         demo.pack();
         demo.setVisible(true);
         demo.run();

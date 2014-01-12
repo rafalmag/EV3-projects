@@ -1,15 +1,7 @@
-#eapol_version=1
-#ap_scan=1
 ctrl_interface=/var/run/wpa_supplicant
 
-#fast_reauth=1
-
-# Pers
 network={
 	ssid=
 	key_mgmt=WPA-PSK
 	psk=
-	pairwise=CCMP TKIP
-	group=CCMP TKIP
-	proto=RSN
 }
