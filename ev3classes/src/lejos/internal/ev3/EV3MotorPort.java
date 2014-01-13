@@ -620,7 +620,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         synchronized(cmd)
         {
             cmd[0] = OUTPUT_CLR_COUNT;
-            cmd[1] = (byte)(1 << port);
+            cmd[1] = (byte)port;
             pwm.write(cmd,  2);
         }
     }
@@ -630,7 +630,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     }
 
     /**
-     * reset all motor ports by setting the type tobe none.
+     * reset all motor ports by setting the type to be none.
      */
     private static void resetAll()
     {
