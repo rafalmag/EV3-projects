@@ -92,7 +92,7 @@ public class EV3I2CPort extends EV3IOPort implements I2CPort
         Delay.msDelay(100);
         iicChanged.put(port, (byte)0);
         setOperatingMode(TYPE_IIC_UNKNOWN, 255);
-        System.out.println("Status " + getStatus() + " changed " + getChanged());
+        //System.out.println("Status " + getStatus() + " changed " + getChanged());
         /*
         while (!getChanged())
         {
@@ -101,9 +101,9 @@ public class EV3I2CPort extends EV3IOPort implements I2CPort
         }*/
         Delay.msDelay(100);
         setOperatingMode(TYPE_IIC_UNKNOWN, 0);        
-        System.out.println("Status " + getStatus() + " changed " + getChanged());
+        //System.out.println("Status " + getStatus() + " changed " + getChanged());
         Delay.msDelay(100);
-        System.out.println("Status " + getStatus() + " changed " + getChanged());
+        //System.out.println("Status " + getStatus() + " changed " + getChanged());
         return true;
     }
     
@@ -125,7 +125,7 @@ public class EV3I2CPort extends EV3IOPort implements I2CPort
     @Override
     public boolean setType(int type)
     {
-        System.out.println("Set type " + type);
+        //System.out.println("Set type " + type);
         switch(type)
         {
         case TYPE_LOWSPEED:

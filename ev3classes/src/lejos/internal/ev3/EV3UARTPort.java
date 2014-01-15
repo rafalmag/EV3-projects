@@ -101,7 +101,7 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
         public UARTCTL()
         {
             //this.setAlignType(Structure.ALIGN_DEFAULT);
-            System.out.println("size is " + size());
+            //System.out.println("size is " + size());
         }
 
     }
@@ -136,7 +136,7 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
             Delay.msDelay(TIMEOUT_DELTA);
             status = getStatus();
         }
-        System.out.println("NZS Timeout");
+        //System.out.println("NZS Timeout");
         return status;       
     }
 
@@ -158,7 +158,7 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
             Delay.msDelay(TIMEOUT_DELTA);
             status = getStatus();
         }
-        System.out.println("ZS Timeout");
+        //System.out.println("ZS Timeout");
         return status;       
     }
 
@@ -245,7 +245,7 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
             else
                 modeInfo[i] = null;
         }
-        System.out.println("Got " + modeCnt + " entries time " + (System.currentTimeMillis() - base));
+        //System.out.println("Got " + modeCnt + " entries time " + (System.currentTimeMillis() - base));
         return modeCnt > 0;
 
     }
@@ -258,14 +258,14 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
     {
         byte status;
         int retryCnt = 0;
-        System.out.println("Initial status is " + getStatus());
+        //System.out.println("Initial status is " + getStatus());
         long base = System.currentTimeMillis();
         if (ldm.getPortType(port) != CONN_INPUT_UART)
             return false;
         // now try and configure as a UART
         setOperatingMode(mode);
         status = waitNonZeroStatus(TIMEOUT);
-        System.out.println("Time is " + (System.currentTimeMillis() - base));
+        //System.out.println("Time is " + (System.currentTimeMillis() - base));
         while((status & UART_PORT_CHANGED) != 0 && retryCnt++ < INIT_RETRY)
         {
             // something change wait for it to become ready
@@ -281,7 +281,7 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
                 status = waitNonZeroStatus(TIMEOUT);
             }
         }
-        System.out.println("Init complete retry " + retryCnt + " time " + (System.currentTimeMillis() - base));
+        //System.out.println("Init complete retry " + retryCnt + " time " + (System.currentTimeMillis() - base));
         if ((status & UART_DATA_READY) != 0 && (status & UART_PORT_CHANGED) == 0)
             return super.setMode(mode);
         else
@@ -301,7 +301,7 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
             // then read it, otherwise use what we have
             if (initSensor(mode) && (modeCnt > 0 || readModeInfo()))
             {
-                System.out.println("reset cnt " + i);
+                //System.out.println("reset cnt " + i);
                 return true;
             }
             resetSensor();
@@ -350,16 +350,16 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
      */
     public boolean setMode(int mode)
     {
-        System.out.println("Set mode " + mode);
+        //System.out.println("Set mode " + mode);
         // are we initialised ?
         if (modeCnt <= 0)
             return initialiseSensor(mode);
         if (modeInfo[mode] == null)
             return false;
-        System.out.println("Mode is " + getModeName(mode));
+        //System.out.println("Mode is " + getModeName(mode));
         setOperatingMode(mode);
         int status = waitNonZeroStatus(TIMEOUT);
-        System.out.println("status is " + status);
+        //System.out.println("status is " + status);
         if ((status & UART_DATA_READY) != 0 && (status & UART_PORT_CHANGED) == 0)
         {
             return super.setMode(mode);
@@ -390,7 +390,7 @@ public class EV3UARTPort extends EV3IOPort implements UARTPort
             throw new DeviceException("Sensor unavailable");
         if ((getStatus() & UART_PORT_CHANGED) != 0)
         {
-            System.out.println("port " + port + " Changed ");
+            //System.out.println("port " + port + " Changed ");
             // try and reinitialze it
             if (!initialiseSensor(getMode()))
                 throw new DeviceException("Sensor changed unable to reset");

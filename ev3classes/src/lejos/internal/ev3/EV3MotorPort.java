@@ -13,7 +13,6 @@ import lejos.robotics.RegulatedMotorListener;
 import lejos.utility.Delay;
 
 /**
- * 
  * Abstraction for an EV3 output port.
  * 
  * TODO: Sort out a better way to do this, or least clean up the magic numbers.
@@ -27,8 +26,8 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     static final byte OUTPUT_CLR_COUNT = (byte)0xb2;
         
     protected static NativeDevice tacho;
-    protected static ByteBuffer bbuf;
-    protected static IntBuffer ibuf;
+    protected static volatile ByteBuffer bbuf;
+    protected static volatile IntBuffer ibuf;
     protected static NativeDevice pwm;
     static
     {
@@ -62,8 +61,8 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         protected int limitAngle;
         protected float curPosition;
         protected float curVelocity;
-        protected float curCnt;
-        protected int curTime;
+        protected volatile float curCnt;
+        protected volatile int curTime;
         protected int curLimit;
         protected float curSpeed;
         protected float curAcc;
@@ -220,8 +219,9 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
          */
         protected void subMove(int t1, int t2, int t3, float c1, float c2, float c3, float v1, float v2, float a1, float a3, int sl, int st, int ts, boolean hold)
         {
-            //System.out.println("t1 " + t1 + " t2 " + t2 + " t3 " + t3 + " c2 " + c2 + " c3 " + c3 + " v1 " + v1 + " v2 " + v2 + " a1 " + a1 + " a3 " + a3);
+            //System.out.println("t1 " + t1 + " t2 " + t2 + " t3 " + t3 + " c1 " + c1 + " c2 " + c2 + " c3 " + c3 + " v1 " + v1 + " v2 " + v2 + " a1 " + a1 + " a3 " + a3);
             // convert units from /s (i.e 100ms) to be per 1024ms to allow div to be performed by shift
+//System.out.println("c1 " + c1 + " c2 " + c2 + " ts " + ts + " ct " + System.currentTimeMillis());
             v1 = (v1/1000f)*1024f;
             v2 = (v2/1000f)*1024f;
             a1 = (((a1/1000f)*1024f)/1000f)*1024f;
@@ -243,7 +243,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
             setVal(cmd, 46, st);
             setVal(cmd, 50, ts);
             cmd[54] = (byte) (hold ? 1 : 0);
-            if (t1 > 0 && v1 == 0.0)
+            if ((v1 != 0 || v2 != 0) && !isMoving())
                 startNewMove();
             pwm.write(cmd, 55);      
         }
@@ -375,6 +375,10 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
             limitAngle = limit;
             if (Math.abs(limit) != NO_LIMIT)
                 limit += zeroTachoCnt;
+            // Ignore repeated commands
+            if (!waitComplete && (speed == curSpeed) && (curAcc == acceleration) && (curLimit == limit) && (curHold == hold))
+                return;
+System.out.println("New command");
             updateVelocityAndPosition();
             // Stop moves always happen now
             if (speed == 0)
@@ -409,22 +413,31 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         /**
          * Grabs the current state of the regulator
          */
-        protected void updateVelocityAndPosition()
+        protected synchronized void updateVelocityAndPosition()
         {
             int baseCnt;
             int cnt;
             int vel;
             int time;
+            int time2;
+            int serial;
+            int loopCnt = 0;
             // Check to make sure time is not changed during read
             do {
-                time = ibuf.get(port*6 + 5);
-                baseCnt = ibuf.get(port*6);
-                cnt = ibuf.get(port*6+1);
-                vel = ibuf.get(port*6+2);
-            } while (time != ibuf.get(port*6 + 5));
+                time = ibuf.get(port*7 + 5);
+                baseCnt = ibuf.get(port*7);
+                cnt = ibuf.get(port*7+1);
+                vel = ibuf.get(port*7+2);
+                loopCnt++;
+                time2 = ibuf.get(port*7 + 6);
+                serial = ibuf.get(port*7 + 6);
+            } while (time != time2);
+            //if (loopCnt > 1) System.out.println("loop cnt " + loopCnt + " time " + time);
             curCnt = FixToFloat(cnt);
             curPosition = curCnt + baseCnt;
             curVelocity = (FixToFloat(vel)/1024)*1000;
+            //if (curTime == time)
+                //System.out.println("t " + time + " cc " + curCnt + " s " + serial);
             curTime = time;
         }
         
@@ -449,9 +462,9 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         }
 
         
-        protected int getRegState()
+        protected synchronized int getRegState()
         {
-            return ibuf.get(port*6 + 4);
+            return ibuf.get(port*7 + 4);
         }
         
         public boolean isMoving()
@@ -464,7 +477,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
             return getRegState() == ST_STALL;
         }
                         
-        public int getTachoCount()
+        public synchronized int getTachoCount()
         {
             return EV3MotorPort.this.getTachoCount() - zeroTachoCnt;
         }
@@ -490,7 +503,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         public synchronized void adjustSpeed(float newSpeed)
         {
             int state = getRegState();
-            if (state >= ST_START && state <= ST_MOVE)
+            if (newSpeed != curSpeed && state >= ST_START && state <= ST_MOVE)
             {
                 updateVelocityAndPosition();
                 genMove(curVelocity, curPosition, curCnt, curTime, newSpeed, curAcc, curLimit, curHold);
@@ -504,7 +517,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         public synchronized void adjustAcceleration(int newAcc)
         {
             int state = getRegState();
-            if (state >= ST_START && state <= ST_MOVE)
+            if (newAcc != curAcc && state >= ST_START && state <= ST_MOVE)
             {
                 updateVelocityAndPosition();
                 genMove(curVelocity, curPosition, curCnt, curTime, curSpeed, newAcc, curLimit, curHold);
@@ -608,7 +621,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
      */
     public  int getTachoCount()
     {
-        return ibuf.get(port*6 + 3);
+        return ibuf.get(port*7 + 3);
     }
     
     
@@ -648,7 +661,8 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
     private static void initDeviceIO()
     {
         tacho = new NativeDevice("/dev/lms_motor");
-        bbuf = tacho.mmap(96).getByteBuffer(0, 96);
+        bbuf = tacho.mmap(4*7*4).getByteBuffer(0, 4*7*4);
+        //System.out.println("direct " + bbuf.isDirect());
         ibuf = bbuf.asIntBuffer();
         pwm = new NativeDevice("/dev/lms_pwm");
         resetAll();
