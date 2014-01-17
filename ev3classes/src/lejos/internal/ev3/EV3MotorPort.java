@@ -378,7 +378,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
             // Ignore repeated commands
             if (!waitComplete && (speed == curSpeed) && (curAcc == acceleration) && (curLimit == limit) && (curHold == hold))
                 return;
-System.out.println("New command");
+//System.out.println("New command " + speed + " ismoving " + getRegState());
             updateVelocityAndPosition();
             // Stop moves always happen now
             if (speed == 0)
@@ -400,6 +400,7 @@ System.out.println("New command");
                     genMove(curVelocity, curPosition, curCnt, curTime, speed, acceleration, limit, hold);
                 else
                 {
+                    System.out.println("gen two moves");
                     genMove(curVelocity, curPosition, curCnt, curTime, 0, acceleration, NO_LIMIT, true);
                     waitComplete();
                     updateVelocityAndPosition();
@@ -503,7 +504,7 @@ System.out.println("New command");
         public synchronized void adjustSpeed(float newSpeed)
         {
             int state = getRegState();
-            if (newSpeed != curSpeed && state >= ST_START && state <= ST_MOVE)
+            if (curSpeed != 0 && newSpeed != curSpeed && state >= ST_START && state <= ST_MOVE)
             {
                 updateVelocityAndPosition();
                 genMove(curVelocity, curPosition, curCnt, curTime, newSpeed, curAcc, curLimit, curHold);
