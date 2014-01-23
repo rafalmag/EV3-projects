@@ -463,7 +463,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
         }
 
         
-        protected synchronized int getRegState()
+        protected int getRegState()
         {
             return ibuf.get(port*7 + 4);
         }
