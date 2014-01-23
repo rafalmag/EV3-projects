@@ -400,7 +400,7 @@ public class EV3MotorPort extends EV3IOPort implements TachoMotorPort {
                     genMove(curVelocity, curPosition, curCnt, curTime, speed, acceleration, limit, hold);
                 else
                 {
-                    System.out.println("gen two moves");
+                    //System.out.println("gen two moves");
                     genMove(curVelocity, curPosition, curCnt, curTime, 0, acceleration, NO_LIMIT, true);
                     waitComplete();
                     updateVelocityAndPosition();
