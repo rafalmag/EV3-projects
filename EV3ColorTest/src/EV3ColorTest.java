@@ -1,7 +1,7 @@
 import lejos.utility.TextMenu;
 import lejos.hardware.Button;
-import lejos.hardware.LCD;
 import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.LCD;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.HiTechnicColorSensor;
 import lejos.hardware.sensor.NXTColorSensor;

@@ -16,7 +16,6 @@ import lejos.utility.EndianTools;
  * 
  */
 public class DexterIMUSensor extends BaseSensor implements SensorModes {
-  // TODO: Make it work for the EV3
   // TODO: Add support for sensor configuration
 
   // I2C Addresses for the gyro and acceleration chips with the default values
@@ -91,8 +90,8 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
     private float[]          MULTIPLIERS = { 8.75f, 17.5f, 70f };
 
     private int              range       = 2;
-    private int              rate        = 3;
-    private float            toSI        = MULTIPLIERS[range] / 1000f;
+    private int              rate        = 2;
+    private float            toSI        = 1f/MULTIPLIERS[range] ;
 
     private byte[]           buf         = new byte[7];
 
@@ -149,10 +148,12 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
     }
 
     /**
-     * Provides access to the temperature data on the yro sensor
+     * Provides access to the temperature data on the Gyro sensor
+     * Method added for consistency with other SensoModes
      * 
      * @return
      */
+    @SuppressWarnings("unused")
     public SampleProvider getTemperatureMode() {
       return getMode(1);
     }
@@ -182,8 +183,8 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
 
       @Override
       public void fetchSample(float[] sample, int offset) {
-        // TODO Test method, maybe temperature needs to be converted
-        getData(DATA_REG, buf, 7);
+        // Temperature in degrees
+        getData(DATA_REG, buf, 1);
         sample[offset] = buf[0];
       }
 
@@ -226,9 +227,10 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
           }
         }
         else {
-          for (int i = 0; i < 3; i++) {
-            sample[i + offset] = (float) ((((buf[i + 2]) << 8) | (buf[i + 1] & 0xFF)) * toSI);
-          }
+          // a correction for misalignment of the gyro sensor is made here
+          sample[offset] = EndianTools.decodeShortLE(buf, 3) * toSI;
+          sample[1 + offset] = EndianTools.decodeShortLE(buf, 1) * toSI;
+          sample[2 + offset] = EndianTools.decodeShortLE(buf, 5) * toSI;
         }
       }
 
@@ -247,14 +249,16 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
    * 
    */
   public class DexterIMUAccelerationSensor extends I2CSensor implements SampleProvider, SensorMode {
-    protected static final int   DATA_REG = 0x00;
-    protected static final int   MODE_REG = 0x16;
-    protected static final float TOSI     = 1.0f / (64.0f * 9.81f);
+    protected static final int   DATA_10BIT_REG = 0x00;
+    protected static final int   DATA_8BIT_REG  = 0x06;
+    protected static final int   MODE_REG       = 0x16;
+    protected static final float TOSI           = 100f / (64.0f * 9.81f);
 
-    private byte[]               buf      = new byte[6];
+    private byte[]               buf            = new byte[6];
 
     private DexterIMUAccelerationSensor(I2CPort port, int address) {
       super(port, address);
+      // configuure for 2G measurement mode
       sendData(MODE_REG, (byte) 0x05);
     }
 
@@ -263,26 +267,41 @@ public class DexterIMUSensor extends BaseSensor implements SensorModes {
       return 3;
     }
 
-    @Override
-    public void fetchSample(float[] sample, int offset) {
-      getData(DATA_REG, buf, 6);
-      System.out.print("GetData buf: ");
-      for (int i = 0; i < 6; i++)
-        System.out.print(" " + buf[i]);
-      System.out.println();
+    @SuppressWarnings("unused")
+    // 10 bit data seems not to be working correctly for the Y-axis. 
+    // modified new way (see below seems to work).
+    private void fetchSample10(float[] sample, int offset) {
+      getData(DATA_10BIT_REG, buf, 6);
       for (int i = 0; i < 3; i++) {
-        sample[i + offset] = EndianTools.decodeShortBE(buf, i);
-        if ((buf[i + 1] & 0x02) != 0)
-          sample[i + offset] = -(sample[i + offset] - 512);
-        sample[i + offset] *= TOSI;
+        // old way
+        //int x = ((buf[i + 1]) << 8) | (buf[i] & 0xFF) & 0x03ff;
+        //if (x > 512)
+          //x -= 1024;
+        //sample[i + offset] = x * TOSI;
+        // new way
+         buf[i*2+1] = (byte)((byte)(buf[i*2+1] << 6) >> 6);
+         sample[i + offset] = EndianTools.decodeShortLE(buf, i*2);
+         sample[i + offset] *= TOSI;
       }
+    }
 
+    private void fetchSample8(float[] sample, int offset) {
+      getData(DATA_8BIT_REG, buf, 3);
+      for (int i = 0; i < 3; i++) {
+        sample[i + offset] = buf[i] * TOSI;
+      }
     }
 
     @Override
     public String getName() {
       return "Acceleration";
     }
+
+    @Override
+    public void fetchSample(float[] sample, int offset) {
+      fetchSample10(sample, offset);
+    }
   }
 
 }
+ 

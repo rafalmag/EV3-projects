@@ -6,8 +6,15 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import lejos.hardware.Battery;
+import lejos.hardware.Audio;
+import lejos.hardware.BrickFinder;
+import lejos.hardware.Power;
+import lejos.hardware.LocalBTDevice;
+import lejos.hardware.LocalWifiDevice;
 import lejos.hardware.ev3.EV3;
+import lejos.hardware.lcd.Font;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.PortException;
 
@@ -43,7 +50,7 @@ public class RemoteEV3 implements EV3 {
 	}
 
 	@Override
-	public Battery getBattery() {
+	public Power getPower() {
 		try {
 			return new RemoteBattery(rmiEV3.getBattery());
 		} catch (RemoteException e) {
@@ -64,7 +71,7 @@ public class RemoteEV3 implements EV3 {
 		}
 	}
 	
-	public RMIRegulatedMotor createRegulatedProvider(String portName) {
+	public RMIRegulatedMotor createRegulatedMotor(String portName) {
 		try {
 			return rmiEV3.createRegulatedMotor(portName);
 		} catch (RemoteException e) {
@@ -72,9 +79,17 @@ public class RemoteEV3 implements EV3 {
 		}
 	}
 	
-	public RMISound getSound() {
+	public Audio getAudio() {
 		try {
-			return rmiEV3.getSound();
+			return new RemoteAudio(rmiEV3.getAudio());
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
+	}
+	
+	public TextLCD getTextLCD() {
+		try {
+			return new RemoteTextLCD(rmiEV3.getTextLCD());
 		} catch (RemoteException e) {
 			throw new PortException(e);
 		}
@@ -94,5 +109,57 @@ public class RemoteEV3 implements EV3 {
 		} catch (RemoteException e) {
 			throw new PortException(e);
 		}
+	}
+
+	@Override
+	public GraphicsLCD getGraphicsLCD() {
+		try {
+			return new RemoteGraphicsLCD(rmiEV3.getGraphicsLCD());
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
+	}
+
+	@Override
+	public TextLCD getTextLCD(Font f) {
+		try {
+			return new RemoteTextLCD(rmiEV3.getTextLCD(f));
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
+	}
+
+	@Override
+	public boolean isLocal() {
+		return false;
+	}
+
+	@Override
+	public String getType() {
+		return "EV3";
+	}
+
+	@Override
+	public String getName() {
+		try {
+			return rmiEV3.getName();
+		} catch (RemoteException e) {
+			throw new PortException(e);
+		}
+	}
+
+	@Override
+	public LocalBTDevice getBluetoothDevice() {
+		return null;
+	}
+
+	@Override
+	public LocalWifiDevice getWifiDevice() {
+		return null;
+	}
+
+	@Override
+	public void setDefault() {
+		BrickFinder.setDefault(this);
 	}
 }

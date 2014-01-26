@@ -1,5 +1,6 @@
 package lejos.hardware.port;
 
+import lejos.hardware.motor.MotorRegulator;
 import lejos.robotics.Encoder;
 
 /*
@@ -14,4 +15,9 @@ import lejos.robotics.Encoder;
  *
  */
 public interface TachoMotorPort extends BasicMotorPort, Encoder {
+    /**
+     * Return the motor regulator associated with this motor port.
+     * @return the motor regulator for this port.
+     */
+    public MotorRegulator getRegulator();
 }

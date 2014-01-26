@@ -1,10 +1,11 @@
 package lejos.ev3.startup;
 
-import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.Image;
-
 import lejos.hardware.Button;
-import lejos.hardware.LCD;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.CommonLCD;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.lcd.Image;
+import lejos.hardware.lcd.TextLCD;
 import lejos.utility.Delay;
 import lejos.utility.TextMenu;
 
@@ -49,7 +50,8 @@ public class GraphicMenu extends TextMenu {
 	protected Image[] _iconImages;
 	protected int _titleLine;
 	
-	protected Graphics g = new Graphics();
+	protected GraphicsLCD g = LocalEV3.get().getGraphicsLCD();
+	protected TextLCD lcd = LocalEV3.get().getTextLCD();
 	
 	/**
 	 * This constructor sets the location of the menu to the parameter line
@@ -194,7 +196,7 @@ public class GraphicMenu extends TextMenu {
 	protected void display(int selectedIndex, int animateDirection, int tick)
 	{
 		if(_title != null)
-			LCD.drawString(_title, 0, _titleLine);
+			lcd.drawString(_title, 0, _titleLine);
 		clearArea();
 		//Prepare Index Locations
 		int length = _length;
@@ -220,17 +222,17 @@ public class GraphicMenu extends TextMenu {
 		if (length > 3)
 			drawIconAtTick(_iconImages[((index[4]>=length)?index[4]-length:index[4])],4,4+animateDirection,tick);
 		// Draw Label
-		LCD.drawString(BLANK, 0, labelLine);
+		lcd.drawString(BLANK, 0, labelLine);
 		if (_items[index[2]].length()>16)
-			LCD.drawString(_items[index[2]],0, labelLine);
+			lcd.drawString(_items[index[2]],0, labelLine);
 		else
-			LCD.drawString(_items[index[2]], 8-(_items[index[2]].length()/2), labelLine);
+			lcd.drawString(_items[index[2]], 8-(_items[index[2]].length()/2), labelLine);
 		
-		LCD.asyncRefresh();
+		lcd.refresh();
 	}
 	
 	public void clearArea() {
-		LCD.bitBlt(null, 178, 64, 0, 0, 0, yArea, 178, 64, LCD.ROP_CLEAR);
+		lcd.bitBlt(null, 178, 64, 0, 0, 0, yArea, 178, 64, CommonLCD.ROP_CLEAR);
 	}
 	
 	/**

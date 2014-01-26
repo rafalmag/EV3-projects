@@ -1,7 +1,5 @@
 package lejos.hardware.motor;
 
-import java.io.Closeable;
-
 import lejos.hardware.Device;
 import lejos.hardware.port.BasicMotorPort;
 import lejos.robotics.DCMotor;

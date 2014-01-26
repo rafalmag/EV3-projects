@@ -2,7 +2,7 @@ package lejos.robotics.navigation;
 
 import java.util.ArrayList;
 
-import lejos.hardware.Battery;
+import lejos.hardware.Power;
 import lejos.robotics.Gyroscope;
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.RegulatedMotorListener;
@@ -63,7 +63,7 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 	private float spinLinSpeed = 0; // units/s
 	private float spinAngSpeed = 0; // deg/s
 	private float spinTravelDirection = 0; // deg
-	private Battery battery;
+	private Power battery;
 	
 	private double minTurnRadius = 0; // This vehicle can turn withgout moving therefore minimum turn radius = 0
 	
@@ -92,7 +92,7 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 	public OmniPilot (float wheelDistanceFromCenter, float wheelDiameter, 
 					RegulatedMotor centralMotor, RegulatedMotor CW120degMotor, RegulatedMotor CCW120degMotor,  
 					boolean centralWheelFrontal, boolean motorReverse,
-					Battery battery) {
+					Power battery) {
 		this.wheelBase = wheelDistanceFromCenter;
 		this.wheelDiameter = wheelDiameter;
 		this.motor1 = centralMotor;
@@ -126,7 +126,7 @@ public class OmniPilot implements ArcRotateMoveController, RegulatedMotorListene
 	public OmniPilot(float wheelDistanceFromCenter, float wheelDiameter, 
 			RegulatedMotor centralMotor, RegulatedMotor CW120degMotor, RegulatedMotor CCW120degMotor,  
 			boolean centralWheelFrontal, boolean motorReverse, 
-			Battery battery, Gyroscope gyro) {
+			Power battery, Gyroscope gyro) {
 		this(wheelDistanceFromCenter, wheelDiameter,centralMotor, CW120degMotor, CCW120degMotor,  
 				centralWheelFrontal, motorReverse, battery);
 		this.gyro = gyro;

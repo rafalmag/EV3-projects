@@ -1,6 +1,8 @@
 package lejos.utility;
+
+import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.TextLCD;
 
 /**
  *Displays a list of items.  The select() method allows the user to scroll the list using the right and left keys to scroll forward and backward 
@@ -64,8 +66,9 @@ public class TextMenu
 	 * Timout used for {@link Button#waitForAnyPress(int)} in {@link #select(int, int)}.
 	 */
 	protected static final int BUTTON_POLL_INTERVAL = 10; // Time to wait for button press
-
 	
+	protected TextLCD lcd =  BrickFinder.getDefault().getTextLCD();
+
 	/**
 	 * This constructor sets location of the top row of the item list to row 0 of the display.
 	 */
@@ -246,19 +249,19 @@ public class TextMenu
 	{
 		//LCD.asyncRefreshWait();
 		if(_title != null)
-			LCD.drawString(_title, 0, _topRow - 1);
+			lcd.drawString(_title, 0, _topRow - 1);
 		int max = _topRow + _height;
 		for (int i = _topRow; i < max; i++)
 		{
-			LCD.drawString(BLANK, 0, i);
+			lcd.drawString(BLANK, 0, i);
 			int idx = i - _topRow + topIndex;
 			if (idx >= 0 && idx < _length)
 			{
-				LCD.drawChar(idx == selectedIndex ? SEL_CHAR : ' ', 0, i);
-				LCD.drawString(_items[idx], 1, i);
+				lcd.drawChar(idx == selectedIndex ? SEL_CHAR : ' ', 0, i);
+				lcd.drawString(_items[idx], 1, i);
 			}
 		}
-		LCD.asyncRefresh();
+		lcd.refresh();
 	}
 	
 	/**

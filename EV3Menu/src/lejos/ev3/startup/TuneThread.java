@@ -22,7 +22,7 @@ public class TuneThread extends Thread
         int[] freq = { 523, 784, 659 };
         for (int i = 0; i < 3; i++) {
             Sound.playTone(freq[i], 300);
-            Sound.pause(300);
+            //Sound.pause(300);
         }
     }
 }

@@ -2,6 +2,7 @@ package lejos.remote.ev3;
 
 import java.rmi.RemoteException;
 
+import lejos.hardware.motor.MotorRegulator;
 import lejos.hardware.port.BasicMotorPort;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.PortException;
@@ -83,5 +84,13 @@ public class RemoteMotorPort extends RemoteIOPort implements TachoMotorPort {
 		} catch (RemoteException e) {
 			throw new PortException(e);
 		}
+    }
+
+    @Override
+    public MotorRegulator getRegulator()
+    {
+        // TODO Does it make sense to allow this to be remote?
+        throw(new UnsupportedOperationException("Remote regulators are not supported"));
+        //return null;
     }
 }

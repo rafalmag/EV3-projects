@@ -1,12 +1,14 @@
 package lejos.ev3.startup;
-import javax.microedition.lcdui.Graphics;
 
-import lejos.hardware.LCD;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.GraphicsLCD;
+import lejos.hardware.lcd.TextLCD;
 
 public class Utils
 {
 	
-	static Graphics g = new Graphics();
+	private static GraphicsLCD g = LocalEV3.get().getGraphicsLCD();
+	private static TextLCD lcd = LocalEV3.get().getTextLCD();
 	
 	public static byte[] stringToBytes8(String str)
 	{
@@ -34,20 +36,21 @@ public class Utils
 	{
 		int len = text.length();
 		int blen = 0;
+		int fw = lcd.getFont().width;
 		if (len > 0)
-			blen = len * (LCD.FONT_WIDTH + 1) - 1;
+			blen = len * (fw + 1) - 1;
 
 		byte[] b = new byte[blen];
-		byte[] f = LCD.getSystemFont();
+		byte[] f = lcd.getFont().glyphs;
 
 		for (int i = 0; i < len; i++)
 		{
 			char c = text.charAt(i);
-			int i1 = c * LCD.FONT_WIDTH;
-			int i2 = i * (LCD.FONT_WIDTH + 1);
+			int i1 = c * fw;
+			int i2 = i * (fw + 1);
 
 			if (i1 < f.length)
-				System.arraycopy(f, i1, b, i2, LCD.FONT_WIDTH);
+				System.arraycopy(f, i1, b, i2, fw);
 		}
 
 		return b;

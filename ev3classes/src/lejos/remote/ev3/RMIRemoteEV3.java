@@ -2,6 +2,8 @@ package lejos.remote.ev3;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.Font;
 import lejos.remote.ev3.RMIAnalogPort;
 import lejos.remote.ev3.RMIBattery;
 import lejos.remote.ev3.RMIEV3;
@@ -56,11 +58,6 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	}
 
 	@Override
-	public RMISound getSound() throws RemoteException {
-		return new RMIRemoteSound();
-	}
-
-	@Override
 	public RMIWifi getWifi() throws RemoteException {
 		return new RMIRemoteWifi();
 	}
@@ -68,5 +65,32 @@ public class RMIRemoteEV3 extends UnicastRemoteObject implements RMIEV3 {
 	@Override
 	public RMIBluetooth getBluetooth() throws RemoteException {
 		return new RMIRemoteBluetooth();
+	}
+
+	@Override
+	public RMITextLCD getTextLCD() throws RemoteException {
+		return new RMIRemoteTextLCD();
+	}
+
+	@Override
+	public RMIAudio getAudio() throws RemoteException {
+		return new RMIRemoteAudio();
+	}
+
+	@Override
+	public RMIGraphicsLCD getGraphicsLCD() throws RemoteException {
+		return new RMIRemoteGraphicsLCD();
+	}
+
+	@Override
+	public RMITextLCD getTextLCD(Font f) throws RemoteException {
+		RMIRemoteTextLCD lcd = new RMIRemoteTextLCD();
+		lcd.setFont(f);
+		return lcd;
+	}
+
+	@Override
+	public String getName() throws RemoteException {
+		return LocalEV3.get().getName();
 	}
 }

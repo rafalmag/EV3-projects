@@ -6,7 +6,8 @@ import lejos.utility.Delay;
 import lejos.utility.EndianTools;
 
 /**
- * Driver for the Dexter Industries compass sensor
+ * Driver for the Dexter Industries compass sensor. <br>
+ * This sensor uses the Honeywell HMC5883L 3-Axis digital compass IC.
  * 
  * @author Aswin
  * @version 1.0
@@ -28,7 +29,7 @@ public class DexterCompassSensor extends I2CSensor implements SensorMode {
   // default configuration
   int                          measurementMode    = MODE_NORMAL;
   int                          range              = 6;
-  int                          rate               = 6;
+  int                          rate               = 5;
   int                          operatingMode      = CONTINUOUS;
 
   // sensor register adresses
@@ -44,7 +45,7 @@ public class DexterCompassSensor extends I2CSensor implements SensorMode {
   private float                multiplier;
 
   /**
-   * Constructor for the driver. Also loads calibration settings when available.
+   * Constructor for the driver. 
    * 
    * @param port
    */
@@ -54,12 +55,11 @@ public class DexterCompassSensor extends I2CSensor implements SensorMode {
   }
 
   public DexterCompassSensor(Port port) {
-    super(port, I2C_ADDRESS);
+    super(port, I2C_ADDRESS,  TYPE_LOWSPEED_9V);
     init();
   }
 
   protected void init() {
-    Delay.msDelay(10000);
     setModes(new SensorMode[] { this });
     configureSensor();
   }
@@ -69,13 +69,37 @@ public class DexterCompassSensor extends I2CSensor implements SensorMode {
    * settings
    */
   private void configureSensor() {
-    buf[0] = (byte) (3 << 5 + rate << 2 + measurementMode);
-    buf[0] = (byte) (rate << 2);
+    // TODO: remove debug code
+    System.out.println("rate: "+rate);
+    System.out.println("measurementMode: "+measurementMode);
+    System.out.println("range: "+range);
+    System.out.println("operatingMode: "+operatingMode);
+    
+    buf[0] = (byte) ((3 << 5) | (rate << 2) | measurementMode);
     buf[1] = (byte) (range << 5);
     buf[2] = (byte) (operatingMode);
+    
+    // TODO: remove debug code
+    System.out.println("Buffer to send");
+    for(int i=0;i<3;i++) {
+      System.out.println(String.format("%8s", Integer.toBinaryString(buf[i] & 0xFF)).replace(' ', '0'));
+    }
+    
     sendData(REG_CONFIG, buf, 3);
+    
+    // TODO: remove debug code
+    Delay.msDelay(200);
+    System.out.println("Actual value of registers");
+    getData(REG_CONFIG, buf, 3);
+    for(int i=0;i<3;i++) {
+      System.out.println(String.format("%8s", Integer.toBinaryString(buf[i] & 0xFF)).replace(' ', '0'));
+    }
+    
+    Delay.msDelay(6);
+    
     multiplier = 1.0f / RANGEMULTIPLIER[range];
     // first measurement after configuration is not yet configured properly;
+    Delay.msDelay(6);
     fetchSample(dummy, 0);
   }
 
@@ -98,7 +122,7 @@ public class DexterCompassSensor extends I2CSensor implements SensorMode {
         break;
       default:
         for (int axis = 0; axis < 3; axis++)
-          sample[axis + offset] = 0;
+          sample[axis + offset] = Float.NaN;
         break;
     }
   }

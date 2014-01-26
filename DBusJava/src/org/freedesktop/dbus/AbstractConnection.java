@@ -81,6 +81,7 @@ public abstract class AbstractConnection
       public _thread()
       {
          setName("DBusConnection");
+         setDaemon(true);
       }
       public void run()
       {
@@ -155,6 +156,7 @@ public abstract class AbstractConnection
       public void halt()
       {
          _run = false;
+         setDaemon(true);
       }
       public void run()
       {
@@ -175,6 +177,7 @@ public abstract class AbstractConnection
       public _sender()
       {
          setName("Sender");
+         setDaemon(true);
       }
       public void run()
       {

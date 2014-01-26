@@ -1,5 +1,5 @@
 package lejos.utility;
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 
 /**
  * This class has been developed to use it in case of you have

@@ -4,10 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import lejos.hardware.Bluetooth;
+import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
-import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.Port;
@@ -169,7 +168,7 @@ public class LCP {
 			break;
 		}
 		case GET_BATTERY_LEVEL: {
-			setReplyShortInt(LocalEV3.get().getBattery().getVoltageMilliVolt(), reply, 3);
+			setReplyShortInt(BrickFinder.getDefault().getPower().getVoltageMilliVolt(), reply, 3);
 			len = 5;									
 			break;
 		}

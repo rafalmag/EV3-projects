@@ -1,6 +1,6 @@
 package lejos.robotics.filter;
 
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 import lejos.robotics.SampleProvider;
 
 public class Dump extends AbstractFilter {
@@ -23,6 +23,7 @@ public class Dump extends AbstractFilter {
   for (int i=0;i<Math.min(sampleSize,LCD.DISPLAY_CHAR_DEPTH);i++) { 
     f=String.format(format,sample[i+offset]);
     System.out.print(f);
+    System.out.print(' ');
     LCD.drawString(f, 0, i);
   }
   System.out.println();

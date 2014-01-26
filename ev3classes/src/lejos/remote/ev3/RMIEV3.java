@@ -3,6 +3,8 @@ package lejos.remote.ev3;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import lejos.hardware.lcd.Font;
+
 public interface RMIEV3 extends Remote {
 
 	public RMIAnalogPort openAnalogPort(String portName) throws RemoteException;
@@ -19,9 +21,17 @@ public interface RMIEV3 extends Remote {
 	
 	public RMIRegulatedMotor createRegulatedMotor(String portName) throws RemoteException;
 
-	public RMISound getSound() throws RemoteException;
+	public RMIAudio getAudio() throws RemoteException;
+	
+	public RMITextLCD getTextLCD() throws RemoteException;
+	
+	public RMITextLCD getTextLCD(Font f) throws RemoteException;
+	
+	public RMIGraphicsLCD getGraphicsLCD() throws RemoteException;
 	
 	public RMIWifi getWifi() throws RemoteException;
 	
 	public RMIBluetooth getBluetooth() throws RemoteException;
+	
+	public String getName() throws RemoteException;
 }

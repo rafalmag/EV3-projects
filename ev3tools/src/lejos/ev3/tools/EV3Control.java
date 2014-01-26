@@ -1435,7 +1435,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	private void getSensorValues() {
 		if (ev3 != null) {
-			mv = ev3.getBattery().getVoltageMilliVolt();
+			mv = ev3.getPower().getVoltageMilliVolt();
 		}
 	}
 
@@ -1621,25 +1621,25 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		try {
 			if (ev3 == null) return;
 			if (selectors[0].isSelected()) {
-				motor0 = ev3.createRegulatedProvider("A");
+				motor0 = ev3.createRegulatedMotor("A");
 			    motor0.setSpeed(speed0);
 			    if (lim[0] !=0) motor0.rotateTo(lim[0]);
 			    else if (speed0 > 0) motor0.forward(); else motor0.backward();
 			}
 			if (selectors[1].isSelected()) {
-				motor1 = ev3.createRegulatedProvider("B");
+				motor1 = ev3.createRegulatedMotor("B");
 			    motor1.setSpeed(speed1);
 			    if (lim[1] !=0) motor1.rotateTo(lim[1]);
 			    else if (speed1 > 0) motor1.forward(); else motor1.backward();
 			}
 			if (selectors[2].isSelected()) {
-				motor2 = ev3.createRegulatedProvider("C");
+				motor2 = ev3.createRegulatedMotor("C");
 			    motor2.setSpeed(speed2);
 			    if (lim[2] !=0) motor2.rotateTo(lim[2]);
 			    else if (speed2 > 0) motor2.forward(); else motor2.backward();
 			}
 			if (selectors[3].isSelected()) {
-				motor3 = ev3.createRegulatedProvider("D");
+				motor3 = ev3.createRegulatedMotor("D");
 			    motor3.setSpeed(speed2);
 			    if (lim[2] !=0) motor3.rotateTo(lim[2]);
 			    else if (speed2 > 0) motor3.forward(); else motor3.backward();
@@ -1654,11 +1654,11 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 	 */
 	private void playTone() {
 		try {
-			ev3.getSound().playTone((Integer) freq.getValue(), (Integer) duration.getValue());
-		} catch (IOException ioe) {
-			showMessage("IO Exception playing tone");
+			ev3.getAudio().playTone((Integer) freq.getValue(), (Integer) duration.getValue());
 		} catch (NumberFormatException nfe) {
 			showMessage("Frequency and Duration must be integers");
+		} catch (Exception ioe) {
+			showMessage("Exception playing tone");
 		}
 	}
 	
@@ -1696,7 +1696,7 @@ public class EV3Control implements ListSelectionListener, NXTProtocol, ConsoleVi
 		String fileName = fmPrograms.getFile(row).fileName;
 		try {
 			System.out.println("Playing file " + fileName);
-			ev3.getSound().playSample("/home/root/lejos/samples/" + fileName);
+			ev3.getAudio().playSample(new File("/home/root/lejos/samples/" + fileName));
 		} catch (Exception ioe) {
 			showMessage("IO Exception playing sound file");
 		}

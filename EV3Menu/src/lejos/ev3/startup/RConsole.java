@@ -8,11 +8,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import lejos.hardware.LCD;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
 
 public class RConsole extends Thread
 {
-    
     static final int MODE_SWITCH = 0xff;
     static final int MODE_LCD = 0x0;
     
@@ -20,6 +20,8 @@ public class RConsole extends Thread
     ServerSocket ss = null;
     Socket conn = null;
     PrintStream origOut = System.out, origErr = System.err;
+    
+    private TextLCD lcd = LocalEV3.get().getTextLCD();
     
 	public RConsole()
 	{
@@ -65,7 +67,7 @@ public class RConsole extends Thread
                     	String line = input.readLine(); 
                     	if (line == null) break;
                     } catch (SocketTimeoutException e) {
-                        os.writeLCD(LCD.getHWDisplay());
+                        os.writeLCD(lcd.getHWDisplay());
                     }                
                 }
                 os.close();

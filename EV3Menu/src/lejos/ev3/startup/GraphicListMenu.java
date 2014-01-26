@@ -1,6 +1,8 @@
 package lejos.ev3.startup;
 
-import lejos.hardware.LCD;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.CommonLCD;
+import lejos.hardware.lcd.TextLCD;
 
 /**
  * Abrams version of a more detailed GraphicMenu for the file menu.
@@ -9,6 +11,8 @@ import lejos.hardware.LCD;
  *
  */
 public class GraphicListMenu extends GraphicMenu {
+	
+	private TextLCD lcd = LocalEV3.get().getTextLCD();
 	
 	public GraphicListMenu(String[] items, String[] icons) {
 		super(items, icons, -1);
@@ -25,23 +29,23 @@ public class GraphicListMenu extends GraphicMenu {
 	{
 		if(_title != null) {
 			System.out.println("Displaying title " + _title + " on line " + (_topRow - 1));
-			LCD.drawString(_title, 0, _topRow - 1);
+			lcd.drawString(_title, 0, _topRow - 1);
 		}
 			
 		int max = _topRow + _height;
 		for (int i = _topRow; i < max; i++){
-			LCD.drawString(BLANK, 0, i);
+			lcd.drawString(BLANK, 0, i);
 			int idx = i - _topRow + _topIndex;
 			if (idx >= 0 && idx < _length){
-				LCD.drawChar(idx == selectedIndex ? SEL_CHAR : ' ', 0, i);
-				LCD.drawString(_items[idx], 3, i);
+				lcd.drawChar(idx == selectedIndex ? SEL_CHAR : ' ', 0, i);
+				lcd.drawString(_items[idx], 3, i);
 			}
 		}
-		LCD.asyncRefresh();
+		lcd.refresh();
 	}
 	@Override
 	public void clearArea(){
-		LCD.bitBlt(null, 30, 100, 0, 0, 0, 16, 30, 100, LCD.ROP_CLEAR);
+		lcd.bitBlt(null, 30, 100, 0, 0, 0, 16, 30, 100, CommonLCD.ROP_CLEAR);
 	}
 	
 	@Override
