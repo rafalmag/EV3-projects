@@ -1,18 +1,24 @@
 package pl.rafalmag.ev3.clock;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import lejos.hardware.Sound;
+import lejos.robotics.RegulatedMotor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lejos.hardware.Sound;
-import lejos.robotics.RegulatedMotor;
 import pl.rafalmag.ev3.AtomicWrappingCounter;
 import pl.rafalmag.ev3.LoggingExceptionHandler;
+
+import com.google.common.io.Resources;
 
 public class Cuckoo {
 
@@ -38,7 +44,23 @@ public class Cuckoo {
 	private final AtomicWrappingCounter tick = new AtomicWrappingCounter(0,
 			AnalogClock.TICKS_PER_ROTATION);
 
-	private static final String CUCKOO_WAV = "cuckoo.wav";
+	public static final String CUCKOO_WAV = "cuckoo.rsf";
+
+	static {
+		copyResource();
+	}
+
+	private static void copyResource() {
+		URL url = Cuckoo.class.getClass().getResource("/" + CUCKOO_WAV);
+		try {
+			File file = new File(CUCKOO_WAV);
+			try (OutputStream os = new FileOutputStream(file, false)) {
+				Resources.copy(url, os);
+			}
+		} catch (IOException e) {
+			log.error("Cannot extract " + CUCKOO_WAV + " file");
+		}
+	}
 
 	public Cuckoo(RegulatedMotor cuckooMotor) {
 		this.cuckooMotor = cuckooMotor;
@@ -58,18 +80,12 @@ public class Cuckoo {
 	}
 
 	private void playCuckoo() {
-		try (InputStream is = getClass().getResourceAsStream(CUCKOO_WAV)) {
-			if (is == null) {
-				throw new IOException("Cannot find wav=" + CUCKOO_WAV);
-			}
-			int errorCode = Sound.playSample(is, Sound.VOL_MAX);
-			if (errorCode < 0) {
-				log.error("Cannot play cuckoo, error code=" + errorCode);
-			}
-		} catch (IOException e) {
-			log.error("Cannot play cuckoo, because of " + e.getMessage(), e);
+		int errorCode = Sound.playSample(new File(CUCKOO_WAV), Sound.VOL_MAX);
+		if (errorCode < 0) {
+			log.error("Cannot play cuckoo, error code=" + errorCode); // TOTO
+																		// -5
+																		// returned
 		}
-
 	}
 
 	private void doCuckoo() {
