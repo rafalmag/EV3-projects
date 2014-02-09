@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 import pl.rafalmag.systemtime.SystemTime;
 
 public class DigitalClock {

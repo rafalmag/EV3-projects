@@ -3,7 +3,7 @@ package pl.rafalmag.ev3.clock;
 import java.util.concurrent.TimeUnit;
 
 import lejos.hardware.Button;
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.Motor;
 import lejos.robotics.MirrorMotor;
 

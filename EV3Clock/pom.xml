@@ -4,6 +4,13 @@
 	<groupId>EV3Clock</groupId>
 	<artifactId>EV3Clock</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
+	<properties>
+		<brick.host>192.168.0.13</brick.host>
+		<brick.home>/home/lejos/programs</brick.home>
+		<brick.user>root</brick.user>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -35,6 +42,62 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<inherited>false</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo
+									message="Push to server ${project.build.directory}/${project.build.finalName}*.jar">
+								</echo>
+								<scp trust="yes" username="${brick.user}" password=""
+									todir="root@${brick.host}:${brick.home}">
+									<fileset dir="${project.build.directory}">
+										<include name="${project.build.finalName}*.jar">
+										</include>
+									</fileset>
+								</scp>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<!-- ANT dependencies -->
+					<dependency>
+						<groupId>commons-net</groupId>
+						<artifactId>commons-net</artifactId>
+						<version>1.4.1</version>
+					</dependency>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant-commons-net</artifactId>
+						<version>1.6.5</version>
+					</dependency>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant-jsch</artifactId>
+						<version>1.6.5</version>
+					</dependency>
+					<dependency>
+						<groupId>jsch</groupId>
+						<artifactId>jsch</artifactId>
+						<version>0.1.29</version>
+					</dependency>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>20020829</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -63,7 +126,8 @@
 		<dependency>
 			<groupId>lejos</groupId>
 			<artifactId>ev3classes</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.5-SNAPSHOT</version>
+<!-- 			<scope>provided</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>

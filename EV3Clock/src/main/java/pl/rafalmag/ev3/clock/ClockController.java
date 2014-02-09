@@ -2,7 +2,7 @@ package pl.rafalmag.ev3.clock;
 
 import lejos.hardware.Button;
 import lejos.hardware.ButtonListener;
-import lejos.hardware.LCD;
+import lejos.hardware.lcd.LCD;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
