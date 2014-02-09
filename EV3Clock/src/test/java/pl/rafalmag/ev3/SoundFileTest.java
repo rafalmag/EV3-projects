@@ -8,10 +8,12 @@ import java.io.InputStream;
 
 import lejos.hardware.Sound;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import pl.rafalmag.ev3.clock.Cuckoo;
 
+@Ignore
 public class SoundFileTest {
 
 	@Test
