@@ -24,16 +24,25 @@ public class TimeAngleUtilsTest {
 	}
 
 	Object[] parametersForShould_convert_clock_to_angle() {
-		return $(
-				$(new Time(00, 00), 0),
-				$(new Time(01, 00), 360),
-				$(new Time(00, 30), 180),
-				$(new Time(11, 00), 360 * 11),
-				$(new Time(12, 00), 0),
-				$(new Time(13, 00), 360),
-				$(new Time(12, 30), 180),
-				$(new Time(23, 00), 360 * 11),
+		return $($(new Time(00, 00), 0), $(new Time(01, 00), 360), $(new Time(00, 30), 180), $(new Time(11, 00), 360 * 11),
+				$(new Time(12, 00), 0), $(new Time(13, 00), 360), $(new Time(12, 30), 180), $(new Time(23, 00), 360 * 11),
 				$(new Time(23, 30), 360 * 11 + 180));
+	}
+
+	@Parameters
+	@Test
+	public void should_convert_angle_to_time(int angle, Time expectedTime) throws Exception {
+		// given
+		// when
+		Time time = TimeAngleUtils.toTime(angle);
+
+		// then
+		assertThat(time).isEqualTo(expectedTime);
+	}
+
+	Object[] parametersForShould_convert_angle_to_time() {
+		return $($(0, new Time(00, 00)), $(180, new Time(00, 30)), $(360, new Time(01, 00)), $(360 * 11, new Time(11, 00)),
+				$(-180, new Time(11, 30)), $(48 * 360, new Time(00, 00)));
 	}
 
 	// TODO angle to clock !? - do I need that ?
@@ -59,14 +68,28 @@ public class TimeAngleUtilsTest {
 				$(new Time(00, 00), new Time(06, 00), +6 * 360), // could be -6 * 360 - it does not matter
 				$(new Time(00, 00), new Time(05, 59), +6 * 360 - 6),
 				// // start 03:00
-				$(new Time(03, 00), new Time(01, 00), -2 * 360),
-				$(new Time(03, 00), new Time(06, 00), +3 * 360),
-				$(new Time(03, 00), new Time(15, 00), +0),
-				$(new Time(03, 00), new Time(14, 00), -360),
-				$(new Time(03, 00), new Time(16, 00), +360),
-				$(new Time(03, 00), new Time(10, 00), -5 * 360),
+				$(new Time(03, 00), new Time(01, 00), -2 * 360), $(new Time(03, 00), new Time(06, 00), +3 * 360),
+				$(new Time(03, 00), new Time(15, 00), +0), $(new Time(03, 00), new Time(14, 00), -360),
+				$(new Time(03, 00), new Time(16, 00), +360), $(new Time(03, 00), new Time(10, 00), -5 * 360),
 				$(new Time(03, 00), new Time(8, 00), 5 * 360)
 
 		);
+	}
+
+	@Parameters
+	@Test
+	public void should_getTime(Time initTime, int angle, Time expectedTime) throws Exception {
+		// given
+
+		// when
+		Time time = TimeAngleUtils.getTime(initTime, angle);
+
+		// then
+		assertThat(time).isEqualTo(expectedTime);
+	}
+
+	Object[] parametersForShould_getTime() {
+		return $($(new Time(00, 00), 360, new Time(01, 00)), $(new Time(00, 00), -360, new Time(11, 00)),
+				$(new Time(03, 00), 360, new Time(04, 00)), $(new Time(03, 00), -360, new Time(02, 00)));
 	}
 }
