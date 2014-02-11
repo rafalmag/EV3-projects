@@ -10,6 +10,7 @@ import lejos.robotics.MirrorMotor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.rafalmag.ev3.Time;
 import pl.rafalmag.systemtime.SystemTime;
 import pl.rafalmag.systemtime.SystemTimeManager;
 import pl.rafalmag.systemtime.SystemTimeManagerException;
@@ -27,9 +28,8 @@ public class Main {
 
 		initSysTime();
 
-		AnalogClock clock = new AnalogClock(
-				new TickPeriod(1, TimeUnit.SECONDS),
-				MirrorMotor.invertMotor(Motor.A), Motor.B);
+		Time initTime = new Time(12, 00);
+		AnalogClock clock = new AnalogClock(initTime, new TickPeriod(1, TimeUnit.SECONDS), MirrorMotor.invertMotor(Motor.A), Motor.B);
 		ClockController clockController = new ClockController(clock);
 		clockController.init();
 		DigitalClock digitalClock = new DigitalClock(clock.getClockRunning());
@@ -44,9 +44,7 @@ public class Main {
 			long offsetMs = systemTimeManager.getOffsetMs();
 			SystemTime.setOffset(offsetMs);
 		} catch (SystemTimeManagerException e) {
-			log.error(
-					"Could not adjust system clock, because of "
-							+ e.getMessage(), e);
+			log.error("Could not adjust system clock, because of " + e.getMessage(), e);
 		}
 	}
 
