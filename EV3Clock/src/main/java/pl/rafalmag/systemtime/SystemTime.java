@@ -10,7 +10,10 @@ public class SystemTime {
 		SystemTime.offsetMs.set(offsetMs);
 	}
 
+	// TODO timezone
+
 	public static long getTime() {
 		return System.currentTimeMillis() + offsetMs.get();
 	}
+
 }
