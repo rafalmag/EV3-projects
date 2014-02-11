@@ -6,7 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
-		<brick.host>192.168.0.13</brick.host>
+		<brick.host>10.0.1.1</brick.host>
 		<brick.home>/home/lejos/programs</brick.home>
 		<brick.user>root</brick.user>
 	</properties>
@@ -61,7 +61,7 @@
 								<scp trust="yes" username="${brick.user}" password=""
 									todir="root@${brick.host}:${brick.home}">
 									<fileset dir="${project.build.directory}">
-										<include name="${project.build.finalName}*.jar">
+										<include name="${project.build.finalName}*dependencies.jar">
 										</include>
 									</fileset>
 								</scp>
