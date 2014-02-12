@@ -12,8 +12,7 @@ import pl.rafalmag.ev3.LoggingExceptionHandler;
 
 public class ClockController {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(AnalogClock.class);
+	private static final Logger log = LoggerFactory.getLogger(AnalogClock.class);
 
 	private final AnalogClock clock;
 
@@ -98,13 +97,12 @@ public class ClockController {
 			@Override
 			public void buttonReleased(Button b) {
 				log.trace("Button.ENTER released");
-				clock.toggleStart();
 			}
 
 			@Override
 			public void buttonPressed(Button b) {
 				log.trace("Button.ENTER pressed");
-				// wait for release
+				clock.toggleStart();
 			}
 		});
 
@@ -113,12 +111,12 @@ public class ClockController {
 			@Override
 			public void buttonReleased(Button b) {
 				log.trace("Button.ESCAPE released");
-				stopApp();
 			}
 
 			@Override
 			public void buttonPressed(Button b) {
 				log.trace("Button.ESCAPE pressed");
+				stopApp();
 			}
 		});
 	}
