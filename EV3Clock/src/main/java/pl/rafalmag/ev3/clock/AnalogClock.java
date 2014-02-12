@@ -90,6 +90,7 @@ public class AnalogClock {
 
 	public void stop() {
 		clockRunning.setRunning(false);
+		doStop();
 	}
 
 	public void fastForward() {
