@@ -1,29 +1,40 @@
 package pl.rafalmag.ev3.clock;
 
 import java.util.Observable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClockRunning extends Observable {
-	private boolean running;
+	private final AtomicBoolean running;
 
 	public ClockRunning(boolean running) {
-		this.running = running;
+		this.running = new AtomicBoolean(running);
 	}
 
-	public synchronized boolean isRunning() {
-		return running;
+	public boolean isRunning() {
+		return running.get();
 	}
 
-	public synchronized void setRunning(boolean running) {
-		this.running = running;
+	public void setRunning(boolean running) {
+		boolean oldValue = this.running.getAndSet(running);
+		if (oldValue != running) {
+			setChanged();
+			notifyObservers(running);
+		}
+	}
+
+	public boolean toggle() {
+		boolean currentValue = negate(running);
 		setChanged();
-		notifyObservers(running);
+		notifyObservers(currentValue);
+		return currentValue;
 	}
 
-	public synchronized boolean toggle() {
-		running = !running;
-		setChanged();
-		notifyObservers(running);
-		return running;
+	private static boolean negate(AtomicBoolean atomicBoolean) {
+		boolean oldValue;
+		do {
+			oldValue = atomicBoolean.get();
+		} while (!atomicBoolean.compareAndSet(oldValue, !oldValue));
+		return !oldValue;
 	}
 
 }
