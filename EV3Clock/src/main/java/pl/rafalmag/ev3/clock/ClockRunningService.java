@@ -14,8 +14,7 @@ import pl.rafalmag.ev3.LoggingExceptionHandler;
 
 public abstract class ClockRunningService extends ClockRunningObserver {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(ClockRunningService.class);
+	private static final Logger log = LoggerFactory.getLogger(ClockRunningService.class);
 
 	private final Lock lock = new ReentrantLock();
 	// guarded by lock
@@ -57,7 +56,9 @@ public abstract class ClockRunningService extends ClockRunningObserver {
 
 			@Override
 			public void run() {
-				executor.shutdownNow();
+				// shutdownNow - hung the application at hang at lejos.internal.ev3.EV3MotorPort.EV3MotorRegulatorKernelModule.subMove()
+				// http://www.lejos.org/forum/viewtopic.php?f=18&t=5822&p=22608#p22608
+				executor.shutdown();
 			}
 		});
 		onStop();
