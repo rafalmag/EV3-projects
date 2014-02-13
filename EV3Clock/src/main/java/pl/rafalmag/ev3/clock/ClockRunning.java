@@ -14,11 +14,11 @@ public class ClockRunning extends Observable {
 		return running.get();
 	}
 
-	public void setRunning(boolean running) {
-		boolean oldValue = this.running.getAndSet(running);
-		if (oldValue != running) {
+	public void setRunning(boolean newValue) {
+		boolean oldValue = this.running.getAndSet(newValue);
+		if (oldValue != newValue) {
 			setChanged();
-			notifyObservers(running);
+			notifyObservers(newValue);
 		}
 	}
 
