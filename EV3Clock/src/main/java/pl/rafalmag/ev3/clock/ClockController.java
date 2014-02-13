@@ -10,9 +10,12 @@ import org.slf4j.LoggerFactory;
 import pl.rafalmag.ev3.ButtonsListener;
 import pl.rafalmag.ev3.LoggingExceptionHandler;
 
+@Deprecated
+// TODO duplicated in MainWithMenu
 public class ClockController {
 
-	private static final Logger log = LoggerFactory.getLogger(AnalogClock.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(AnalogClock.class);
 
 	private final AnalogClock clock;
 

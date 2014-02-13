@@ -1,5 +1,8 @@
 package pl.rafalmag.ev3;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import com.google.common.base.Preconditions;
 
 /**
@@ -15,6 +18,13 @@ public class Time {
 		validateTime(hour, minute);
 		this.hour = hour;
 		this.minute = minute;
+	}
+
+	public Time(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		hour = calendar.get(Calendar.HOUR);
+		minute = calendar.get(Calendar.MINUTE);
 	}
 
 	private static void validateTime(int hour, int minute) {

@@ -1,5 +1,6 @@
 package pl.rafalmag.ev3.clock;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
 import lejos.robotics.RegulatedMotor;
@@ -13,14 +14,16 @@ import pl.rafalmag.ev3.TimeAngleUtils;
 
 public class AnalogClock {
 
-	private static final Logger log = LoggerFactory.getLogger(AnalogClock.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(AnalogClock.class);
 
 	private static final int CUCKOO_SPEED = 300;
 	private static final int TICK_SPEED = 400;
 	private static final int FAST_SPEED = 720;
 	private static final float GEAR_RATIO = 1f / 6f;
 	static final int TICKS_PER_ROTATION = 12;
-	private static final int TICK_ANGLE = Math.round(new Float(1f / TICKS_PER_ROTATION * 360f / GEAR_RATIO));
+	private static final int TICK_ANGLE = Math.round(new Float(1f
+			/ TICKS_PER_ROTATION * 360f / GEAR_RATIO));
 
 	private final ClockRunning clockRunning = new ClockRunning(false);
 
@@ -29,13 +32,15 @@ public class AnalogClock {
 
 	private final AtomicReference<Time> time = new AtomicReference<>();
 
-	public AnalogClock(final Time initTime, TickPeriod tickPeriod, RegulatedMotor handMotor, RegulatedMotor cuckooMotor) {
+	public AnalogClock(final Time initTime, TickPeriod tickPeriod,
+			RegulatedMotor handMotor, RegulatedMotor cuckooMotor) {
 		this.handMotor = handMotor;
 		handMotor.resetTachoCount();
 		handMotor.addListener(new RegulatedMotorListener() {
 
 			@Override
-			public void rotationStopped(RegulatedMotor motor, int tachoCount, boolean stalled, long timeStamp) {
+			public void rotationStopped(RegulatedMotor motor, int tachoCount,
+					boolean stalled, long timeStamp) {
 				double angle = tachoCount * GEAR_RATIO;
 				Time newTime = TimeAngleUtils.getTime(initTime, (int) angle);
 				time.set(newTime);
@@ -43,7 +48,8 @@ public class AnalogClock {
 			}
 
 			@Override
-			public void rotationStarted(RegulatedMotor motor, int tachoCount, boolean stalled, long timeStamp) {
+			public void rotationStarted(RegulatedMotor motor, int tachoCount,
+					boolean stalled, long timeStamp) {
 			}
 		});
 		time.set(initTime);
@@ -111,5 +117,12 @@ public class AnalogClock {
 
 	public ClockRunning getClockRunning() {
 		return clockRunning;
+	}
+
+	public void autoSet(long date) {
+		Time timeToBeSet = new Time(new Date(date));
+		int diffAngle = TimeAngleUtils.getDiffAngle(time.get(), timeToBeSet);
+		handMotor.rotate((int) (diffAngle / GEAR_RATIO));
+		doStop();
 	}
 }
