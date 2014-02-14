@@ -11,13 +11,13 @@
 		<brick.user>root</brick.user>
 	</properties>
 	<dependencies>
-		
 		<dependency>
 			<groupId>lejos</groupId>
 			<artifactId>ev3classes</artifactId>
 			<version>0.6.0-SNAPSHOT</version>
 			<scope>provided</scope>
-		</dependency><dependency>
+		</dependency>
+		<dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
 			<version>3.3</version>
@@ -27,22 +27,26 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.13</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>15.0</version>
-		</dependency><dependency>
+		</dependency>
+		
+		<!-- tests only -->
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 			<scope>test</scope>
-		</dependency><dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 			<version>1.5.0</version>
 			<scope>test</scope>
-		</dependency><dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
 			<version>1.3</version>
@@ -54,18 +58,17 @@
 			<version>1.9.5</version>
 			<scope>test</scope>
 		</dependency>
-		
 		<dependency>
 			<groupId>pl.pragmatists</groupId>
 			<artifactId>JUnitParams</artifactId>
 			<version>1.0.2</version>
 			<scope>test</scope>
 		</dependency>
-		
 	</dependencies>
 
 	<build>
 		<plugins>
+			<!-- to point our java 7 compatibility -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -73,6 +76,7 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<!-- build a runnable jar with dependencies -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -81,6 +85,7 @@
 							<mainClass>pl.rafalmag.ev3.clock.MainWithMenu</mainClass>
 						</manifest>
 						<manifestEntries>
+						<!-- if ev3classes scope is "provided" -> make sure this point to existing files-->
 							<Class-Path>/home/root/lejos/lib/ev3classes.jar
 								/home/root/lejos/lib/dbusjava.jar
 								/home/root/lejos/libjna/usr/share/java/jna.jar</Class-Path>
@@ -92,14 +97,15 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
+						<id>make-assembly</id>
+						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
+			<!-- deploy jar with dependencies on EV3 -->
 			<plugin>
 				<inherited>false</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -117,7 +123,7 @@
 									message="Push to server ${project.build.directory}/${project.build.finalName}*.jar">
 								</echo>
 								<scp trust="yes" username="${brick.user}" password=""
-									todir="root@${brick.host}:${brick.home}">
+									todir="${brick.user}@${brick.host}:${brick.home}">
 									<fileset dir="${project.build.directory}">
 										<include name="${project.build.finalName}*dependencies.jar">
 										</include>
@@ -128,7 +134,7 @@
 					</execution>
 				</executions>
 				<dependencies>
-					<!-- ANT dependencies -->
+					<!-- ANT dependencies for this plugin - mainly to be able to use SCP -->
 					<dependency>
 						<groupId>commons-net</groupId>
 						<artifactId>commons-net</artifactId>
@@ -158,5 +164,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 </project>
