@@ -1,5 +1,6 @@
 package pl.rafalmag.systemtime;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
@@ -17,8 +18,8 @@ public class SystemTime {
 
 	// TODO timezone
 
-	public static long getTime() {
-		return System.currentTimeMillis() + offsetMs.get();
+	public static Date getDate() {
+		return new Date(System.currentTimeMillis() + offsetMs.get());
 	}
 
 	private static String NTP_SERVER = "pl.pool.ntp.org";
@@ -33,7 +34,9 @@ public class SystemTime {
 			long offsetMs = systemTimeManager.getOffsetMs();
 			SystemTime.setOffset(offsetMs);
 		} catch (SystemTimeManagerException e) {
-			log.error("Could not adjust system clock, because of " + e.getMessage(), e);
+			log.error(
+					"Could not adjust system clock, because of "
+							+ e.getMessage(), e);
 		}
 	}
 

@@ -3,6 +3,7 @@ package pl.rafalmag.ev3.clock;
 import java.util.concurrent.TimeUnit;
 
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
@@ -35,24 +36,24 @@ public class MainWithMenu {
 				new EV3LargeRegulatedMotor(MotorPort.B));
 		MainWithMenu mainWithMenu = new MainWithMenu(clock);
 		log.info("Ready");
+		Sound.beep();
 		mainWithMenu.start();
 	}
 
-	private final TextMenu textMenu;
 	private final AnalogClock clock;
 
 	public MainWithMenu(AnalogClock clock) {
 		this.clock = clock;
-		String[] items = MainMenu.getNames();
-		int topRow = 1;
-		String title = "Clock";
-		textMenu = new TextMenu(items, topRow, title);
 	}
 
 	public void start() {
 		addRunningLeds();
 		addShutdownHook();
-		menuLoop();
+		clockSettingMenu();
+		LCD.clear();
+		mainMenuLoop();
+		LCD.clear();
+		stopApp();
 	}
 
 	private void addRunningLeds() {
@@ -79,20 +80,58 @@ public class MainWithMenu {
 		}, "Shutdown hook"));
 	}
 
-	public void menuLoop() {
+	public void clockSettingMenu() {
+		Time time = clock.getTime();
+		LCD.drawString("Clock setting", 0, 0);
+		TextMenu textMenu = new TextMenu(ClockSettingMenu.getNames(), 2);
 		int lastSelected = 0;
 		while (true) {
+			textMenu.setTitle(time.toString());
 			// blocking here
 			lastSelected = textMenu.select(lastSelected);
-			if (lastSelected == -1) { // ESCAPE button
-				stopApp();
+			if (lastSelected < 0) {
+				clock.setTime(time);
+				return;
+			}
+			ClockSettingMenu clockSettingMenu = ClockSettingMenu.values()[lastSelected];
+			switch (clockSettingMenu) {
+			case HOUR_MINUS:
+				time = time.minusHour();
+				break;
+			case HOUR_PLUS:
+				time = time.plusHour();
+				break;
+			case MINUTE_MINUS:
+				time = time.minusMinute();
+				break;
+			case MINUTE_PLUS:
+				time = time.plusMinute();
+				break;
+			case OK:
+				clock.setTime(time);
+				return;
+			default:
+				throw new IllegalStateException("Not supported enum value = "
+						+ clockSettingMenu);
+			}
+		}
+	}
+
+	public void mainMenuLoop() {
+		LCD.drawString("Clock setting", 0, 0);
+		TextMenu textMenu = new TextMenu(MainMenu.getNames(), 2);
+		int lastSelected = 0;
+		while (true) {
+			textMenu.setTitle(clock.getTime().toString());
+			// blocking here
+			lastSelected = textMenu.select(lastSelected);
+			if (lastSelected < 0) {
 				return;
 			}
 			MainMenu mainMenu = MainMenu.values()[lastSelected];
 			switch (mainMenu) {
 			case AUTO:
-				// clock.setTime(); //TODO submenu ?
-				clock.autoSet(SystemTime.getTime());
+				clock.autoSet(SystemTime.getDate());
 				break;
 			case BACKWARD:
 				clock.fastBackward();

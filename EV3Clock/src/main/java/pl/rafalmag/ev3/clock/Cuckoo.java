@@ -25,24 +25,27 @@ public class Cuckoo {
 	private static final Logger log = LoggerFactory.getLogger(Cuckoo.class);
 
 	private static final int CUCKOO_ROTATION = 720;
+	private static final int CUCKOO_SPEED = 300;
 
-	private final Executor cuckooExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+	private final Executor cuckooExecutor = Executors
+			.newCachedThreadPool(new ThreadFactory() {
 
-		@Override
-		public Thread newThread(Runnable runnable) {
-			Thread thread = new Thread(runnable);
-			thread.setDaemon(true);
-			thread.setName("Cuckoo");
-			thread.setUncaughtExceptionHandler(new LoggingExceptionHandler());
-			return thread;
-		}
-	});
+				@Override
+				public Thread newThread(Runnable runnable) {
+					Thread thread = new Thread(runnable);
+					thread.setDaemon(true);
+					thread.setName("Cuckoo");
+					thread.setUncaughtExceptionHandler(new LoggingExceptionHandler());
+					return thread;
+				}
+			});
 
 	private final RegulatedMotor cuckooMotor;
 
-	private final AtomicWrappingCounter tick = new AtomicWrappingCounter(0, AnalogClock.TICKS_PER_ROTATION);
+	private final AtomicWrappingCounter tick = new AtomicWrappingCounter(0,
+			AnalogClock.TICKS_PER_ROTATION);
 
-	public static final String CUCKOO_WAV = "cuckoo.rsf";
+	public static final String CUCKOO_WAV = "cuckoo.wav";
 
 	static {
 		// TODO temporary switched off
@@ -63,6 +66,8 @@ public class Cuckoo {
 
 	public Cuckoo(RegulatedMotor cuckooMotor) {
 		this.cuckooMotor = cuckooMotor;
+		cuckooMotor.setAcceleration(400);
+		cuckooMotor.setSpeed(CUCKOO_SPEED);
 	}
 
 	public void cuckoo() {

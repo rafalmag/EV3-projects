@@ -28,8 +28,10 @@ public class Time {
 	}
 
 	private static void validateTime(int hour, int minute) {
-		Preconditions.checkArgument(hour >= 0 && hour <= 24, "%s must be in range [%s, %s]", hour, 0, 24);
-		Preconditions.checkArgument(minute >= 0 && minute <= 59, "%s must be in range [%s, %s]", minute, 0, 59);
+		Preconditions.checkArgument(hour >= 0 && hour <= 23,
+				"%s must be in range [%s, %s]", hour, 0, 23);
+		Preconditions.checkArgument(minute >= 0 && minute <= 59,
+				"%s must be in range [%s, %s]", minute, 0, 59);
 	}
 
 	public int getHour() {
@@ -42,7 +44,7 @@ public class Time {
 
 	@Override
 	public String toString() {
-		return String.format("Time=%02d:%02d", hour, minute);
+		return String.format("%02d:%02d", hour, minute);
 	}
 
 	@Override
@@ -68,6 +70,50 @@ public class Time {
 		if (minute != other.minute)
 			return false;
 		return true;
+	}
+
+	public Time minusHour() {
+		return new Time(getMinusHour(), minute);
+	}
+
+	private int getMinusHour() {
+		int newHour = hour - 1;
+		if (newHour < 0) {
+			newHour = 23;
+		}
+		return newHour;
+	}
+
+	public Time plusHour() {
+		return new Time(getPlusHour(), minute);
+	}
+
+	private int getPlusHour() {
+		int newHour = hour + 1;
+		if (newHour > 23) {
+			newHour = 0;
+		}
+		return newHour;
+	}
+
+	public Time minusMinute() {
+		int newMinute = minute - 1;
+		int newHour = hour;
+		if (newMinute < 0) {
+			newMinute = 59;
+			newHour = getMinusHour();
+		}
+		return new Time(newHour, newMinute);
+	}
+
+	public Time plusMinute() {
+		int newMinute = minute + 1;
+		int newHour = hour;
+		if (newMinute > 59) {
+			newMinute = 0;
+			newHour = getPlusHour();
+		}
+		return new Time(newHour, newMinute);
 	}
 
 }

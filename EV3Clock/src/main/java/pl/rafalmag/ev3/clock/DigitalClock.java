@@ -2,7 +2,6 @@ package pl.rafalmag.ev3.clock;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import lejos.hardware.lcd.LCD;
@@ -42,7 +41,7 @@ public class DigitalClock {
 	}
 
 	String getTime() {
-		return DATE_FORMAT.format(new Date(SystemTime.getTime()));
+		return DATE_FORMAT.format(SystemTime.getDate());
 	}
 
 }

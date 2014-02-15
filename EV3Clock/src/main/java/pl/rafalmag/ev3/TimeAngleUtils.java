@@ -20,7 +20,9 @@ public class TimeAngleUtils {
 		int givenTimeAngle = toAngle(givenTime);
 
 		int diff = getDiffAbsolute(baseTimeAngle, givenTimeAngle);
-		if (diff > 6 * 360) {
+		if (diff < -(6 * 360)) {
+			return 12 * 360 + diff;
+		} else if (diff > 6 * 360) {
 			return -(12 * 360 - diff);
 		} else {
 			return diff;
