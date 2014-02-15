@@ -15,9 +15,9 @@ public class SystemTimeManagerTest {
 		String ntpServer = "pl.pool.ntp.org";
 		SystemTimeManager systemTimeManager = new SystemTimeManager(ntpServer);
 		// when
-		Long offset = systemTimeManager.getOffsetMs();
+		Long offsetMs = systemTimeManager.getOffsetMs();
 		// then
-		assertThat(offset, notNullValue());
+		assertThat(offsetMs, notNullValue());
 	}
 
 }
