@@ -8,18 +8,17 @@ import java.io.InputStream;
 
 import lejos.hardware.Sound;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import pl.rafalmag.ev3.clock.Cuckoo;
 
-@Ignore
 public class SoundFileTest {
 
 	@Test
 	public void should_play_file() throws Exception {
 		// given
-		try (InputStream is = getClass().getResourceAsStream(Cuckoo.CUCKOO_WAV)) {
+		try (InputStream is = getClass().getResourceAsStream(
+				"/" + Cuckoo.CUCKOO_WAV)) {
 			if (is == null) {
 				throw new IOException("Cannot find wav=" + Cuckoo.CUCKOO_WAV);
 			}

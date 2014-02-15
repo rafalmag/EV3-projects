@@ -50,8 +50,7 @@ public class Cuckoo {
 	private final Time tickTime;
 
 	static {
-		// TODO temporary switched off
-		// copyResource();
+		copyResource();
 	}
 
 	private static void copyResource() {
@@ -106,7 +105,7 @@ public class Cuckoo {
 	}
 
 	private void doCuckoo() {
-		// playCuckoo(); // TODO temporary switched off
+		playCuckoo();
 		cuckooMotor.rotate(CUCKOO_ROTATION);
 		cuckooMotor.stop();
 		cuckooMotor.flt();
