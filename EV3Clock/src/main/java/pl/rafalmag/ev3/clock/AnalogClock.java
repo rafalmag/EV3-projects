@@ -21,9 +21,6 @@ public class AnalogClock {
 	private static final int TICK_SPEED = 400;
 	private static final int FAST_SPEED = 720;
 	private static final float GEAR_RATIO = 1f / 6f;
-	static final int TICKS_PER_ROTATION = 12;
-	private static final int TICK_ANGLE = Math.round(new Float(1f
-			/ TICKS_PER_ROTATION * 360f / GEAR_RATIO));
 
 	private final ClockRunning clockRunning = new ClockRunning(false);
 
@@ -34,8 +31,11 @@ public class AnalogClock {
 
 	private final AtomicInteger lastTachoCount = new AtomicInteger(0);
 
-	public AnalogClock(Time initTime, TickPeriod tickPeriod,
+	private final Time tickTime;
+
+	public AnalogClock(Time initTime, TickPeriod tickPeriod, Time tickTime,
 			RegulatedMotor handMotor, RegulatedMotor cuckooMotor) {
+		this.tickTime = tickTime;
 		this.handMotor = handMotor;
 		handMotor.resetTachoCount();
 		handMotor.addListener(new RegulatedMotorListener() {
@@ -59,7 +59,7 @@ public class AnalogClock {
 		setTime(initTime);
 		handMotor.setSpeed(TICK_SPEED);
 		handMotor.setAcceleration(800);
-		this.cuckoo = new Cuckoo(cuckooMotor);
+		this.cuckoo = new Cuckoo(cuckooMotor, tickTime, time);
 
 		clockRunning.addObserver(new ClockRunningService(tickPeriod) {
 
@@ -75,16 +75,15 @@ public class AnalogClock {
 
 			@Override
 			public void onStart() {
-				cuckoo.resetTickCount();
 			}
 		});
 	}
 
 	private void doTick() {
 		handMotor.setSpeed(TICK_SPEED);
-		handMotor.rotate(TICK_ANGLE);
+		handMotor.rotate(TimeAngleUtils.toAngle(tickTime));
 		doStop();
-		cuckoo.cuckoo();
+		cuckoo.checkCuckoo();
 	}
 
 	private void doStop() {

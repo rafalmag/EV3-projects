@@ -30,7 +30,7 @@ public class MainWithMenu {
 		SystemTime.initSysTime();
 		Time initTime = new Time(12, 00);
 		AnalogClock clock = new AnalogClock(initTime, new TickPeriod(1,
-				TimeUnit.SECONDS),
+				TimeUnit.SECONDS), new Time(0, 20),
 				MirrorMotor
 						.invertMotor(new EV3MediumRegulatedMotor(MotorPort.A)),
 				new EV3LargeRegulatedMotor(MotorPort.B));

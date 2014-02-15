@@ -5,7 +5,8 @@ public enum MainMenu {
 	BACKWARD("manual backward"),
 	AUTO("auto"),
 	TOGGLE_RUN("toggle run");
-	// CUCKOO; // TODO
+	// CUCKOO; // TODO on/off/manual, sound on/off
+	// hand_settings
 
 	private final String name;
 

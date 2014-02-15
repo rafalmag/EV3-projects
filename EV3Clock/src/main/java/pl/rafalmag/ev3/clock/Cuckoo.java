@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicReference;
 
 import lejos.hardware.Sound;
 import lejos.robotics.RegulatedMotor;
@@ -15,8 +16,8 @@ import lejos.robotics.RegulatedMotor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.rafalmag.ev3.AtomicWrappingCounter;
 import pl.rafalmag.ev3.LoggingExceptionHandler;
+import pl.rafalmag.ev3.Time;
 
 import com.google.common.io.Resources;
 
@@ -42,10 +43,11 @@ public class Cuckoo {
 
 	private final RegulatedMotor cuckooMotor;
 
-	private final AtomicWrappingCounter tick = new AtomicWrappingCounter(0,
-			AnalogClock.TICKS_PER_ROTATION);
-
 	public static final String CUCKOO_WAV = "cuckoo.wav";
+
+	private final AtomicReference<Time> analogTime;
+
+	private final Time tickTime;
 
 	static {
 		// TODO temporary switched off
@@ -64,18 +66,21 @@ public class Cuckoo {
 		}
 	}
 
-	public Cuckoo(RegulatedMotor cuckooMotor) {
+	public Cuckoo(RegulatedMotor cuckooMotor, Time tickTime,
+			AtomicReference<Time> analogTime) {
 		this.cuckooMotor = cuckooMotor;
+		this.tickTime = tickTime;
+		this.analogTime = analogTime;
 		cuckooMotor.setAcceleration(400);
 		cuckooMotor.setSpeed(CUCKOO_SPEED);
 	}
 
-	public void cuckoo() {
+	public void checkCuckoo() {
 		cuckooExecutor.execute(new Runnable() {
 
 			@Override
 			public void run() {
-				if (tick.incrementAndGet() == 0) {
+				if (shouldCuckoo(analogTime.get(), tickTime)) {
 					doCuckoo();
 				}
 			}
@@ -83,30 +88,28 @@ public class Cuckoo {
 		});
 	}
 
+	static boolean shouldCuckoo(Time analogTime, Time tickTime) {
+		int positiveBound = tickTime.getMinute() / 2;
+		int negativeBound = 60 - positiveBound;
+		int minutesOnClock = analogTime.getMinute();
+		return minutesOnClock == 0 || minutesOnClock >= negativeBound
+				|| minutesOnClock < positiveBound;
+	}
+
 	private void playCuckoo() {
 		int errorCode = Sound.playSample(new File(CUCKOO_WAV), Sound.VOL_MAX);
 		if (errorCode < 0) {
-			log.error("Cannot play cuckoo, error code=" + errorCode); // TOTO
+			log.error("Cannot play cuckoo, error code=" + errorCode); // TODO
 																		// -5
 																		// returned
 		}
 	}
 
 	private void doCuckoo() {
-		cuckooExecutor.execute(new Runnable() {
-
-			@Override
-			public void run() {
-				// playCuckoo(); // TODO temporary switched off
-			}
-
-		});
+		// playCuckoo(); // TODO temporary switched off
 		cuckooMotor.rotate(CUCKOO_ROTATION);
 		cuckooMotor.stop();
 		cuckooMotor.flt();
 	}
 
-	public void resetTickCount() {
-		tick.reset();
-	}
 }
