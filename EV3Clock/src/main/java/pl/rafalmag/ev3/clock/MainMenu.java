@@ -4,7 +4,8 @@ public enum MainMenu {
 	FORWARD("manual forward"),
 	BACKWARD("manual backward"),
 	AUTO("auto"),
-	TOGGLE_RUN("toggle run");
+	TOGGLE_RUN("toggle run"),
+	HAND_SETTINGS("hand settings");
 	// CUCKOO; // TODO on/off/manual, sound on/off
 	// hand_settings
 

@@ -45,10 +45,11 @@ public class AnalogClock {
 					boolean stalled, long timeStamp) {
 				int lastTachoCount = AnalogClock.this.lastTachoCount
 						.getAndSet(tachoCount);
-				double angle = (tachoCount - lastTachoCount) * GEAR_RATIO;
-				Time newTime = TimeAngleUtils.getTime(getTime(), (int) angle);
+				float angle = (tachoCount - lastTachoCount) * GEAR_RATIO;
+				Time newTime = TimeAngleUtils.getTime(getTime(),
+						Math.round(angle));
 				setTime(newTime);
-				log.debug("angle ={}, time={}", angle, newTime);
+				log.debug("angle={}, time={}", angle, newTime);
 			}
 
 			@Override
@@ -81,7 +82,8 @@ public class AnalogClock {
 
 	private void doTick() {
 		handMotor.setSpeed(TICK_SPEED);
-		handMotor.rotate(TimeAngleUtils.toAngle(tickTime));
+		handMotor.rotate(Math.round(TimeAngleUtils.toAngle(tickTime)
+				/ GEAR_RATIO));
 		doStop();
 		cuckoo.checkCuckoo();
 	}
@@ -123,7 +125,7 @@ public class AnalogClock {
 	public void autoSet(Date date) {
 		Time timeToBeSet = new Time(date);
 		Time baseTime = getTime();
-		int diffAngle = (int) (TimeAngleUtils.getDiffAngle(baseTime,
+		int diffAngle = Math.round(TimeAngleUtils.getDiffAngle(baseTime,
 				timeToBeSet) / GEAR_RATIO);
 		log.debug("baseTime={}, timeToBeSet={}, diffAngle={}", baseTime,
 				timeToBeSet, diffAngle);

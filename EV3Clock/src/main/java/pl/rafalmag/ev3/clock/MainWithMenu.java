@@ -29,7 +29,7 @@ public class MainWithMenu {
 		Button.setKeyClickVolume(1);
 		SystemTime.initSysTime();
 		Time initTime = new Time(12, 00);
-		AnalogClock clock = new AnalogClock(initTime, new TickPeriod(1,
+		AnalogClock clock = new AnalogClock(initTime, new TickPeriod(5,
 				TimeUnit.SECONDS), new Time(0, 20),
 				MirrorMotor
 						.invertMotor(new EV3MediumRegulatedMotor(MotorPort.A)),
@@ -146,6 +146,11 @@ public class MainWithMenu {
 			case TOGGLE_RUN:
 				clock.toggleStart();
 				// TODO submenu with digital time ?
+				break;
+			case HAND_SETTINGS:
+				LCD.clear();
+				clockSettingMenu();
+				LCD.clear();
 				break;
 			default:
 				throw new IllegalStateException("Not supported enum value = "

@@ -5,9 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import lejos.hardware.Sound;
@@ -28,8 +29,8 @@ public class Cuckoo {
 	private static final int CUCKOO_ROTATION = 720;
 	private static final int CUCKOO_SPEED = 300;
 
-	private final Executor cuckooExecutor = Executors
-			.newCachedThreadPool(new ThreadFactory() {
+	private final ScheduledExecutorService cuckooExecutor = Executors
+			.newScheduledThreadPool(2, new ThreadFactory() {
 
 				@Override
 				public Thread newThread(Runnable runnable) {
@@ -57,8 +58,13 @@ public class Cuckoo {
 		URL url = Cuckoo.class.getClass().getResource("/" + CUCKOO_WAV);
 		try {
 			File file = new File(CUCKOO_WAV);
-			try (OutputStream os = new FileOutputStream(file, false)) {
-				Resources.copy(url, os);
+			if (file.exists()) {
+				log.info("File " + file.getAbsolutePath()
+						+ " already exists - so it won't be overriden");
+			} else {
+				try (OutputStream os = new FileOutputStream(file, false)) {
+					Resources.copy(url, os);
+				}
 			}
 		} catch (IOException e) {
 			log.error("Cannot extract " + CUCKOO_WAV + " file");
@@ -96,12 +102,28 @@ public class Cuckoo {
 	}
 
 	private void playCuckoo() {
-		int errorCode = Sound.playSample(new File(CUCKOO_WAV), Sound.VOL_MAX);
-		if (errorCode < 0) {
-			log.error("Cannot play cuckoo, error code=" + errorCode); // TODO
-																		// -5
-																		// returned
-		}
+		final File cuckooWav = new File(CUCKOO_WAV);
+		cuckooExecutor.execute(new Runnable() {
+
+			@Override
+			public void run() {
+				int playTimeMs = Sound.playSample(cuckooWav, Sound.VOL_MAX);
+				if (playTimeMs < 0) {
+					log.error("Cannot play cuckoo, error code=" + playTimeMs);
+				} else {
+					cuckooExecutor.schedule(new Runnable() {
+
+						@Override
+						public void run() {
+							// play time / error time ignored as we won't be
+							// here if first cuckoo failed
+							Sound.playSample(cuckooWav, Sound.VOL_MAX);
+						}
+					}, playTimeMs + 1, TimeUnit.MILLISECONDS);
+				}
+			}
+		});
+
 	}
 
 	private void doCuckoo() {
