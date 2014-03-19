@@ -57,7 +57,7 @@ public class AnalogClock {
 					boolean stalled, long timeStamp) {
 			}
 		});
-		setTime(initTime);
+		setTime(initTime); // TODO read from property file
 		handMotor.setSpeed(TICK_SPEED);
 		handMotor.setAcceleration(800);
 		this.cuckoo = new Cuckoo(cuckooMotor, tickTime, time);
@@ -141,5 +141,6 @@ public class AnalogClock {
 	public void setTime(Time time) {
 		log.debug("Setting time={}", time);
 		this.time.set(time);
+		// TODO persist to property file ?
 	}
 }
