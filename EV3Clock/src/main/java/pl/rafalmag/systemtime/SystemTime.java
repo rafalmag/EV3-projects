@@ -1,6 +1,8 @@
 package pl.rafalmag.systemtime;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
@@ -10,16 +12,21 @@ public class SystemTime {
 
 	private static final Logger log = LoggerFactory.getLogger(SystemTime.class);
 
-	private final static AtomicLong offsetMs = new AtomicLong(0);
+	private static final TimeZone TIME_ZONE = TimeZone
+			.getTimeZone("Europe/Warsaw");
+
+	private static final AtomicLong offsetMs = new AtomicLong(0);
 
 	public static void setOffset(long offsetMs) {
 		SystemTime.offsetMs.set(offsetMs);
 	}
 
-	// TODO timezone
-
 	public static Date getDate() {
-		return new Date(System.currentTimeMillis() + offsetMs.get());
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MILLISECOND, (int) offsetMs.get());
+		calendar.add(Calendar.MILLISECOND, TIME_ZONE.getRawOffset());
+		calendar.add(Calendar.MILLISECOND, TIME_ZONE.getDSTSavings());
+		return calendar.getTime();
 	}
 
 	private static String NTP_SERVER = "pl.pool.ntp.org";
