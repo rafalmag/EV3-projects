@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import lejos.hardware.Sound;
@@ -18,15 +17,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.rafalmag.ev3.LoggingExceptionHandler;
+import pl.rafalmag.ev3.RuntimeInterruptedException;
 import pl.rafalmag.ev3.Time;
 
 import com.google.common.io.Resources;
 
 public class Cuckoo {
 
+	private static final int EXTRA_WAIT_TIME_MS = 100;
+
 	private static final Logger log = LoggerFactory.getLogger(Cuckoo.class);
 
-	private static final int CUCKOO_ROTATION = 720;
+	private static final int CUCKOO_ROTATION = 360;
 	private static final int CUCKOO_SPEED = 300;
 
 	private final ScheduledExecutorService cuckooExecutor = Executors
@@ -101,36 +103,37 @@ public class Cuckoo {
 				|| minutesOnClock < positiveBound;
 	}
 
-	private void playCuckoo() {
-		final File cuckooWav = new File(CUCKOO_WAV);
-		cuckooExecutor.execute(new Runnable() {
-
-			@Override
-			public void run() {
-				int playTimeMs = Sound.playSample(cuckooWav, Sound.VOL_MAX);
-				if (playTimeMs < 0) {
-					log.error("Cannot play cuckoo, error code=" + playTimeMs);
-				} else {
-					cuckooExecutor.schedule(new Runnable() {
-
-						@Override
-						public void run() {
-							// play time / error time ignored as we won't be
-							// here if first cuckoo failed
-							Sound.playSample(cuckooWav, Sound.VOL_MAX);
-						}
-					}, playTimeMs + 1, TimeUnit.MILLISECONDS);
-				}
-			}
-		});
-
+	private void doCuckoo() {
+		// first cuckoo
+		rotateAndCuckoo();
+		// second cuckoo
+		rotateAndCuckoo();
 	}
 
-	private void doCuckoo() {
-		playCuckoo();
+	private void rotateAndCuckoo() {
 		cuckooMotor.rotate(CUCKOO_ROTATION);
 		cuckooMotor.stop();
 		cuckooMotor.flt();
+		sleep(EXTRA_WAIT_TIME_MS);
+		int playTimeMs = playCuckoo();
+		if (playTimeMs < 0) {
+			log.error("Cannot play cuckoo, error code=" + playTimeMs);
+		} else {
+			// ok
+			sleep(playTimeMs + EXTRA_WAIT_TIME_MS);
+		}
+	}
+
+	private void sleep(long sleepTimeMs) {
+		try {
+			Thread.sleep(sleepTimeMs);
+		} catch (InterruptedException e) {
+			throw new RuntimeInterruptedException(e);
+		}
+	}
+
+	private int playCuckoo() {
+		return Sound.playSample(new File(CUCKOO_WAV), Sound.VOL_MAX);
 	}
 
 }
