@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicReference;
 
 import lejos.hardware.Sound;
 import lejos.robotics.RegulatedMotor;
@@ -48,9 +47,9 @@ public class Cuckoo {
 
 	public static final String CUCKOO_WAV = "cuckoo.wav";
 
-	private final AtomicReference<Time> analogTime;
-
 	private final Time tickTime;
+
+	private final ClockProperties clockProperties;
 
 	static {
 		copyResource();
@@ -74,10 +73,10 @@ public class Cuckoo {
 	}
 
 	public Cuckoo(RegulatedMotor cuckooMotor, Time tickTime,
-			AtomicReference<Time> analogTime) {
+			ClockProperties clockProperties) {
 		this.cuckooMotor = cuckooMotor;
 		this.tickTime = tickTime;
-		this.analogTime = analogTime;
+		this.clockProperties = clockProperties;
 		cuckooMotor.setAcceleration(400);
 		cuckooMotor.setSpeed(CUCKOO_SPEED);
 	}
@@ -87,7 +86,7 @@ public class Cuckoo {
 
 			@Override
 			public void run() {
-				if (shouldCuckoo(analogTime.get(), tickTime)) {
+				if (shouldCuckoo(clockProperties.getTime(), tickTime)) {
 					doCuckoo();
 				}
 			}

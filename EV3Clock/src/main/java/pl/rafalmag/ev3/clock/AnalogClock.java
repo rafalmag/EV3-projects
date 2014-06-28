@@ -2,7 +2,6 @@ package pl.rafalmag.ev3.clock;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import lejos.robotics.RegulatedMotor;
 import lejos.robotics.RegulatedMotorListener;
@@ -27,14 +26,15 @@ public class AnalogClock {
 	private final RegulatedMotor handMotor;
 	private final Cuckoo cuckoo;
 
-	private final AtomicReference<Time> time = new AtomicReference<>();
-
 	private final AtomicInteger lastTachoCount = new AtomicInteger(0);
 
 	private final Time tickTime;
 
-	public AnalogClock(Time initTime, TickPeriod tickPeriod, Time tickTime,
-			RegulatedMotor handMotor, RegulatedMotor cuckooMotor) {
+	private final ClockProperties clockProperties;
+
+	public AnalogClock(ClockProperties clockProperties, TickPeriod tickPeriod,
+			Time tickTime, RegulatedMotor handMotor, RegulatedMotor cuckooMotor) {
+		this.clockProperties = clockProperties;
 		this.tickTime = tickTime;
 		this.handMotor = handMotor;
 		handMotor.resetTachoCount();
@@ -57,10 +57,9 @@ public class AnalogClock {
 					boolean stalled, long timeStamp) {
 			}
 		});
-		setTime(initTime); // TODO read from property file
 		handMotor.setSpeed(TICK_SPEED);
 		handMotor.setAcceleration(800);
-		this.cuckoo = new Cuckoo(cuckooMotor, tickTime, time);
+		this.cuckoo = new Cuckoo(cuckooMotor, tickTime, clockProperties);
 
 		clockRunning.addObserver(new ClockRunningService(tickPeriod) {
 
@@ -134,13 +133,13 @@ public class AnalogClock {
 	}
 
 	public Time getTime() {
-		log.debug("Getting time={}", time.get());
-		return time.get();
+		Time time = clockProperties.getTime();
+		log.debug("Getting time={}", time);
+		return time;
 	}
 
 	public void setTime(Time time) {
 		log.debug("Setting time={}", time);
-		this.time.set(time);
-		// TODO persist to property file ?
+		clockProperties.setTime(time);
 	}
 }

@@ -28,8 +28,8 @@ public class Main {
 
 		SystemTime.initSysTime();
 
-		Time initTime = new Time(12, 00);
-		AnalogClock clock = new AnalogClock(initTime, new TickPeriod(1,
+		ClockProperties clockProperties = ClockProperties.getInstance();
+		AnalogClock clock = new AnalogClock(clockProperties, new TickPeriod(1,
 				TimeUnit.SECONDS), new Time(0, 20),
 				MirrorMotor
 						.invertMotor(new EV3MediumRegulatedMotor(MotorPort.A)),
