@@ -6,8 +6,8 @@ public enum MainMenu {
 	AUTO("auto"),
 	TOGGLE_RUN("toggle run"),
 	HAND_SETTINGS("hand settings");
+	// TIMEZONE("time zone"); // TODO timezone settings
 	// CUCKOO; // TODO on/off/manual, sound on/off
-	// hand_settings
 
 	private final String name;
 
