@@ -11,10 +11,22 @@
 		<brick.user>root</brick.user>
 	</properties>
 	<dependencies>
+	<!-- 
+	mvn install:install-file -Dfile=ev3classes.jar -DgroupId=lejos -DartifactId=ev3classes -Dversion=0.8.1 -Dpackaging=jar
+	-->
 		<dependency>
 			<groupId>lejos</groupId>
 			<artifactId>ev3classes</artifactId>
-			<version>0.6.0-SNAPSHOT</version>
+			<version>0.8.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- 
+		mvn install:install-file -Dfile=dbusjava.jar -DgroupId=lejos -DartifactId=dbus -Dversion=0.8.1 -Dpackaging=jar
+		 -->
+		<dependency>
+			<groupId>lejos</groupId>
+			<artifactId>dbus</artifactId>
+			<version>0.8.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
