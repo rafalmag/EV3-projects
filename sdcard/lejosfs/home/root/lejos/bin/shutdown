@@ -1,8 +1,0 @@
-#! /bin/sh
-. /etc/default/lejos
-echo "Set power off flag..."
-cd ${LEJOS_HOME}/bin/utils
-${LEJOS_HOME}/bin/jrun PowerOff 
-sync;sync
-# Power will be turned off when modules are unloaded
-

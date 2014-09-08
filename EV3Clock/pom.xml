@@ -6,7 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
-		<brick.host>10.0.1.1</brick.host>
+		<brick.host>192.168.0.15</brick.host>
 		<brick.home>/home/lejos/programs</brick.home>
 		<brick.user>root</brick.user>
 	</properties>
