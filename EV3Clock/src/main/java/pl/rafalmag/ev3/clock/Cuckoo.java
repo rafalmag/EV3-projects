@@ -27,7 +27,7 @@ public class Cuckoo {
 
 	private static final Logger log = LoggerFactory.getLogger(Cuckoo.class);
 
-	private static final int CUCKOO_ROTATION = 360;
+	private static final int CUCKOO_ROTATION = 90;
 	private static final int CUCKOO_SPEED = 300;
 
 	private final ScheduledExecutorService cuckooExecutor = Executors
@@ -121,6 +121,9 @@ public class Cuckoo {
 			// ok
 			sleep(playTimeMs + EXTRA_WAIT_TIME_MS);
 		}
+		cuckooMotor.rotate((int) (-CUCKOO_ROTATION * 0.9));
+		cuckooMotor.stop();
+		cuckooMotor.flt();
 	}
 
 	private void sleep(long sleepTimeMs) {
