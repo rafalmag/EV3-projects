@@ -11,17 +11,15 @@
 
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>test.log</file>
+		<file>ev3.log</file>
 
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- daily rollover -->
-			<fileNamePattern>logFile.%d{yyyy-MM-dd-T-HHmmss}.log
-			</fileNamePattern>
-
-			<!-- keep 30 days' worth of history -->
-			<maxHistory>10</maxHistory>
-			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<fileNamePattern>ev3-%i.log</fileNamePattern>
+			<minIndex>1</minIndex>
+			<maxIndex>3</maxIndex>
 		</rollingPolicy>
+
+		<triggeringPolicy class="pl.rafalmag.ev3.TriggerOnce"/>
 
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
