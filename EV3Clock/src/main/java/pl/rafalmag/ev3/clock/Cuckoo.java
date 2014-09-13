@@ -28,7 +28,7 @@ public class Cuckoo {
 	private static final Logger log = LoggerFactory.getLogger(Cuckoo.class);
 
 	private static final int CUCKOO_ROTATION = 90;
-	private static final int CUCKOO_SPEED = 300;
+	private static final int CUCKOO_SPEED = 700;
 
 	private final ScheduledExecutorService cuckooExecutor = Executors
 			.newScheduledThreadPool(2, new ThreadFactory() {
@@ -57,18 +57,16 @@ public class Cuckoo {
 
 	private static void copyResource() {
 		URL url = Cuckoo.class.getClass().getResource("/" + CUCKOO_WAV);
-		try {
-			File file = new File(CUCKOO_WAV);
-			if (file.exists()) {
-				log.info("File " + file.getAbsolutePath()
-						+ " already exists - so it won't be overriden");
-			} else {
-				try (OutputStream os = new FileOutputStream(file, false)) {
-					Resources.copy(url, os);
-				}
+		File file = new File(CUCKOO_WAV);
+		if (file.exists()) {
+			log.info("File " + file.getAbsolutePath()
+					+ " already exists - so it won't be overriden");
+		} else {
+			try (OutputStream os = new FileOutputStream(file, false)) {
+				Resources.copy(url, os);
+			} catch (IOException e) {
+				log.error("Cannot extract " + CUCKOO_WAV + " file");
 			}
-		} catch (IOException e) {
-			log.error("Cannot extract " + CUCKOO_WAV + " file");
 		}
 	}
 
@@ -110,7 +108,7 @@ public class Cuckoo {
 	}
 
 	private void rotateAndCuckoo() {
-		cuckooMotor.rotate(CUCKOO_ROTATION);
+		cuckooMotor.rotateTo(CUCKOO_ROTATION);
 		cuckooMotor.stop();
 		cuckooMotor.flt();
 		sleep(EXTRA_WAIT_TIME_MS);
@@ -121,7 +119,7 @@ public class Cuckoo {
 			// ok
 			sleep(playTimeMs + EXTRA_WAIT_TIME_MS);
 		}
-		cuckooMotor.rotate((int) (-CUCKOO_ROTATION * 0.9));
+		cuckooMotor.rotateTo(-CUCKOO_ROTATION);
 		cuckooMotor.stop();
 		cuckooMotor.flt();
 	}

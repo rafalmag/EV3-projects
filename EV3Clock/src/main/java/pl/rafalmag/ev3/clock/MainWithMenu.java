@@ -33,7 +33,8 @@ public class MainWithMenu {
 				TimeUnit.SECONDS), new Time(0, 20),
 				MirrorMotor
 						.invertMotor(new EV3MediumRegulatedMotor(MotorPort.A)),
-				new EV3LargeRegulatedMotor(MotorPort.B));
+				MirrorMotor
+						.invertMotor(new EV3LargeRegulatedMotor(MotorPort.B)));
 		MainWithMenu mainWithMenu = new MainWithMenu(clock);
 		log.info("Ready");
 		Sound.beep();
@@ -125,9 +126,11 @@ public class MainWithMenu {
 			textMenu.setTitle(clock.getTime().toString());
 			// blocking here
 			lastSelected = textMenu.select(lastSelected);
-			if (lastSelected < 0) {
-				return;
-			}
+			// if (lastSelected < 0 || lastSelected >= MainMenu.values().length)
+			// {
+			// log.warn("lastSelected=" + lastSelected + " out of range");
+			// return;
+			// }
 			MainMenu mainMenu = MainMenu.values()[lastSelected];
 			switch (mainMenu) {
 			case AUTO:
