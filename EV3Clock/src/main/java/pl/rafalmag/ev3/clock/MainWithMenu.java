@@ -8,6 +8,8 @@ import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
+import lejos.internal.ev3.EV3LCDManager;
+import lejos.internal.ev3.EV3LCDManager.LCDLayer;
 import lejos.robotics.MirrorMotor;
 import lejos.utility.TextMenu;
 
@@ -26,6 +28,8 @@ public class MainWithMenu {
 	public static void main(String[] args) {
 		log.info("Initializing...");
 		LCD.clear();
+		disableOtherLogLayers();
+		LCD.clear();
 		Button.setKeyClickVolume(1);
 		SystemTime.initSysTime();
 		ClockProperties clockProperties = ClockProperties.getInstance();
@@ -39,6 +43,15 @@ public class MainWithMenu {
 		log.info("Ready");
 		Sound.beep();
 		mainWithMenu.start();
+	}
+
+	@SuppressWarnings("restriction")
+	private static void disableOtherLogLayers() {
+		for (LCDLayer layer : EV3LCDManager.getLocalLCDManager().getLayers()) {
+			if (!layer.getName().equalsIgnoreCase("LCD")) {
+				layer.setVisible(false);
+			}
+		}
 	}
 
 	private final AnalogClock clock;
@@ -90,7 +103,7 @@ public class MainWithMenu {
 			textMenu.setTitle(time.toString());
 			// blocking here
 			lastSelected = textMenu.select(lastSelected);
-			if (lastSelected < 0) {
+			if (lastSelected < 0) { // esc
 				clock.setTime(time);
 				return;
 			}
@@ -126,11 +139,9 @@ public class MainWithMenu {
 			textMenu.setTitle(clock.getTime().toString());
 			// blocking here
 			lastSelected = textMenu.select(lastSelected);
-			// if (lastSelected < 0 || lastSelected >= MainMenu.values().length)
-			// {
-			// log.warn("lastSelected=" + lastSelected + " out of range");
-			// return;
-			// }
+			if (lastSelected < 0) { // esc
+				return;
+			}
 			MainMenu mainMenu = MainMenu.values()[lastSelected];
 			switch (mainMenu) {
 			case AUTO:
