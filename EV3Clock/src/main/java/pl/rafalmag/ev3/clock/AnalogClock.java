@@ -32,11 +32,14 @@ public class AnalogClock {
 
 	private final ClockProperties clockProperties;
 
+	private final RegulatedMotor cuckooMotor;
+
 	public AnalogClock(ClockProperties clockProperties, TickPeriod tickPeriod,
 			Time tickTime, RegulatedMotor handMotor, RegulatedMotor cuckooMotor) {
 		this.clockProperties = clockProperties;
 		this.tickTime = tickTime;
 		this.handMotor = handMotor;
+		this.cuckooMotor = cuckooMotor;
 		handMotor.resetTachoCount();
 		handMotor.addListener(new RegulatedMotorListener() {
 
@@ -114,6 +117,7 @@ public class AnalogClock {
 	}
 
 	public void toggleStart() {
+		cuckooMotor.resetTachoCount();
 		clockRunning.toggle();
 	}
 
