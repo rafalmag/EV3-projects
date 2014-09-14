@@ -119,7 +119,7 @@ public class Cuckoo {
 			// ok
 			sleep(playTimeMs + EXTRA_WAIT_TIME_MS);
 		}
-		cuckooMotor.rotateTo(-CUCKOO_ROTATION);
+		cuckooMotor.rotateTo(0);
 		cuckooMotor.stop();
 		cuckooMotor.flt();
 	}
