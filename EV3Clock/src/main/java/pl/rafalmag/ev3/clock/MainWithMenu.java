@@ -20,6 +20,7 @@ import pl.rafalmag.ev3.RuntimeInterruptedException;
 import pl.rafalmag.ev3.Time;
 import pl.rafalmag.systemtime.SystemTime;
 
+@SuppressWarnings("restriction")
 public class MainWithMenu {
 
 	private static final Logger log = LoggerFactory
@@ -45,7 +46,6 @@ public class MainWithMenu {
 		mainWithMenu.start();
 	}
 
-	@SuppressWarnings("restriction")
 	private static void disableOtherLogLayers() {
 		for (LCDLayer layer : EV3LCDManager.getLocalLCDManager().getLayers()) {
 			if (!layer.getName().equalsIgnoreCase("LCD")) {
