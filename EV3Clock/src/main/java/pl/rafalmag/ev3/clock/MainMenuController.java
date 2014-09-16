@@ -6,8 +6,7 @@ import lejos.hardware.lcd.Font;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.lcd.TextLCD;
 import lejos.utility.TextMenu;
-import pl.rafalmag.ev3.LcdUtil;
-import pl.rafalmag.ev3.TimeUtil;
+import pl.rafalmag.ev3.Ev3Utils;
 import pl.rafalmag.systemtime.SystemTime;
 
 public class MainMenuController {
@@ -40,12 +39,12 @@ public class MainMenuController {
 				break;
 			case BACKWARD:
 				clock.fastBackward();
-				waitTillEnterIsDown();
+				Ev3Utils.waitTillEnterIsDown();
 				clock.stop();
 				break;
 			case FORWARD:
 				clock.fastForward();
-				waitTillEnterIsDown();
+				Ev3Utils.waitTillEnterIsDown();
 				clock.stop();
 				break;
 			case TOGGLE_RUN:
@@ -72,14 +71,9 @@ public class MainMenuController {
 				Font.getLargeFont());
 		LCD.clear();
 		do {
-			LcdUtil.displayLargeText(timeLCD, clock.getTime().toString());
+			Ev3Utils.displayLargeText(timeLCD, clock.getTime().toString());
 		} while (Button.waitForAnyPress(TIMEOUT_MS) == 0);
 		timeLCD.clear();
 	}
 
-	private void waitTillEnterIsDown() {
-		while (Button.ENTER.isDown()) {
-			TimeUtil.sleep(TIMEOUT_MS);
-		}
-	}
 }

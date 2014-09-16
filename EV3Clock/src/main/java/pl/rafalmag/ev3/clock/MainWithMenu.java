@@ -17,7 +17,7 @@ import lejos.robotics.MirrorMotor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.rafalmag.ev3.LcdUtil;
+import pl.rafalmag.ev3.Ev3Utils;
 import pl.rafalmag.ev3.Time;
 import pl.rafalmag.systemtime.SystemTime;
 
@@ -105,7 +105,7 @@ public class MainWithMenu {
 		clock.stop();
 		Button.LEDPattern(0);
 		LCD.clear();
-		LcdUtil.displayLargeText(
+		Ev3Utils.displayLargeText(
 				BrickFinder.getDefault().getTextLCD(Font.getLargeFont()),
 				"Bye!");
 		log.info("bye");
