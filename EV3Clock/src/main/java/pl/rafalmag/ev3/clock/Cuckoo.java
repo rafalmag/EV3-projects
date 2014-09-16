@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.rafalmag.ev3.LoggingExceptionHandler;
-import pl.rafalmag.ev3.RuntimeInterruptedException;
 import pl.rafalmag.ev3.Time;
+import pl.rafalmag.ev3.TimeUtil;
 
 import com.google.common.io.Resources;
 
@@ -111,25 +111,17 @@ public class Cuckoo {
 		cuckooMotor.rotateTo(CUCKOO_ROTATION);
 		cuckooMotor.stop();
 		cuckooMotor.flt();
-		sleep(EXTRA_WAIT_TIME_MS);
+		TimeUtil.sleep(EXTRA_WAIT_TIME_MS);
 		int playTimeMs = playCuckoo();
 		if (playTimeMs < 0) {
 			log.error("Cannot play cuckoo, error code=" + playTimeMs);
 		} else {
 			// ok
-			sleep(playTimeMs + EXTRA_WAIT_TIME_MS);
+			TimeUtil.sleep(playTimeMs + EXTRA_WAIT_TIME_MS);
 		}
 		cuckooMotor.rotateTo(0);
 		cuckooMotor.stop();
 		cuckooMotor.flt();
-	}
-
-	private void sleep(long sleepTimeMs) {
-		try {
-			Thread.sleep(sleepTimeMs);
-		} catch (InterruptedException e) {
-			throw new RuntimeInterruptedException(e);
-		}
 	}
 
 	private int playCuckoo() {

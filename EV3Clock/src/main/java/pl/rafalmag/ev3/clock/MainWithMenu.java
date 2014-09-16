@@ -2,9 +2,12 @@ package pl.rafalmag.ev3.clock;
 
 import java.util.concurrent.TimeUnit;
 
+import lejos.hardware.BrickFinder;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
+import lejos.hardware.lcd.Font;
 import lejos.hardware.lcd.LCD;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
@@ -16,13 +19,14 @@ import lejos.utility.TextMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.rafalmag.ev3.RuntimeInterruptedException;
 import pl.rafalmag.ev3.Time;
+import pl.rafalmag.ev3.TimeUtil;
 import pl.rafalmag.systemtime.SystemTime;
 
 @SuppressWarnings("restriction")
 public class MainWithMenu {
 
+	private static final int TIMEOUT_MS = 50;
 	private static final Logger log = LoggerFactory
 			.getLogger(MainWithMenu.class);
 
@@ -159,7 +163,7 @@ public class MainWithMenu {
 				break;
 			case TOGGLE_RUN:
 				clock.toggleStart();
-				// TODO submenu with digital time ?
+				displayTime();
 				break;
 			case HAND_SETTINGS:
 				LCD.clear();
@@ -173,13 +177,29 @@ public class MainWithMenu {
 		}
 	}
 
+	/**
+	 * Displays time and waits for any button to be pressed.
+	 */
+	private void displayTime() {
+		TextLCD timeLCD = BrickFinder.getDefault().getTextLCD(
+				Font.getLargeFont());
+		LCD.clear();
+		do {
+			String timeString = clock.getTime().toString();
+			displayLargeText(timeLCD, timeString);
+		} while (Button.waitForAnyPress(TIMEOUT_MS) == 0);
+		timeLCD.clear();
+	}
+
+	private void displayLargeText(TextLCD textLCD, String text) {
+		textLCD.clear();
+		textLCD.drawString(text,
+				(textLCD.getTextWidth() - text.length() + 1) / 2, 1);
+	}
+
 	private void waitTillEnterIsDown() {
 		while (Button.ENTER.isDown()) {
-			try {
-				Thread.sleep(10); // 10 ms
-			} catch (InterruptedException e) {
-				throw new RuntimeInterruptedException(e);
-			}
+			TimeUtil.sleep(TIMEOUT_MS);
 		}
 	}
 
@@ -187,7 +207,9 @@ public class MainWithMenu {
 		clock.stop();
 		Button.LEDPattern(0);
 		LCD.clear();
-		LCD.drawString("Bye!", 0, 5);
+		displayLargeText(
+				BrickFinder.getDefault().getTextLCD(Font.getLargeFont()),
+				"Bye!");
 		log.info("bye");
 	}
 }
