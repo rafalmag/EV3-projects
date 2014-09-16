@@ -106,6 +106,8 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+					<finalName>${project.artifactId}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
@@ -132,13 +134,12 @@
 						<configuration>
 							<target>
 								<echo
-									message="Push to server ${project.build.directory}/${project.build.finalName}*.jar">
+									message="Push to server ${project.build.directory}/${project.artifactId}.jar">
 								</echo>
 								<scp trust="yes" username="${brick.user}" password=""
 									todir="${brick.user}@${brick.host}:${brick.home}">
 									<fileset dir="${project.build.directory}">
-										<include name="${project.build.finalName}*dependencies.jar">
-										</include>
+										<include name="${project.artifactId}.jar"/>
 									</fileset>
 								</scp>
 							</target>
