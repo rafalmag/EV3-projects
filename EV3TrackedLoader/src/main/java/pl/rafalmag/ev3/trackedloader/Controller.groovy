@@ -48,7 +48,7 @@ class Controller {
     }
 
     void handleIrCommand(int remoteCommand) {
-        IrControllerButton irControllerButton = IrControllerButton.fromNum(remoteCommand)
+        IrControllerButton irControllerButton = IrControllerButton.fromCode(remoteCommand)
         def differentialPilotCommand = { differentialPilot.stop() }
         def loaderMotorCommand = { loaderMotor.flt() }
         String command;

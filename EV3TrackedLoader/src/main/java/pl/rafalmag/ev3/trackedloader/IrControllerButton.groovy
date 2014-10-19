@@ -23,7 +23,7 @@ enum IrControllerButton {
 		this.code = code
 	}
 
-	static IrControllerButton fromNum(int code) {
+	static IrControllerButton fromCode(int code) {
 		for (IrControllerButton irControllerButton : values()) {
 			if (irControllerButton.code == code) {
 				return irControllerButton
