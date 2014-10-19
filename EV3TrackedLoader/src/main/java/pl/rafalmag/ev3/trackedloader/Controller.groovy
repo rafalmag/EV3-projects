@@ -118,7 +118,7 @@ class Controller {
         if (beaconOptional.present) {
             def beacon = beaconOptional.get()
             if (beacon.distanceCm > 20) {
-                differentialPilot.steer(beacon.get().bearing)
+                differentialPilot.steer(beacon.bearing)
 //            differentialPilot.travel(5) // 5cm // TODO travel forward ?
             } else {
                 log.info("Got you !")
