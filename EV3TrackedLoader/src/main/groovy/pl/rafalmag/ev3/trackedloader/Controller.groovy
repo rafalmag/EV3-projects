@@ -1,9 +1,6 @@
 package pl.rafalmag.ev3.trackedloader
 
 import groovy.util.logging.Slf4j
-import lejos.hardware.Button
-import lejos.hardware.Key
-import lejos.hardware.KeyListener
 import lejos.hardware.sensor.EV3IRSensor
 import lejos.robotics.RegulatedMotor
 import lejos.robotics.navigation.DifferentialPilot
@@ -28,6 +25,7 @@ class Controller {
     }
 
     public void doJob() {
+        log.info("Started...")
         while (true) {
             int remoteCommand = ev3IrSensor.getRemoteCommand(channel)
             handleIrCommand(remoteCommand)
@@ -36,13 +34,14 @@ class Controller {
 
     void handleIrCommand(int remoteCommand) {
         IrControllerButton irControllerButton = IrControllerButton.fromCode(remoteCommand)
+        def logCommand = { log.info("Command $it") }
         def differentialPilotCommand = { differentialPilot.stop() }
         def loaderMotorCommand = { loaderMotor.flt() }
-        String command;
+        String command = null
         switch (irControllerButton) {
             case NONE:
                 // default closures
-                command = "idle..."
+                logCommand = { log.trace("Command idle...") }
                 break
             case TOP_LEFT:
                 command = "turn right forward"
@@ -90,10 +89,10 @@ class Controller {
             default:
                 throw new IllegalStateException("Unhandled controller type: " + irControllerButton)
         }
-        log.info("Command $command");
+
         // TODO draw string
 //        LCD.drawString(command, 0, 0);
-
+        logCommand.call(command)
         differentialPilotCommand.call()
         loaderMotorCommand.call()
     }
@@ -106,10 +105,13 @@ class Controller {
             def beacon = beaconOptional.get()
 
             if (beacon.bearing > 1) {
-                differentialPilot.rotateLeft()
+                differentialPilot.steer(200)
+                log.info("beacon left $beacon")
             } else if (beacon.bearing < 1) {
-                differentialPilot.rotateRight()
+                differentialPilot.steer(-200)
+                log.info("beacon right $beacon")
             } else {
+                differentialPilot.travel(2) // 2 cm ahead
                 log.info("beacon ahead! $beacon")
             }
 
@@ -120,6 +122,9 @@ class Controller {
 //                log.info("Got you !")
 //                // TODO bucket part
 //            }
+        } else {
+            differentialPilot.stop()
+            log.info("no beacon")
         }
     }
 }
