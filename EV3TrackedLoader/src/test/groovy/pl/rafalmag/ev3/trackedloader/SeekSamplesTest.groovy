@@ -16,8 +16,8 @@ class SeekSamplesTest extends Specification {
         when:
         def samples = SeekSamples.parseSeekSamples(rawData)
         then:
-        samples.getBeacons().size == 4
-        samples.getBeaconsPresent().size == 3
+        samples.getBeacons().size() == 4
+        samples.getBeaconsPresent().size() == 3
         samples.getBeacon(0) == new SeekSample(channel: 0, bearing: -12, distanceCm: 10)
         samples.getBeacon(1) == new SeekSample(channel: 1, bearing: 0, distanceCm: 15)
         samples.getBeacon(2) == new SeekSample(channel: 2, bearing: 5, distanceCm: 100)
@@ -32,8 +32,8 @@ class SeekSamplesTest extends Specification {
         when:
         def samples = SeekSamples.parseSeekSamples(rawData)
         then:
-        samples.getBeacons().size == 4
-        samples.getBeaconsPresent().size == 0
+        samples.getBeacons().size() == 4
+        samples.getBeaconsPresent().size() == 0
         !samples.getClosestBeacon().present
         !samples.getClosestBeacon().orNull()
     }

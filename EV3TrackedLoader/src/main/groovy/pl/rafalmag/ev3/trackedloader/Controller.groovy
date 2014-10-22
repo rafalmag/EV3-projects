@@ -28,19 +28,6 @@ class Controller {
     }
 
     public void doJob() {
-        Button.ESCAPE.addKeyListener(new KeyListener() {
-            @Override
-            void keyPressed(Key key) {
-                log.info("Bye!")
-            }
-
-            @Override
-            void keyReleased(Key key) {
-                loaderMotor.flt()
-                differentialPilot.stop()
-                System.exit(0)
-            }
-        })
         while (true) {
             int remoteCommand = ev3IrSensor.getRemoteCommand(channel)
             handleIrCommand(remoteCommand)
@@ -117,13 +104,22 @@ class Controller {
         def beaconOptional = seekSensor.getSeekSamples().getClosestBeacon()
         if (beaconOptional.present) {
             def beacon = beaconOptional.get()
-            if (beacon.distanceCm > 20) {
-                differentialPilot.steer(beacon.bearing)
-//            differentialPilot.travel(5) // 5cm // TODO travel forward ?
+
+            if (beacon.bearing > 1) {
+                differentialPilot.rotateLeft()
+            } else if (beacon.bearing < 1) {
+                differentialPilot.rotateRight()
             } else {
-                log.info("Got you !")
-                // TODO bucket part
+                log.info("beacon ahead! $beacon")
             }
+
+//            if (beacon.distanceCm > 20) {
+//                differentialPilot.steer(beacon.bearing)
+////            differentialPilot.travel(5) // 5cm // TODO travel forward ?
+//            } else {
+//                log.info("Got you !")
+//                // TODO bucket part
+//            }
         }
     }
 }

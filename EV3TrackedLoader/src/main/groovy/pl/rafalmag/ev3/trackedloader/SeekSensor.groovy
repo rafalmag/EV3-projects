@@ -5,10 +5,13 @@ import groovy.transform.Immutable
 import groovy.transform.TupleConstructor
 import lejos.hardware.sensor.SensorMode
 
-@Immutable
 class SeekSensor {
 
     final SensorMode seekSensor
+
+    SeekSensor(SensorMode seekSensor) {
+        this.seekSensor = seekSensor
+    }
 
     SeekSamples getSeekSamples(){
         def seekSamples = new float[seekSensor.sampleSize()]
