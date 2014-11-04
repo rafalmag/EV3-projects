@@ -1,8 +1,10 @@
 package pl.rafalmag.ev3.trackedloader
 
 import lejos.hardware.sensor.EV3IRSensor
+import lejos.hardware.sensor.SensorMode
 import lejos.robotics.RegulatedMotor
 import lejos.robotics.navigation.DifferentialPilot
+import spock.lang.Shared
 import spock.lang.Specification
 
 class ControllerTest extends Specification {
@@ -11,8 +13,14 @@ class ControllerTest extends Specification {
     def DifferentialPilot differentialPilot = Mock(DifferentialPilot)
     def RegulatedMotor loaderMotor = Mock(RegulatedMotor)
 
-    def Controller controller = new Controller(ev3IrSensor, differentialPilot, loaderMotor, channel)
+    def Controller controller
+
     int channel = 0
+
+    def setup() {
+        ev3IrSensor.getSeekMode() >> Mock(SensorMode)
+        controller = new Controller(ev3IrSensor, differentialPilot, loaderMotor, channel)
+    }
 
     def "should stop"() {
         when:
