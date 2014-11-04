@@ -107,7 +107,7 @@ class Controller {
             if (beacon.bearing > 1) {
                 differentialPilot.steer(200)
                 log.info("beacon left $beacon")
-            } else if (beacon.bearing < 1) {
+            } else if (beacon.bearing < -1) {
                 differentialPilot.steer(-200)
                 log.info("beacon right $beacon")
             } else {

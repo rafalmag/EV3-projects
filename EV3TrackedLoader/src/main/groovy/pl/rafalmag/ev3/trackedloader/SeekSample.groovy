@@ -1,8 +1,7 @@
 package pl.rafalmag.ev3.trackedloader
 
-import groovy.transform.EqualsAndHashCode
+import com.google.common.math.DoubleMath
 import groovy.transform.Immutable
-import groovy.transform.ToString
 
 @Immutable
 class SeekSample {
@@ -19,6 +18,6 @@ class SeekSample {
     float distanceCm
 
     boolean isPresent() {
-        distanceCm != 255 // todo float check!
+        !DoubleMath.fuzzyEquals(distanceCm, 255, 1);
     }
 }
