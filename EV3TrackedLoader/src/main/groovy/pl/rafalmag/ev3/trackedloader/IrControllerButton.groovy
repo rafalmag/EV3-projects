@@ -24,15 +24,11 @@ enum IrControllerButton {
 	}
 
 	static IrControllerButton fromCode(int code) {
-		for (IrControllerButton irControllerButton : values()) {
-			if (irControllerButton.code == code) {
-				return irControllerButton
-			}
+		IrControllerButton result = values().find {it.code == code}
+		if(result == null){
+			throw new IllegalArgumentException("Unsupported code: " + code)
 		}
-		throw new IllegalArgumentException("Unsupported code: " + code)
+		result
 	}
 
-	public int getCode() {
-		return code
-	}
 }
