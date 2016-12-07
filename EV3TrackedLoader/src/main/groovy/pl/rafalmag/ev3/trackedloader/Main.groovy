@@ -22,6 +22,7 @@ class Main {
     static final LEFT_MOTOR = MirrorMotor.invertMotor(new EV3LargeRegulatedMotor(MotorPort.B))
     static final RIGHT_MOTOR = MirrorMotor.invertMotor(new EV3LargeRegulatedMotor(MotorPort.D))
     static final LOADER_MOTOR = new EV3MediumRegulatedMotor(MotorPort.C)
+    static final EV3_IR_SENSOR = new EV3IRSensor(IR_SENSOR_PORT)
 
     public static void main(String[] args) {
         log.info("Initializing...")
@@ -29,19 +30,17 @@ class Main {
 //		disableOtherLogLayers()
 //		LCD.clear()
         Button.setKeyClickVolume(1)
-        EV3IRSensor ev3IRSensor = null
         try {
             LOADER_MOTOR.setSpeed(LOADER_MOTOR.getMaxSpeed())
 
-            ev3IRSensor = new EV3IRSensor(IR_SENSOR_PORT)
             def differentialPilot = new DifferentialPilot(WHEEL_DIAMETER, TRACK_WIDTH, LEFT_MOTOR, RIGHT_MOTOR)
             differentialPilot.setTravelSpeed(differentialPilot.getMaxTravelSpeed() * 0.5)
             addKeyListener(differentialPilot)
 
-            def controller = new Controller(ev3IRSensor, differentialPilot, LOADER_MOTOR, CHANNEL)
+            def controller = new Controller(EV3_IR_SENSOR, differentialPilot, LOADER_MOTOR, CHANNEL)
             controller.doJob()
         } finally {
-            ev3IRSensor?.close()
+            EV3_IR_SENSOR?.close()
             LOADER_MOTOR?.close()
             LEFT_MOTOR?.close()
             RIGHT_MOTOR?.close()
@@ -49,6 +48,17 @@ class Main {
     }
 
     private static addKeyListener(differentialPilot) {
+        Button.ENTER.addKeyListener(new KeyListener() {
+            @Override
+            void keyPressed(Key key) {
+                log.info("Stop all!")
+            }
+
+            @Override
+            void keyReleased(Key key) {
+                differentialPilot.stop()
+            }
+        })
         Button.ESCAPE.addKeyListener(new KeyListener() {
             @Override
             void keyPressed(Key key) {
@@ -57,13 +67,12 @@ class Main {
 
             @Override
             void keyReleased(Key key) {
-//                ev3IRSensor?.close()
-//                LOADER_MOTOR?.close()
-//                LEFT_MOTOR?.close()
-//                RIGHT_MOTOR?.close()
-//                ev3IrSensor.close()
+                EV3_IR_SENSOR?.close()
+                LOADER_MOTOR?.close()
+                LEFT_MOTOR?.close()
+                RIGHT_MOTOR?.close()
                 differentialPilot.stop()
-//                System.exit(0)
+                System.exit(0)
             }
         })
     }

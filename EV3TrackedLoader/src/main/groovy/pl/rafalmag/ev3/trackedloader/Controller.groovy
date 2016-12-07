@@ -95,6 +95,7 @@ class Controller {
         logCommand.call(command)
         differentialPilotCommand.call()
         loaderMotorCommand.call()
+        Thread.sleep(100)
     }
 
     def autoMode() {
@@ -105,12 +106,15 @@ class Controller {
             def beacon = beaconOptional.get()
 
             if (beacon.bearing > 1) {
+                differentialPilot.stop()
                 differentialPilot.steer(200)
                 log.info("beacon left $beacon")
             } else if (beacon.bearing < -1) {
+                differentialPilot.stop()
                 differentialPilot.steer(-200)
                 log.info("beacon right $beacon")
             } else {
+                differentialPilot.stop()
                 differentialPilot.travel(2) // 2 cm ahead
                 log.info("beacon ahead! $beacon")
             }
