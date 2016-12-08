@@ -18,14 +18,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.rafalmag.ev3.Ev3Utils;
+import pl.rafalmag.ev3.JulConfigure;
 import pl.rafalmag.ev3.Time;
 import pl.rafalmag.systemtime.SystemTime;
 
 @SuppressWarnings("restriction")
 public class MainWithMenu {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(MainWithMenu.class);
+	static {
+		JulConfigure.configureJul();
+	}
+
+	private static final Logger log = LoggerFactory.getLogger(MainWithMenu.class);
 
 	public static void main(String[] args) {
 		log.info("Initializing...");
