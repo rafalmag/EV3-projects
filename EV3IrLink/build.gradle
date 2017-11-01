@@ -4,14 +4,12 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
-//        classpath "org.hidetake:gradle-ssh-plugin:2.9.0"
     }
 }
 
 apply plugin: 'scala'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
-//apply plugin: "org.hidetake.ssh"
 
 mainClassName = 'pl.rafalmag.ev3.irlink.Main'
 
@@ -30,6 +28,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+shadowJar {
+    baseName = 'EV3IrLink'
+    classifier = null
+    version = null
+}
+
  // deploy via scp
 configurations { sshAntTask }
 
@@ -46,7 +50,7 @@ task scp {
         def host = '192.168.1.7'
 
         ant.scp(
-                file: file("build/libs/EV3IrLink-all.jar"),
+                file: file("build/libs/EV3IrLink.jar"),
                 todir: "${user}@${host}:/home/lejos/programs",
                 password: "${password}",
                 trust: true
