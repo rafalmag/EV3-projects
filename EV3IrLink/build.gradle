@@ -1,0 +1,57 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+//        classpath "org.hidetake:gradle-ssh-plugin:2.9.0"
+    }
+}
+
+apply plugin: 'scala'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+//apply plugin: "org.hidetake.ssh"
+
+mainClassName = 'pl.rafalmag.ev3.irlink.Main'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile 'org.scala-lang:scala-library:2.12.4'
+    // mvn install:install-file -Dfile=ev3classes.jar -DgroupId=lejos -DartifactId=ev3classes -Dversion=0.9.1 -Dpackaging=jar
+    compileOnly 'lejos:ev3classes:0.9.1'
+    // mvn install:install-file -Dfile=dbusjava.jar -DgroupId=lejos -DartifactId=dbus -Dversion=0.9.1 -Dpackaging=jar
+    compileOnly 'lejos:dbus:0.9.1'
+    testCompile 'org.scalatest:scalatest_2.11:3.0.0'
+    testCompile 'junit:junit:4.12'
+}
+
+ // deploy via scp
+configurations { sshAntTask }
+
+dependencies { sshAntTask 'org.apache.ant:ant-jsch:1.10.1' }
+ant.taskdef(
+        name: 'scp',
+        classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+        classpath: configurations.sshAntTask.asPath)
+
+task scp {
+    doLast {
+        def user = 'root'
+        def password = ''
+        def host = '192.168.1.7'
+
+        ant.scp(
+                file: file("build/libs/EV3IrLink-all.jar"),
+                todir: "${user}@${host}:/home/lejos/programs",
+                password: "${password}",
+                trust: true
+        )
+    }
+}
+
+scp.dependsOn shadowJar
