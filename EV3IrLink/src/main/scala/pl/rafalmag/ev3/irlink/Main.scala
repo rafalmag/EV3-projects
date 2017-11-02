@@ -1,7 +1,7 @@
 package pl.rafalmag.ev3.irlink
 
 import lejos.hardware.Button
-import lejos.hardware.device.{IRLink, PFMotorPort}
+import lejos.hardware.device.{NewIRLink, PFMotorPort}
 import lejos.hardware.motor.RCXMotor
 import lejos.hardware.port.{BasicMotorPort, I2CPort, SensorPort}
 
@@ -16,10 +16,12 @@ object Main extends App {
 
   // http://blog.hsh.one.pl/?p=194
   // http://blog.hsh.one.pl/?p=200
-  val irLink = new IRLink(SensorPort.S2)
+  val irLink = new NewIRLink(SensorPort.S2)
   val channel = 0
   val slotA = 0
   val slotB = 1
+  // FIXME RCX motor does not work well with PF Motors - as it "updates State" only when there is a new state,
+  // but PF motors require constant state feed.
   val engineMotor = new RCXMotor(new PFMotorPort(irLink, channel, slotA))
   val steeringMotor = new RCXMotor(new PFMotorPort(irLink, channel, slotB))
   controlLoop
@@ -34,7 +36,7 @@ object Main extends App {
         case Button.ID_LEFT => steeringMotor.forward(); println("LEFT")
         case Button.ID_RIGHT => steeringMotor.backward(); println("RIGHT")
         case Button.ID_ESCAPE => return
-        case 0 =>engineMotor.flt(); steeringMotor.flt();
+        case 0 => //irLink.sendPFComboDirect(channel,0,0)
         case _@x => println(s"default $x")
       }
       Thread.sleep(100)

@@ -24,8 +24,12 @@ dependencies {
     compileOnly 'lejos:ev3classes:0.9.1'
     // mvn install:install-file -Dfile=dbusjava.jar -DgroupId=lejos -DartifactId=dbus -Dversion=0.9.1 -Dpackaging=jar
     compileOnly 'lejos:dbus:0.9.1'
-    testCompile 'org.scalatest:scalatest_2.11:3.0.0'
+    testCompile 'org.scalatest:scalatest_2.12:3.0.4'
+    testCompile 'org.scalamock:scalamock_2.12:4.0.0'
+    testCompile 'org.scalacheck:scalacheck_2.12:1.13.5'
     testCompile 'junit:junit:4.12'
+
+    testCompile 'lejos:ev3classes:0.9.1'
 }
 
 shadowJar {

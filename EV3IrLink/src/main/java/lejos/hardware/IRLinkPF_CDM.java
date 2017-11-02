@@ -1,57 +1,58 @@
 package lejos.hardware;
 
-import lejos.hardware.device.IRLink;
+import lejos.hardware.device.NewIRLink;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.port.SensorPort;
 
-/** Description: LeJOS NXJ new IRLink driver.
-    Run PF Combo Direct Mode Tests.
-*/
+/**
+ * Description: LeJOS NXJ new IRLink driver.
+ * Run PF Combo Direct Mode Tests.
+ */
 
 public class IRLinkPF_CDM {
-	
-	/* Sensors */
-	private IRLink pfIRLink;
 
-	/* Constructor */
-	public IRLinkPF_CDM() {
-		pfIRLink = new IRLink(SensorPort.S2);
-	}
+    /* Sensors */
+    private NewIRLink pfIRLink;
 
-	public static void main(String[] args) {
-		IRLinkPF_CDM obj = new IRLinkPF_CDM();
-		obj.testPFComboDirectMode(); // Run PF Combo Direct Mode Tests.
-	}
+    /* Constructor */
+    public IRLinkPF_CDM() {
+        pfIRLink = new NewIRLink(SensorPort.S2);
+    }
 
-   	// PF Combo Direct Mode Tests.
-	public void testPFComboDirectMode() {
-		
-		LCD.drawString("PF CDM:", 0, 0);
-		while (!(Button.ESCAPE.isDown())) {
+    public static void main(String[] args) {
+        IRLinkPF_CDM obj = new IRLinkPF_CDM();
+        obj.testPFComboDirectMode(); // Run PF Combo Direct Mode Tests.
+    }
 
-			if(Button.ENTER.isDown()) {
-				// Stop all motors on output A and output B.
-				LCD.drawString("Fl A, Fl B", 0, 1);
-				for (int i=0; i<4; i++) {
-					pfIRLink.sendPFComboDirect(i, IRLink.PF_CDM_COMMAND_BRAKE, IRLink.PF_CDM_COMMAND_BRAKE);
-				}
-			}
+    // PF Combo Direct Mode Tests.
+    public void testPFComboDirectMode() {
 
-			if(Button.RIGHT.isDown()) {
-				// Full forward motors on output A and full backward motors on output B.
-				LCD.drawString("FF A, FB B", 0, 1);
-				for (int i=0; i<4; i++) {
-					pfIRLink.sendPFComboDirect(i, IRLink.PF_CDM_COMMAND_FORWARD, IRLink.PF_CDM_COMMAND_BACKWARD);
-				}
-			}
+        LCD.drawString("PF CDM:", 0, 0);
+        while (!(Button.ESCAPE.isDown())) {
 
-			if(Button.LEFT.isDown()) {
-				// Full backward motors on output A and full forwardard motors on output B.
-				LCD.drawString("FB A, FF B", 0, 1);
-				for (int i=0; i<4; i++) {
-					pfIRLink.sendPFComboDirect(i, IRLink.PF_CDM_COMMAND_BACKWARD, IRLink.PF_CDM_COMMAND_FORWARD);
-				}
-			}
-		}
-	}
+            if (Button.ENTER.isDown()) {
+                // Stop all motors on output A and output B.
+                LCD.drawString("Fl A, Fl B", 0, 1);
+                for (int i = 0; i < 4; i++) {
+                    pfIRLink.sendPFComboDirect(i, NewIRLink.PF_CDM_COMMAND_BRAKE, NewIRLink.PF_CDM_COMMAND_BRAKE);
+                }
+            }
+
+            if (Button.RIGHT.isDown()) {
+                // Full forward motors on output A and full backward motors on output B.
+                LCD.drawString("FF A, FB B", 0, 1);
+                for (int i = 0; i < 4; i++) {
+                    pfIRLink.sendPFComboDirect(i, NewIRLink.PF_CDM_COMMAND_FORWARD, NewIRLink.PF_CDM_COMMAND_BACKWARD);
+                }
+            }
+
+            if (Button.LEFT.isDown()) {
+                // Full backward motors on output A and full forwardard motors on output B.
+                LCD.drawString("FB A, FF B", 0, 1);
+                for (int i = 0; i < 4; i++) {
+                    pfIRLink.sendPFComboDirect(i, NewIRLink.PF_CDM_COMMAND_BACKWARD, NewIRLink.PF_CDM_COMMAND_FORWARD);
+                }
+            }
+        }
+    }
 }

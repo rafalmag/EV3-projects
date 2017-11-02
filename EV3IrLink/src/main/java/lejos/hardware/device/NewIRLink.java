@@ -2,8 +2,8 @@ package lejos.hardware.device;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.Port;
-import lejos.hardware.sensor.I2CSensor;
 
+import java.text.DecimalFormat;
 import java.util.BitSet;
 
 /*
@@ -17,7 +17,7 @@ import java.util.BitSet;
  * @author Lawrie Griffiths
  * @author Szymon Madej
  */
-public class IRLink extends I2CSensor {
+public class NewIRLink extends IRLink {
 
 	/*
      * Documentation: http://www.hitechnic.com/cgi-bin/commerce.cgi?preadd=action&key=NIL1046
@@ -121,20 +121,21 @@ public class IRLink extends I2CSensor {
     private BitSet bits = new BitSet(MAX_BITS);
     private int nextBit = 0;
 
-    public IRLink(Port port) {
-        this(port.open(I2CPort.class));
+    public NewIRLink(Port port) {
+        super(port);
+//        System.out.println("Custom NewIRLink");
     }
 
     // *** Constructor *** //
-    public IRLink(I2CPort port) {
+    public NewIRLink(I2CPort port) {
         super(port);
-        System.out.println("Custom IRLink");
+//        System.out.println("Custom NewIRLink");
     }
 
     // *** Methods *** //
 
 	/*
-	 * IRLink: Power Function transmission mode methods.
+     * IRLink: Power Function transmission mode methods.
 	 */
 
     /**
@@ -240,12 +241,21 @@ public class IRLink extends I2CSensor {
         sendPFCommand(nibble1, nibble2, nibble3);
     }
 
+//    static DecimalFormat myFormatter = new DecimalFormat("0000,0000,0000,0000");
+//
+//    static public String format(int value) {
+//        // String.format("%,016d" , Long.valueOf(Integer.toBinaryString(pfData)))
+//        return myFormatter.format(Long.valueOf(Integer.toBinaryString(value)));
+//    }
+
     /*
      * Encode and send bytes from submitted nibbles to the PF IR receiver.
      */
     private void sendPFCommand(int nibble1, int nibble2, int nibble3) {
         byte lrc = (byte) (0xF ^ nibble1 ^ nibble2 ^ nibble3);
         int pfData = (nibble1 << 12) | (nibble2 << 8) | (nibble3 << 4) | lrc;
+
+//        System.out.println("pfData = " + format(pfData));
 
         clearBits();
         nextBit = 0;
