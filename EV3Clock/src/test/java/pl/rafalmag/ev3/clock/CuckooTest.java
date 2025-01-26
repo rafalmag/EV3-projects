@@ -2,7 +2,7 @@ package pl.rafalmag.ev3.clock;
 
 import static junitparams.JUnitParamsRunner.$;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
