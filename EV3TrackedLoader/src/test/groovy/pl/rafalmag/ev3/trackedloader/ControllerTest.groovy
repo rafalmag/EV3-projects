@@ -4,9 +4,9 @@ import lejos.hardware.sensor.EV3IRSensor
 import lejos.hardware.sensor.SensorMode
 import lejos.robotics.RegulatedMotor
 import lejos.robotics.navigation.DifferentialPilot
-import spock.lang.Shared
 import spock.lang.Specification
 
+// For java 17+ Run with: "--add-opens=java.base/java.lang=ALL-UNNAMED"
 class ControllerTest extends Specification {
 
     def EV3IRSensor ev3IrSensor = Mock(EV3IRSensor)
