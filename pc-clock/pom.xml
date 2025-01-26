@@ -5,16 +5,15 @@
 	<artifactId>pc-clock</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<javafx.version>2.2</javafx.version>
-		<exec.mainClass>org.korecky.myhavafx.App</exec.mainClass>
+		<javafx.version>21</javafx.version>
+		<javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
 	</properties>
 	<build>
-		<finalName>MyJavaFX</finalName>
 		<plugins>
 			<plugin>
-				<groupId>com.zenjava</groupId>
+				<groupId>org.openjfx</groupId>
 				<artifactId>javafx-maven-plugin</artifactId>
-				<version>2.0</version>
+				<version>${javafx.maven.plugin.version}</version>
 				<configuration>
 					<mainClass>pl.rafalmag.Clock</mainClass>
 				</configuration>
@@ -23,16 +22,21 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>javafx</groupId>
-			<artifactId>javafx</artifactId>
-			<version>2.1</version>
-			<scope>system</scope>
-			<systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>${javafx.version}</version>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>javafx</groupId>-->
+<!--			<artifactId>javafx</artifactId>-->
+<!--			<version>2.1</version>-->
+<!--			<scope>system</scope>-->
+<!--			<systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
